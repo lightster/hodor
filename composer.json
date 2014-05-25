@@ -17,6 +17,6 @@
     "require": {
         "php": ">=5.3.3",
         "silex/silex": "~1.1",
-	"videlalvaro/php-amqplib": "2.1.0"
+        "videlalvaro/php-amqplib": "2.1.0"
     }
 }
