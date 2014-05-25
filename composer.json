@@ -15,6 +15,7 @@
         }
     },
     "require": {
+        "lightster/lstr-silex": "~0.2.0",
         "php": ">=5.3.3",
         "silex/silex": "~1.1",
         "videlalvaro/php-amqplib": "2.1.0"

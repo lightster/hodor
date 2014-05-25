@@ -3,8 +3,404 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "c81cbae7ae739af833ce27c880853c04",
+    "hash": "8f7a1c312d90dd273a8796fcb35ee315",
     "packages": [
+        {
+            "name": "assetrinc/assetrinc",
+            "version": "v0.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/assetrinc/assetrinc.git",
+                "reference": "85fa6082fdf7f1ccef954091368750d0fc401de8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/assetrinc/assetrinc/zipball/85fa6082fdf7f1ccef954091368750d0fc401de8",
+                "reference": "85fa6082fdf7f1ccef954091368750d0fc401de8",
+                "shasum": ""
+            },
+            "require": {
+                "kriswallsmith/assetic": "~1.1",
+                "leafo/scssphp": "0.0.9",
+                "php": ">=5.3.3",
+                "zacharyrankin/sprocketeer": "~0.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Assetrinc\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "An unusually simple way to include assets",
+            "homepage": "http://github.com/assetrinc/assetrinc",
+            "keywords": [
+                "assentric",
+                "assets",
+                "php"
+            ],
+            "time": "2014-05-11 03:20:51"
+        },
+        {
+            "name": "kriswallsmith/assetic",
+            "version": "v1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kriswallsmith/assetic.git",
+                "reference": "735cffd3982c6e8cdebe292d5db39d077f65890f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kriswallsmith/assetic/zipball/735cffd3982c6e8cdebe292d5db39d077f65890f",
+                "reference": "735cffd3982c6e8cdebe292d5db39d077f65890f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.1",
+                "symfony/process": "~2.1"
+            },
+            "require-dev": {
+                "cssmin/cssmin": "*",
+                "joliclic/javascript-packer": "*",
+                "kamicane/packager": "*",
+                "leafo/lessphp": "*",
+                "leafo/scssphp": "*",
+                "leafo/scssphp-compass": "*",
+                "mrclay/minify": "*",
+                "phpunit/phpunit": "~3.7",
+                "ptachoire/cssembed": "*",
+                "twig/twig": "~1.6"
+            },
+            "suggest": {
+                "leafo/lessphp": "Assetic provides the integration with the lessphp LESS compiler",
+                "leafo/scssphp": "Assetic provides the integration with the scssphp SCSS compiler",
+                "leafo/scssphp-compass": "Assetic provides the integration with the SCSS compass plugin",
+                "ptachoire/cssembed": "Assetic provides the integration with phpcssembed to embed data uris",
+                "twig/twig": "Assetic provides the integration with the Twig templating engine"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Assetic": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kris Wallsmith",
+                    "email": "kris.wallsmith@gmail.com",
+                    "homepage": "http://kriswallsmith.net/"
+                }
+            ],
+            "description": "Asset Management for PHP",
+            "homepage": "https://github.com/kriswallsmith/assetic",
+            "keywords": [
+                "assets",
+                "compression",
+                "minification"
+            ],
+            "time": "2013-07-19 00:03:27"
+        },
+        {
+            "name": "leafo/scssphp",
+            "version": "v0.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/leafo/scssphp.git",
+                "reference": "a06d702ebf9fabb22542bbb27cc12a905813bb6d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/leafo/scssphp/zipball/a06d702ebf9fabb22542bbb27cc12a905813bb6d",
+                "reference": "a06d702ebf9fabb22542bbb27cc12a905813bb6d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "require-dev": {
+                "php": ">=5.3.0",
+                "phpunit/phpunit": "3.7.*"
+            },
+            "bin": [
+                "pscss"
+            ],
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "scss.inc.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT",
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Leaf Corcoran",
+                    "email": "leafot@gmail.com",
+                    "homepage": "http://leafo.net"
+                }
+            ],
+            "description": "scssphp is a compiler for SCSS written in PHP.",
+            "homepage": "http://leafo.net/scssphp/",
+            "time": "2013-12-23 23:28:02"
+        },
+        {
+            "name": "lightster/lstr-silex",
+            "version": "v0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lightster/lstr-silex.git",
+                "reference": "4d46bb54648a7ae33cc2873423cd9d960a8a884f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lightster/lstr-silex/zipball/4d46bb54648a7ae33cc2873423cd9d960a8a884f",
+                "reference": "4d46bb54648a7ae33cc2873423cd9d960a8a884f",
+                "shasum": ""
+            },
+            "require": {
+                "lightster/lstr-silex-app": "~0.0",
+                "lightster/lstr-silex-asset": "~0.1",
+                "lightster/lstr-silex-config": "~0.0",
+                "lightster/lstr-silex-controller": "~0.0",
+                "lightster/lstr-silex-database": "~0.0",
+                "lightster/lstr-silex-template": "~0.0"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Lstr/Silex Quick-start Library",
+            "homepage": "http://lightdatasys.com",
+            "keywords": [
+                "lightster",
+                "lstr",
+                "silex"
+            ],
+            "time": "2014-04-08 05:09:27"
+        },
+        {
+            "name": "lightster/lstr-silex-app",
+            "version": "v0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lightster/lstr-silex-app.git",
+                "reference": "68e7ab4af09d532becc0bb71085f212c0b9cde35"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lightster/lstr-silex-app/zipball/68e7ab4af09d532becc0bb71085f212c0b9cde35",
+                "reference": "68e7ab4af09d532becc0bb71085f212c0b9cde35",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3",
+                "silex/silex": "~1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Lstr\\Silex\\App": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Lstr/Silex/App Quick-start Library",
+            "homepage": "http://lightdatasys.com",
+            "keywords": [
+                "lightster",
+                "lstr",
+                "silex"
+            ],
+            "time": "2014-03-23 15:37:11"
+        },
+        {
+            "name": "lightster/lstr-silex-asset",
+            "version": "v0.5.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lightster/lstr-silex-asset.git",
+                "reference": "d3d3716769803c715510838caf95ab782c6a2394"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lightster/lstr-silex-asset/zipball/d3d3716769803c715510838caf95ab782c6a2394",
+                "reference": "d3d3716769803c715510838caf95ab782c6a2394",
+                "shasum": ""
+            },
+            "require": {
+                "assetrinc/assetrinc": "~0.3",
+                "php": ">=5.3",
+                "silex/silex": "~1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Lstr\\Silex\\Asset\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Lstr/Silex/Asset Library",
+            "homepage": "http://lightdatasys.com",
+            "keywords": [
+                "asset",
+                "lightster",
+                "lstr",
+                "silex"
+            ],
+            "time": "2014-04-19 03:33:50"
+        },
+        {
+            "name": "lightster/lstr-silex-config",
+            "version": "v0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lightster/lstr-silex-config.git",
+                "reference": "90d69b64c80b42bd10e1d9a94aae36dd025cfcb3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lightster/lstr-silex-config/zipball/90d69b64c80b42bd10e1d9a94aae36dd025cfcb3",
+                "reference": "90d69b64c80b42bd10e1d9a94aae36dd025cfcb3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3",
+                "silex/silex": "~1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Lstr\\Silex\\Config\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Lstr/Silex/Config Library",
+            "homepage": "http://lightdatasys.com",
+            "keywords": [
+                "config",
+                "lightster",
+                "lstr",
+                "silex"
+            ],
+            "time": "2014-03-23 04:28:39"
+        },
+        {
+            "name": "lightster/lstr-silex-controller",
+            "version": "v0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lightster/lstr-silex-controller.git",
+                "reference": "8159230ac16bd04ed3d33a26fd6dc44bd40b34f9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lightster/lstr-silex-controller/zipball/8159230ac16bd04ed3d33a26fd6dc44bd40b34f9",
+                "reference": "8159230ac16bd04ed3d33a26fd6dc44bd40b34f9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3",
+                "silex/silex": "~1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Lstr\\Silex\\Controller\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Lstr/Silex/Controller Library",
+            "homepage": "http://lightdatasys.com",
+            "keywords": [
+                "controller",
+                "lightster",
+                "lstr",
+                "silex"
+            ],
+            "time": "2014-03-23 04:28:48"
+        },
+        {
+            "name": "lightster/lstr-silex-database",
+            "version": "v0.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lightster/lstr-silex-database.git",
+                "reference": "a560c7a0ea53e3ca5efde1cd423080ab036bb048"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lightster/lstr-silex-database/zipball/a560c7a0ea53e3ca5efde1cd423080ab036bb048",
+                "reference": "a560c7a0ea53e3ca5efde1cd423080ab036bb048",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3",
+                "silex/silex": "~1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Lstr\\Silex\\Database\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Lstr/Silex/Database Library",
+            "homepage": "http://lightdatasys.com",
+            "keywords": [
+                "database",
+                "lightster",
+                "lstr",
+                "silex"
+            ],
+            "time": "2014-03-27 04:34:25"
+        },
+        {
+            "name": "lightster/lstr-silex-template",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lightster/lstr-silex-template.git",
+                "reference": "31cf4cdd1650d80798f378b7933cd4eaa46b81d5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lightster/lstr-silex-template/zipball/31cf4cdd1650d80798f378b7933cd4eaa46b81d5",
+                "reference": "31cf4cdd1650d80798f378b7933cd4eaa46b81d5",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3",
+                "silex/silex": "~1.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Lstr\\Silex\\Template\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Lstr/Silex/Template Library",
+            "homepage": "http://lightdatasys.com",
+            "keywords": [
+                "lightster",
+                "lstr",
+                "silex",
+                "template"
+            ],
+            "time": "2014-04-17 03:21:15"
+        },
         {
             "name": "pimple/pimple",
             "version": "v1.1.1",
@@ -421,6 +817,55 @@
             "time": "2014-05-22 21:04:05"
         },
         {
+            "name": "symfony/process",
+            "version": "v2.4.5",
+            "target-dir": "Symfony/Component/Process",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/Process.git",
+                "reference": "a7118cb290c62068b3c8ecfbf8b2eda8421fb841"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/Process/zipball/a7118cb290c62068b3c8ecfbf8b2eda8421fb841",
+                "reference": "a7118cb290c62068b3c8ecfbf8b2eda8421fb841",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Symfony\\Component\\Process\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "http://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Process Component",
+            "homepage": "http://symfony.com",
+            "time": "2014-05-22 13:46:01"
+        },
+        {
             "name": "symfony/routing",
             "version": "v2.4.5",
             "target-dir": "Symfony/Component/Routing",
@@ -529,6 +974,60 @@
                 "rabbitmq"
             ],
             "time": "2013-06-17 19:25:27"
+        },
+        {
+            "name": "zacharyrankin/sprocketeer",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zacharyrankin/sprocketeer.git",
+                "reference": "67848c7b5b79cedfd0ded5f3f267df4d196b9ed0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/zacharyrankin/sprocketeer/zipball/67848c7b5b79cedfd0ded5f3f267df4d196b9ed0",
+                "reference": "67848c7b5b79cedfd0ded5f3f267df4d196b9ed0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "pimple/pimple": "~1.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "3.7.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Sprocketeer\\Tests": "tests/",
+                    "Sprocketeer": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Zachary Rankin",
+                    "email": "rankin.zachary@gmail.com",
+                    "homepage": "https://github.com/zacharyrankin"
+                },
+                {
+                    "name": "Matt Light",
+                    "homepage": "https://github.com/lightster"
+                }
+            ],
+            "description": "Sprocketeer is a PHP library for getting a simple list of files from a sprocket-like manifest.",
+            "homepage": "http://github.com/zacharyrankin/sprocketeer",
+            "keywords": [
+                "Sprockets",
+                "asset",
+                "coffeescript",
+                "php",
+                "sass"
+            ],
+            "time": "2014-04-07 03:37:25"
         }
     ],
     "packages-dev": [
