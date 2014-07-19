@@ -27,7 +27,7 @@
             'param1' => 'value1',
             'param2' => 'value2',
         ),
-        $options = array(
+        $job_options = array(
              'queue_name' => 'default',
              'start_time' => new DateTime(),
                              // '+1 hour'
@@ -37,6 +37,7 @@
                  12,         // job id
                  $job,       // job object
              ),
+             'max_failures' => 3,
         )
     );
 
@@ -48,4 +49,36 @@
         'name'   => 'silex_service',
         'method' => 'methodName',
     );
+~~~
+
+### Handling a Job
+~~~php
+    namespace Some\Class;
+
+    class Name extends JobRunner
+    {
+        public function run(array $job_params, array $job_options)
+        {
+            // do some stuff to process the job
+
+            if ($something_went_wrong) {
+                // something went wrong, but if there
+                // are attempts remaining try again
+                return $this->markAsFailure();
+            } elseif ($something_else_went_wrong) {
+                // do not try again
+                return $this->markAsPermanentFailure();
+            } elseif ($what_else_goes_wrong) {
+                throw new Exception('same as $this->markAsFailure()');
+            }
+            else {
+                // success is assumed, otherwise
+            }
+        }
+
+        public function isReadyToRun(array $job_params, array $job_options)
+        {
+             return false;
+        }
+    }
 ~~~
