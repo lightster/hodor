@@ -36,6 +36,9 @@
              'depends_on' => array(
                  12,         // job id
                  $job,       // job object
+                 '#isReadyToRun',
+                 'Some\Other\Class#isReadyToRun',
+                 'silex_service#isReadyToRun',
              ),
              'priority'     => 10,
                                // use `nice`'s semantics:
