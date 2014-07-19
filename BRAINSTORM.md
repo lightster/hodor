@@ -37,6 +37,10 @@
                  12,         // job id
                  $job,       // job object
              ),
+             'priority'     => 10,
+                               // use `nice`'s semantics:
+                               // - lower numbers run sooner
+                               // - allow -20 to 20
              'max_failures' => 3,
         )
     );
