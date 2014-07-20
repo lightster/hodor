@@ -62,7 +62,7 @@ $job_name = array(
 ~~~php
 namespace Some\Class;
 
-class Name extends JobRunner
+class Name extends Job
 {
     public function run(array $job_params, array $job_options)
     {
@@ -71,12 +71,14 @@ class Name extends JobRunner
         if ($something_went_wrong) {
             // something went wrong, but if there
             // are attempts remaining try again
-            return $this->markAsFailure();
+            $this->retry();
         } elseif ($something_else_went_wrong) {
             // do not try again
-            return $this->markAsPermanentFailure();
+            $this->fail();
         } elseif ($what_else_goes_wrong) {
-            throw new Exception('same as $this->markAsFailure()');
+            throw new Exception('same as $this->retry()');
+        } elseif ($something_is_wrong_but_do_not_exit_yet) {
+            $this->setStatus(self::STATUS_RETRY);
         }
         else {
             // success is assumed, otherwise
