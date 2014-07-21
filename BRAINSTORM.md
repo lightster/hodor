@@ -71,10 +71,10 @@ class Name extends Job
         if ($something_went_wrong) {
             // something went wrong, but if there
             // are attempts remaining try again
-            $this->retry();
+            throw $this->retry();
         } elseif ($something_else_went_wrong) {
             // do not try again
-            $this->fail();
+            throw $this->fail();
         } elseif ($what_else_goes_wrong) {
             throw new Exception('same as $this->retry()');
         } elseif ($something_is_wrong_but_do_not_exit_yet) {
