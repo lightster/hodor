@@ -79,8 +79,7 @@ class Name extends Job
             throw new Exception('same as $this->retry()');
         } elseif ($something_is_wrong_but_do_not_exit_yet) {
             $this->setStatus(self::STATUS_RETRY);
-        }
-        else {
+        } else {
             // success is assumed, otherwise
         }
     }
