@@ -86,7 +86,18 @@ class Name extends Job
 
     public function isReadyToRun(array $job_params, array $job_options)
     {
-         return false;
+         return $this->readyOrNot()
+             // limit to 5 simultaneous jobs of `get_class($this)` jobs
+             // per bucket name
+             ->limitTo(
+                 5,
+                 array(
+                     'bucket_name' => $job_params['bucket_name'],
+                 )
+             )
+             // limit to 15 simultaneous jobs of `get_class($this)` jobs
+             ->limitTo(15)
+         ;
     }
 }
 ~~~
