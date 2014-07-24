@@ -97,6 +97,9 @@ class Name extends Job
              )
              // limit to 15 simultaneous jobs of `get_class($this)` jobs
              ->limitTo(15)
+             ->check(function (array $job_params, array $job_options) {
+                 return rand(1, 10) == 5;
+             })
          ;
     }
 }
