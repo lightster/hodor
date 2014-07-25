@@ -100,6 +100,22 @@ class Name extends Job
              ->check(function (array $job_params, array $job_options) {
                  return rand(1, 10) == 5;
              })
+             // the chains are applied as an 'AND', but 'any()'
+             // allows for this 'OR' that
+             ->any(
+                 $this->readyOrNot()
+                     ->check(function (array $job_params, array $job_options) {
+                         return rand(1, 3) == 1;
+                     })
+                     ->check(function (array $job_params, array $job_options) {
+                         return rand(1, 3) == 2;
+                     })
+                 ,
+                 $this->readyOrNot()
+                     ->check(function (array $job_params, array $job_options) {
+                         return rand(1, 10) == 3;
+                     })
+             )
          ;
     }
 }
