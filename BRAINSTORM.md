@@ -33,6 +33,15 @@ Q::push(
                          // '+1 hour'
                          // '2014-07-20 00:15:00'
                          // 'now'
+         'recur' => array(
+              // how often to run the job
+              'interval' => '12:00:00',
+              // optional, will use the last run time
+              // without a base_time
+              'base_time' => '2014-07-20 03:00:00',
+              // a name to refer to the job by
+              'known_as' => 'job_to_run:every_12_hours',
+         ),
          'depends_on' => array(
              12,         // job id
              $job,       // job object
