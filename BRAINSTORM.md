@@ -86,7 +86,7 @@ class Name extends Job
 
     public function isReadyToRun(array $job_params, array $job_options)
     {
-         return $this->readyOrNot()
+         return $this->ready()
              // limit to 5 simultaneous jobs of `get_class($this)` jobs
              // per bucket name
              ->limitTo(
@@ -103,7 +103,7 @@ class Name extends Job
              // the chains are applied as an 'AND', but 'any()'
              // allows for this 'OR' that
              ->any(
-                 $this->readyOrNot()
+                 $this->ready()
                      ->check(function (array $job_params, array $job_options) {
                          return rand(1, 3) == 1;
                      })
@@ -111,7 +111,7 @@ class Name extends Job
                          return rand(1, 3) == 2;
                      })
                  ,
-                 $this->readyOrNot()
+                 $this->ready()
                      ->check(function (array $job_params, array $job_options) {
                          return rand(1, 10) == 3;
                      })
