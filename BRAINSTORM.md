@@ -101,6 +101,43 @@ Q::schedule(
 );
 ~~~
 
+### Scheduling a Recurring Job
+~~~php
+Q::recur(
+    $job_name = 'job_to_run',
+                // 'silex_service'
+                // 'Some\Class\Name'
+                // 'silex_service#methodName'
+                // 'Some\Class\Name#methodName'
+    $job_params = array(
+        'param1' => 'value1',
+        'param2' => 'value2',
+    ),
+    // a name to refer to the job by
+    $known_as = 'job_to_run:every_12_hours',
+    // how often to run the job
+    $interval = '12:00:00',
+    // optional, will use the last run time
+    // without a base_time
+    $base_time = '2014-07-20 03:00:00',
+    $job_options = array(
+         'queue_name' => 'default',
+         'depends_on' => array(
+             12,         // job id
+             $job,       // job object
+             '#isReadyToRun',
+             'Some\Other\Class#isReadyToRun',
+             'silex_service#isReadyToRun',
+         ),
+         'priority'     => 10,
+                           // use `nice`'s semantics:
+                           // - lower numbers run sooner
+                           // - allow -20 to 20
+         'max_failures' => 3,
+    )
+);
+~~~
+
 ### Handling a Job
 ~~~php
 namespace Some\Class;
