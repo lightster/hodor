@@ -200,3 +200,17 @@ class Name extends Job
     }
 }
 ~~~
+
+## Job Processing Flow
+
+### Queued Job
+
+Taken from experiences working with @zacharyrankin and @twenty7:
+
+ - Application pushes job to buffer queue (RabbitMQ)
+ - Job queue's buffer worker reads job from buffer queue (RabbitMQ)
+ - Buffer queue puts job into database (PostgreSQL)
+ - Superqueuer reads job from database (PostgreSQL)
+ - Superqueuer pushes job to worker queue (RabbitMQ)
+ - Job worker reads job from worker queue (RabbitMQ)
+ - Job worker runs job
