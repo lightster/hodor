@@ -226,3 +226,16 @@ Taken from experiences working with @zacharyrankin and @twenty7:
     - Is it possible for the job to successfully complete and be moved out of
       pending jobs but fail to be scheduled for the next run time?  How do we
       handle these failures?
+
+ - Things to consider:
+    - Should a job's next run time be an interval based on the start time or
+      end time of the previous job? Ideas:
+       - If there is a base time, all next run times should be an interval
+         based on that time. So once a job finishes, the next run time would be
+         the next available time that is a multiple of the defined interval plus
+         the base start time.
+       - If there is not a base time, all next run times should be the
+         most recent completion time plus the interval. Using the start time
+         instead would potentially cause problems since a job could take 5 hours
+         to run and be ran at an interval of 1 hour, which would mean the job
+         would be scheduled to immediately re-run.
