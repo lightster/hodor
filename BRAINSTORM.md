@@ -224,4 +224,5 @@ Taken from experiences working with @zacharyrankin and @twenty7:
  - After job is complete, the worker will update the next run time for the
    recurring job ID
     - Is it possible for the job to successfully complete and be moved out of
-      pending jobs but fail to be scheduled for the next run time?  How do we handle these failures?
+      pending jobs but fail to be scheduled for the next run time?  How do we
+      handle these failures?
