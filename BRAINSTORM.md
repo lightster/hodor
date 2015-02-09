@@ -214,3 +214,14 @@ Taken from experiences working with @zacharyrankin and @twenty7:
  - Superqueuer pushes job to worker queue (RabbitMQ)
  - Job worker reads job from worker queue (RabbitMQ)
  - Job worker runs job
+
+### Recurring Job
+
+ - Recurring jobs are stored in PostgreSQL database
+ - Scheduler worker reads job from schedule database (PostgreSQL)
+ - Any jobs that are due to be ran are queued to buffer queue with recurring job
+   ID
+ - After job is complete, the worker will update the next run time for th
+   recurring job ID
+    - Is it possible for the job to successfully complete and be moved out of
+      pending jobs but fail to be scheduled for the next run time?  How do we handle these failures?
