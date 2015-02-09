@@ -221,7 +221,7 @@ Taken from experiences working with @zacharyrankin and @twenty7:
  - Scheduler worker reads job from schedule database (PostgreSQL)
  - Any jobs that are due to be ran are queued to buffer queue with recurring job
    ID
- - After job is complete, the worker will update the next run time for th
+ - After job is complete, the worker will update the next run time for the
    recurring job ID
     - Is it possible for the job to successfully complete and be moved out of
       pending jobs but fail to be scheduled for the next run time?  How do we handle these failures?
