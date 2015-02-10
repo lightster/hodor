@@ -1,23 +1,24 @@
 {
-    "name": "lightster/lzq",
+    "name": "lightster/hodor",
     "description": "PHP/rabbitmq-based job queue",
     "keywords": [
-        "lzq",
+        "hodor",
         "php",
         "rabbitmq",
         "job",
         "queue"
     ],
-    "homepage": "http://github.com/lightster/lzq",
+    "homepage": "http://github.com/lightster/hodor",
     "autoload": {
         "psr-0": {
-            "Lzq\\": "src/"
+            "Hodor\\": "src/"
         }
     },
     "require": {
-        "lightster/lstr-silex": "~0.2.0",
-        "php": ">=5.3.3",
-        "silex/silex": "~1.1",
-        "videlalvaro/php-amqplib": "2.1.0"
+        "davedevelopment/phpmig": "~1.1.0",
+        "lightster/lstr-silex": "~0.2.1",
+        "php": ">=5.5.18",
+        "silex/silex": "~1.2",
+        "videlalvaro/php-amqplib": "~2.4.1"
     }
 }
