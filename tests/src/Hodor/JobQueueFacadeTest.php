@@ -12,7 +12,7 @@ class JobQueueFacadeTest extends PHPUnit_Framework_TestCase
         $job_params = ['a' => 'param'];
         $job_options = ['option' => true];
 
-        $buffer_queue = $this->getMockBuilder('\Hodor\JobQueue')
+        $buffer_queue = $this->getMockBuilder('\Hodor\BufferQueue')
             ->setMethods(['push'])
             ->getMock();
         $buffer_queue->expects($this->once())

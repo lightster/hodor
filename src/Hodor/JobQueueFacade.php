@@ -23,11 +23,17 @@ class JobQueueFacade
         );
     }
 
-    public static function setBufferQueue($buffer_queue)
+    /**
+     * @param \Hodor\BufferQueue $buffer_queue [description]
+     */
+    public static function setBufferQueue(BufferQueue $buffer_queue)
     {
         self::$buffer_queue = $buffer_queue;
     }
 
+    /**
+     * @return \Hodor\BufferQueue
+     */
     private static function getBufferQueue()
     {
         if (self::$buffer_queue) {
