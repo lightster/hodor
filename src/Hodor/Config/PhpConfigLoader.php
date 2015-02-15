@@ -6,7 +6,7 @@ use Hodor\Config;
 
 use Exception;
 
-class PhpConfigLoader
+class PhpConfigLoader implements LoaderInterface
 {
     /**
      * @param  string $file_path
