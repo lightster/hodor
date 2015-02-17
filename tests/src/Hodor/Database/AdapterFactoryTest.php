@@ -10,6 +10,8 @@ class AdapterFactoryTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        parent::setUp();
+
         $this->adapter_factory = new AdapterFactory([]);
     }
 

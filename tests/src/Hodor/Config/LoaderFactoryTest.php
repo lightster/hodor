@@ -10,6 +10,8 @@ class LoaderFactoryTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        parent::setUp();
+
         $this->loader_factory = new LoaderFactory();
     }
 
