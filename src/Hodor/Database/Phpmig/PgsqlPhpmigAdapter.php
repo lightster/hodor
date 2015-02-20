@@ -35,6 +35,19 @@ class PgsqlPhpmigAdapter implements AdapterInterface
 
     public function hasSchema()
     {
+        $sql = <<<SQL
+SELECT 1
+FROM pg_tables
+WHERE schemaname = 'migrations'
+    AND tablename = 'migrations'
+SQL;
+
+        $result = pg_query($this->connection, $sql);
+        if ($row = pg_fetch_row($result)) {
+            return (bool) $row[0];
+        }
+
+        return false;
     }
 
     public function createSchema()
