@@ -2,6 +2,8 @@
 
 namespace Hodor\Database;
 
+use Hodor\Database\Phpmig\PgsqlPhpmigAdapter;
+
 use Exception;
 
 class PgsqlAdapter implements AdapterInterface
@@ -46,6 +48,7 @@ class PgsqlAdapter implements AdapterInterface
 
     public function getPhpmigAdapter()
     {
+        return new PgsqlPhpmigAdapter($this->getConnection());
     }
 
     public function beginTransaction()
