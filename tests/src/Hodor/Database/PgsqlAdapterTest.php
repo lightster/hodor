@@ -35,7 +35,7 @@ class PgsqlAdapterTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \PHPUnit_Framework_Error_Warning
      */
     public function testAConnectionFailureThrowsAnException()
     {

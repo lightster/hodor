@@ -73,7 +73,7 @@ class PgsqlAdapter implements AdapterInterface
             throw new Exception("The 'dsn' part of the database config was not provided.");
         }
 
-        $this->connection = @pg_connect($this->config['dsn']);
+        $this->connection = pg_connect($this->config['dsn']);
 
         if (!$this->connection) {
             // TODO: figure out how to get the error message
