@@ -52,5 +52,18 @@ SQL;
 
     public function createSchema()
     {
+        $sql = <<<SQL
+CREATE SCHEMA migrations;
+
+CREATE TABLE migrations.migrations
+(
+    version VARCHAR PRIMARY KEY,
+    migrated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
+SQL;
+
+        pg_query($this->connection, $sql);
+
+        return $this;
     }
 }
