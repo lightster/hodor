@@ -23,6 +23,19 @@ class PgsqlPhpmigAdapter implements AdapterInterface
 
     public function fetchAll()
     {
+        $sql = <<<SQL
+SELECT version
+FROM migrations.migrations
+ORDER BY version
+SQL;
+
+        $versions = [];
+        $result = pg_query($this->connection, $sql);
+        while ($row = pg_fetch_assoc($result)) {
+            $versions[] = $row['version'];
+        }
+
+        return $versions;
     }
 
     public function up(Migration $migration)
