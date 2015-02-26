@@ -73,6 +73,13 @@ CREATE TABLE migrations.migrations
     version VARCHAR PRIMARY KEY,
     migrated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE migrations.rollbacks
+(
+    version VARCHAR NOT NULL,
+    migrated_at TIMESTAMP WITH TIME ZONE NOT NULL,
+    rolled_back_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+);
 SQL;
 
         pg_query($this->connection, $sql);
