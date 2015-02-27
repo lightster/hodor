@@ -71,12 +71,14 @@ CREATE SCHEMA migrations;
 CREATE TABLE migrations.migrations
 (
     version VARCHAR PRIMARY KEY,
+    file_hash VARCHAR NOT NULL,
     migrated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE migrations.rollbacks
 (
     version VARCHAR NOT NULL,
+    file_hash VARCHAR NOT NULL,
     migrated_at TIMESTAMP WITH TIME ZONE NOT NULL,
     rolled_back_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
