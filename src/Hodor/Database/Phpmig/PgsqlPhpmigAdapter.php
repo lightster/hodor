@@ -40,6 +40,7 @@ SQL;
 
     public function up(Migration $migration)
     {
+
     }
 
     public function down(Migration $migration)
@@ -71,16 +72,17 @@ CREATE SCHEMA migrations;
 CREATE TABLE migrations.migrations
 (
     version VARCHAR PRIMARY KEY,
-    file_hash VARCHAR NOT NULL,
-    migrated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+    migrated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    migration_hash VARCHAR NOT NULL
 );
 
 CREATE TABLE migrations.rollbacks
 (
     version VARCHAR NOT NULL,
-    file_hash VARCHAR NOT NULL,
     migrated_at TIMESTAMP WITH TIME ZONE NOT NULL,
-    rolled_back_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
+    migration_hash VARCHAR NOT NULL,
+    rolled_back_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    rollback_hash VARCHAR NOT NULL
 );
 SQL;
 
