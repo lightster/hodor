@@ -22,4 +22,15 @@ class LoaderFacadeTest extends PHPUnit_Framework_TestCase
         LoaderFacade::setLoaderFactory($loader_factory);
         LoaderFacade::loadFromFile($file_path);
     }
+
+    public function testFacadeReturnsConfig()
+    {
+        $file_path = __DIR__ . '/PhpConfig.php';
+
+        LoaderFacade::setLoaderFactory(null);
+        $this->assertInstanceOf(
+            '\Hodor\Config',
+            LoaderFacade::loadFromFile($file_path)
+        );
+    }
 }

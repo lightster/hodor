@@ -15,13 +15,13 @@ class LoaderFacade
      */
     public static function loadFromFile($file_path)
     {
-        self::getLoaderFactory()->loadFromFile($file_path);
+        return self::getLoaderFactory()->loadFromFile($file_path);
     }
 
     /**
      * @param \Hodor\Config\LoaderFactory $loader_factory
      */
-    public static function setLoaderFactory(LoaderFactory $loader_factory)
+    public static function setLoaderFactory(LoaderFactory $loader_factory = null)
     {
         self::$loader_factory = $loader_factory;
     }
