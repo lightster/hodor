@@ -12,16 +12,15 @@ class Config
     private $config;
 
     /**
-     * @var array
-     */
-    private $processed_config;
-
-    /**
      * @param array $config
      */
     public function __construct(array $config)
     {
         $this->config = $config;
+
+        if (!isset($this->config['database'])) {
+            throw new Exception("Required config option 'database' not provided.");
+        }
     }
 
     /**
@@ -39,23 +38,14 @@ class Config
      */
     private function getOption($option, $default = null)
     {
-        if (null === $this->processed_config) {
+        if (null === $this->config) {
             $this->processConfig();
         }
 
-        if (!array_key_exists($option, $this->processed_config)) {
-            $this->processed_config[$option] = $default;
+        if (!array_key_exists($option, $this->config)) {
+            $this->config[$option] = $default;
         }
 
-        return $this->processed_config[$option];
-    }
-
-    private function processConfig()
-    {
-        if (!isset($this->config['database'])) {
-            throw new Exception("Required config option '{$option}' not provided.");
-        }
-
-        $this->processed_config['database'] = $this->config['database'];
+        return $this->config[$option];
     }
 }
