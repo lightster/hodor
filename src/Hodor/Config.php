@@ -34,16 +34,17 @@ class Config
 
     /**
      * @param  string $option
+     * @param  mixed $default
      * @return mixed
      */
-    private function getOption($option)
+    private function getOption($option, $default = null)
     {
         if (null === $this->processed_config) {
             $this->processConfig();
         }
 
-        if (!isset($this->processed_config[$option])) {
-            throw new Exception("Undefined config option '{$option}'.");
+        if (!array_key_exists($option, $this->processed_config)) {
+            $this->processed_config[$option] = $default;
         }
 
         return $this->processed_config[$option];
