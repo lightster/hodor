@@ -47,7 +47,7 @@ class Config
         $config = array_merge(
             $this->getOption('queue_defaults', [
                 'host'         => null,
-                'port'         => 5432,
+                'port'         => 5672,
                 'username'     => null,
                 'password'     => null,
                 'queue_prefix' => 'hodor-'
