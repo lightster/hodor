@@ -3,6 +3,7 @@
 namespace Hodor\MessageQueue;
 
 use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Message\AMQPMessage;
 
 class Queue
 {
@@ -23,6 +24,25 @@ class Queue
     {
         $this->queue_config = $queue_config;
         $this->channel = $channel;
+    }
+
+    /**
+     * @param  mixed $message
+     */
+    public function push($message)
+    {
+        $amqp_message = new AMQPMessage(
+            json_encode($message),
+            [
+                'content_type' => 'text/plain',
+                'delivery_mode' => 2
+            ]
+        );
+        $this->channel->basic_publish(
+            $amqp_message,
+            '',
+            $this->queue_config['queue_name']
+        );
     }
 
     public function consume()
