@@ -32,6 +32,32 @@ class Config
     }
 
     /**
+     * @param  string $queue_name
+     * @return array
+     */
+    public function getWorkerQueueConfig($queue_name)
+    {
+        $worker_queues = $this->getOption('worker_queues');
+        if (!isset($worker_queues[$queue_name])) {
+            throw new Exception(
+                "Queue name '{$queue_name}' not found in 'worker_queues' config."
+            );
+        }
+
+        return array_merge(
+            $this->getOption('queue_defaults', [
+                'host'         => null,
+                'port'         => 5432,
+                'username'     => null,
+                'password'     => null,
+                'queue_prefix' => 'hodor-'
+            ]),
+            $this->getOption('worker_queue_defaults', []),
+            $worker_queues[$queue_name]
+        );
+    }
+
+    /**
      * @param  string $option
      * @param  mixed $default
      * @return mixed
