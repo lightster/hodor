@@ -63,6 +63,7 @@ class Config
         );
 
         $config['key_name'] = $queue_name;
+        $config['fetch_count'] = 1;
 
         return $config;
     }

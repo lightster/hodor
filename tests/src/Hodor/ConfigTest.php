@@ -69,6 +69,21 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @dataProvider configProvider
+     */
+    public function testWorkerQueueFetchCountIsOne($options)
+    {
+        $config = new Config($options);
+
+        $queue_config = $config->getWorkerQueueConfig('default');
+
+        $this->assertEquals(
+            1,
+            $queue_config['fetch_count']
+        );
+    }
+
     public function configProvider()
     {
         return [
