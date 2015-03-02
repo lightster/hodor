@@ -44,7 +44,7 @@ class Config
             );
         }
 
-        return array_merge(
+        $config = array_merge(
             $this->getOption('queue_defaults', [
                 'host'         => null,
                 'port'         => 5432,
@@ -52,9 +52,19 @@ class Config
                 'password'     => null,
                 'queue_prefix' => 'hodor-'
             ]),
-            $this->getOption('worker_queue_defaults', []),
+            $this->getOption('worker_queue_defaults', [])
+        );
+        $config = array_merge(
+            $config,
+            [
+                'queue_name' => "{$config['queue_prefix']}{$queue_name}",
+            ],
             $worker_queues[$queue_name]
         );
+
+        $config['key_name'] = $queue_name;
+
+        return $config;
     }
 
     /**

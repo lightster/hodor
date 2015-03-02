@@ -39,6 +39,36 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @dataProvider configProvider
+     */
+    public function testWorkerKeyNameIsSet($options)
+    {
+        $config = new Config($options);
+
+        $queue_config = $config->getWorkerQueueConfig('default');
+
+        $this->assertEquals(
+            'default',
+            $queue_config['key_name']
+        );
+    }
+
+    /**
+     * @dataProvider configProvider
+     */
+    public function testWorkerQueueNameDefaultsToPrefixAndQueueKey($options)
+    {
+        $config = new Config($options);
+
+        $queue_config = $config->getWorkerQueueConfig('default');
+
+        $this->assertEquals(
+            "{$queue_config['queue_prefix']}{$queue_config['key_name']}",
+            $queue_config['queue_name']
+        );
+    }
+
     public function configProvider()
     {
         return [
