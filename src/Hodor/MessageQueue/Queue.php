@@ -55,9 +55,9 @@ class Queue
             false,
             false,
             function ($amqp_message) {
-                var_dump($amqp_message->body);
-                $amqp_message->delivery_info['channel']
-                    ->basic_ack($amqp_message->delivery_info['delivery_tag']);
+                $message = new Message($amqp_message);
+                var_dump($message->getContent());
+                $message->acknowledge();
             }
         );
 
