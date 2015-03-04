@@ -45,7 +45,7 @@ class Queue
         );
     }
 
-    public function consume()
+    public function consume(callable $callback)
     {
         $this->channel->basic_consume(
             $this->queue_config['queue_name'],
@@ -54,10 +54,9 @@ class Queue
             ($auto_ack = false),
             false,
             false,
-            function ($amqp_message) {
+            function ($amqp_message) use ($callback) {
                 $message = new Message($amqp_message);
-                var_dump($message->getContent());
-                $message->acknowledge();
+                $callback($message);
             }
         );
 

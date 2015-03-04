@@ -11,4 +11,8 @@ $config = Config::loadFromFile(__DIR__ . '/../config/config.php');
 $queue_factory = new QueueFactory($config);
 $worker_queue = $queue_factory->getWorkerQueue('default');
 
-$worker_queue->consume();
+$worker_queue->consume(function ($message) {
+    var_dump($message->getContent());
+    $message->acknowledge();
+    exit(0);
+});
