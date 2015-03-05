@@ -34,7 +34,7 @@ class Queue
         $amqp_message = new AMQPMessage(
             json_encode($message),
             [
-                'content_type' => 'text/plain',
+                'content_type' => 'application/json',
                 'delivery_mode' => 2
             ]
         );

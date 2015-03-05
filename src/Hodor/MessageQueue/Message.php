@@ -38,7 +38,13 @@ class Message
             return $this->content;
         }
 
-        $this->content = json_decode($this->amqp_message->body);
+        $this->content = $this->amqp_message->body;
+
+        if ($this->amqp_message->has('content_type')
+            && 'application/json' === $this->amqp_message->get('content_type')
+        ) {
+            $this->content = json_decode($this->content);
+        }
 
         return $this->content;
     }
