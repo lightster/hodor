@@ -45,6 +45,9 @@ class Queue
         );
     }
 
+    /**
+     * @param  callable $callback to use for handling the message
+     */
     public function consume(callable $callback)
     {
         $this->channel->basic_consume(
