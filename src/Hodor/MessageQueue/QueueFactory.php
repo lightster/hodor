@@ -27,7 +27,7 @@ class QueueFactory
     /**
      * @var array
      */
-    private $queues = [];
+    private $worker_queues = [];
 
     /**
      * @param Config $config
@@ -43,17 +43,17 @@ class QueueFactory
      */
     public function getWorkerQueue($queue_name)
     {
-        if (isset($this->queues[$queue_name])) {
-            return $this->queues[$queue_name];
+        if (isset($this->worker_queues[$queue_name])) {
+            return $this->worker_queues[$queue_name];
         }
 
         $queue_config = $this->config->getWorkerQueueConfig($queue_name);
-        $this->queues[$queue_name] = new Queue(
+        $this->worker_queues[$queue_name] = new Queue(
             $queue_config,
             $this->getAmqpChannel($queue_config)
         );
 
-        return $this->queues[$queue_name];
+        return $this->worker_queues[$queue_name];
     }
 
     /**
