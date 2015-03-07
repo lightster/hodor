@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../bootstrap.php';
 
 use Hodor\Config\LoaderFacade as Config;
 use Hodor\MessageQueue\QueueFactory as QueueFactory;
