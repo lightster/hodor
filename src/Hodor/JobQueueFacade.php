@@ -30,7 +30,9 @@ class JobQueueFacade
      */
     public static function push($queue_name, $job_name, array $params = [], array $options = [])
     {
-        self::getQueueFactory()->getWorkerQueue($queue_name)->push(
+        $mq = self::getQueueFactory()->getWorkerQueue($queue_name);
+        $worker_queue = new WorkerQueue($mq);
+        $worker_queue->push(
             $job_name,
             $params
         );
