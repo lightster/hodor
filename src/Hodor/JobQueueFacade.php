@@ -3,6 +3,7 @@
 namespace Hodor;
 
 use Hodor\Config\LoaderFactory;
+use Hodor\MessageQueue\QueueFactory;
 
 class JobQueueFacade
 {
@@ -17,21 +18,21 @@ class JobQueueFacade
     private static $config;
 
     /**
-     * @var \Hodor\BufferQueue
+     * @var \Hodor\MessageQueue\QueueFactory
      */
-    private static $buffer_queue;
+    private static $queue_factory;
 
     /**
-     * @param string $name the name of the job to run
+     * @param string $queue_name the name of the queue to push the job to
+     * @param string $job_name the name of the job to run
      * @param array $params the parameters to pass to the job
      * @param array $options the options to use when running the job
      */
-    public static function push($name, array $params = [], array $options = [])
+    public static function push($queue_name, $job_name, array $params = [], array $options = [])
     {
-        self::getBufferQueue()->push(
-            $name,
-            $params,
-            $options
+        self::getQueueFactory()->getWorkerQueue($queue_name)->push(
+            $job_name,
+            $params
         );
     }
 
@@ -65,24 +66,24 @@ class JobQueueFacade
     }
 
     /**
-     * @param \Hodor\BufferQueue $buffer_queue [description]
+     * @param \Hodor\MessageQueue\QueueFactory $queue_factory
      */
-    public static function setBufferQueue(BufferQueue $buffer_queue)
+    public static function setQueueFactory(QueueFactory $queue_factory)
     {
-        self::$buffer_queue = $buffer_queue;
+        self::$queue_factory = $queue_factory;
     }
 
     /**
-     * @return \Hodor\BufferQueue
+     * @return \Hodor\WorkerQueue
      */
-    private static function getBufferQueue()
+    private static function getQueueFactory()
     {
-        if (self::$buffer_queue) {
-            return self::$buffer_queue;
+        if (self::$queue_factory) {
+            return self::$queue_factory;
         }
 
-        self::$buffer_queue = new BufferQueue();
+        self::$queue_factory = new QueueFactory(self::getConfig());
 
-        return self::$buffer_queue;
+        return self::$queue_factory;
     }
 }

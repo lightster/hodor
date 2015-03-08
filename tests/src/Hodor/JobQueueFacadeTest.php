@@ -16,23 +16,36 @@ class JobQueueFacadeTest extends PHPUnit_Framework_TestCase
 
     public function testFacadeCallsBufferPush()
     {
+        $queue_name = 'some_queue_name';
         $job_name = 'some_job_name';
         $job_params = ['a' => 'param'];
         $job_options = ['option' => true];
 
-        $buffer_queue = $this->getMockBuilder('\Hodor\BufferQueue')
+        $worker_queue = $this->getMockBuilder('\Hodor\WorkerQueue')
+            ->disableOriginalConstructor()
             ->setMethods(['push'])
             ->getMock();
-        $buffer_queue->expects($this->once())
+        $worker_queue->expects($this->once())
             ->method('push')
             ->with(
                 $job_name,
-                $job_params,
-                $job_options
+                $job_params
             );
 
-        JobQueueFacade::setBufferQueue($buffer_queue);
+        $queue_factory = $this->getMockBuilder('\Hodor\MessageQueue\QueueFactory')
+            ->disableOriginalConstructor()
+            ->setMethods(['getWorkerQueue'])
+            ->getMock();
+        $queue_factory->expects($this->once())
+            ->method('getWorkerQueue')
+            ->with(
+                $queue_name
+            )
+            ->will($this->returnValue($worker_queue));
+
+        JobQueueFacade::setQueueFactory($queue_factory);
         JobQueueFacade::push(
+            $queue_name,
             $job_name,
             $job_params,
             $job_options
