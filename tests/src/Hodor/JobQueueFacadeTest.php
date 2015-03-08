@@ -21,18 +21,18 @@ class JobQueueFacadeTest extends PHPUnit_Framework_TestCase
         $job_params = ['a' => 'param'];
         $job_options = ['option' => true];
 
-        $message_queue = $this->getMockBuilder('\Hodor\MessageQueue\Queue')
+        $worker_queue = $this->getMockBuilder('\Hodor\WorkerQueue')
             ->disableOriginalConstructor()
             ->setMethods(['push'])
             ->getMock();
-        $message_queue->expects($this->once())
+        $worker_queue->expects($this->once())
             ->method('push')
-            ->with([
-                'name'   => $job_name,
-                'params' => $job_params,
-            ]);
+            ->with(
+                $job_name,
+                $job_params
+            );
 
-        $queue_factory = $this->getMockBuilder('\Hodor\MessageQueue\QueueFactory')
+        $queue_factory = $this->getMockBuilder('\Hodor\JobQueue\QueueFactory')
             ->disableOriginalConstructor()
             ->setMethods(['getWorkerQueue'])
             ->getMock();
@@ -41,7 +41,7 @@ class JobQueueFacadeTest extends PHPUnit_Framework_TestCase
             ->with(
                 $queue_name
             )
-            ->will($this->returnValue($message_queue));
+            ->will($this->returnValue($worker_queue));
 
         JobQueueFacade::setQueueFactory($queue_factory);
         JobQueueFacade::push(

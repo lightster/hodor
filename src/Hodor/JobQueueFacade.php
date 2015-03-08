@@ -3,7 +3,7 @@
 namespace Hodor;
 
 use Hodor\Config\LoaderFactory;
-use Hodor\MessageQueue\QueueFactory;
+use Hodor\JobQueue\QueueFactory;
 
 class JobQueueFacade
 {
@@ -18,7 +18,7 @@ class JobQueueFacade
     private static $config;
 
     /**
-     * @var \Hodor\MessageQueue\QueueFactory
+     * @var \Hodor\JobQueue\QueueFactory
      */
     private static $queue_factory;
 
@@ -30,9 +30,7 @@ class JobQueueFacade
      */
     public static function push($queue_name, $job_name, array $params = [], array $options = [])
     {
-        $mq = self::getQueueFactory()->getWorkerQueue($queue_name);
-        $worker_queue = new WorkerQueue($mq);
-        $worker_queue->push(
+        self::getQueueFactory()->getWorkerQueue($queue_name)->push(
             $job_name,
             $params
         );
@@ -68,7 +66,7 @@ class JobQueueFacade
     }
 
     /**
-     * @param \Hodor\MessageQueue\QueueFactory $queue_factory
+     * @param \Hodor\JobQueue\QueueFactory $queue_factory
      */
     public static function setQueueFactory(QueueFactory $queue_factory)
     {
