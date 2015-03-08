@@ -39,20 +39,21 @@ class QueueFactory
             return $this->worker_queues[$queue_name];
         }
 
+        $queue_config = $this->config->getWorkerQueueConfig($queue_name);
         $this->worker_queues[$queue_name] = new WorkerQueue(
-            $this->getMessageQueue($queue_name)
+            $this->getMessageQueue($queue_config)
         );
 
         return $this->worker_queues[$queue_name];
     }
 
     /**
-     * @param  string $queue_name
+     * @param  array  $queue_config
      * @return \Hodor\MessageQueue\Queue
      */
-    private function getMessageQueue($queue_name)
+    private function getMessageQueue(array $queue_config)
     {
-        return $this->getMessageQueueFactory()->getWorkerQueue($queue_name);
+        return $this->getMessageQueueFactory()->getQueue($queue_config);
     }
 
     /**

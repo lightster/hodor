@@ -10,11 +10,6 @@ use PhpAmqpLib\Connection\AMQPConnection;
 class QueueFactory
 {
     /**
-     * @var Config $config
-     */
-    private $config;
-
-    /**
      * @var array
      */
     private $connections = [];
@@ -27,33 +22,26 @@ class QueueFactory
     /**
      * @var array
      */
-    private $worker_queues = [];
+    private $queues = [];
 
     /**
-     * @param Config $config
-     */
-    public function __construct(Config $config)
-    {
-        $this->config = $config;
-    }
-
-    /**
-     * @param  string $queue_name [description]
+     * @param  array $queue_name
      * @return \Hodor\MessageQueue\Queue
      */
-    public function getWorkerQueue($queue_name)
+    public function getQueue(array $queue_config)
     {
-        if (isset($this->worker_queues[$queue_name])) {
-            return $this->worker_queues[$queue_name];
+        $queue_name = $queue_config['queue_name'];
+
+        if (isset($this->queues[$queue_name])) {
+            return $this->queues[$queue_name];
         }
 
-        $queue_config = $this->config->getWorkerQueueConfig($queue_name);
-        $this->worker_queues[$queue_name] = new Queue(
+        $this->queues[$queue_name] = new Queue(
             $queue_config,
             $this->getAmqpChannel($queue_config)
         );
 
-        return $this->worker_queues[$queue_name];
+        return $this->queues[$queue_name];
     }
 
     /**
