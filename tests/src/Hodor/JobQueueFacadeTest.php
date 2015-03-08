@@ -6,6 +6,14 @@ use PHPUnit_Framework_TestCase;
 
 class JobQueueFacadeTest extends PHPUnit_Framework_TestCase
 {
+    public function testConfigCanBeLoadedFromFile()
+    {
+        JobQueueFacade::setConfigFile(__DIR__ . '/Config/PhpConfig.php');
+        $this->assertTrue(
+            JobQueueFacade::getConfig() instanceof \Hodor\Config
+        );
+    }
+
     public function testFacadeCallsBufferPush()
     {
         $job_name = 'some_job_name';
