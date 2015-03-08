@@ -24,7 +24,7 @@ class Arguments
      */
     public function getQueueName()
     {
-        return $this->getRequiredArgument('config');
+        return $this->getRequiredArgument('queue');
     }
 
     /**
