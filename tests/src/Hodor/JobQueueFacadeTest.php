@@ -21,7 +21,7 @@ class JobQueueFacadeTest extends PHPUnit_Framework_TestCase
         $job_params = ['a' => 'param'];
         $job_options = ['option' => true];
 
-        $worker_queue = $this->getMockBuilder('\Hodor\WorkerQueue')
+        $worker_queue = $this->getMockBuilder('\Hodor\JobQueue\WorkerQueue')
             ->disableOriginalConstructor()
             ->setMethods(['push'])
             ->getMock();

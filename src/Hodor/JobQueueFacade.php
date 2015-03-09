@@ -74,7 +74,7 @@ class JobQueueFacade
     }
 
     /**
-     * @return \Hodor\WorkerQueue
+     * @return \Hodor\JobQueue\WorkerQueue
      */
     private static function getQueueFactory()
     {

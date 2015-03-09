@@ -3,7 +3,6 @@
 namespace Hodor\JobQueue;
 
 use Hodor\Config;
-use Hodor\WorkerQueue;
 use Hodor\MessageQueue\QueueFactory as MqFactory;
 
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -31,7 +30,7 @@ class QueueFactory
 
     /**
      * @param  string $queue_name [description]
-     * @return \Hodor\WorkerQueue
+     * @return \Hodor\JobQueue\WorkerQueue
      */
     public function getWorkerQueue($queue_name)
     {
