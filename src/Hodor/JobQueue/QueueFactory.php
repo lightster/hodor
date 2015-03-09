@@ -2,7 +2,7 @@
 
 namespace Hodor\JobQueue;
 
-use Hodor\Config;
+use Hodor\JobQueue\Config;
 use Hodor\MessageQueue\QueueFactory as MqFactory;
 
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -21,7 +21,7 @@ class QueueFactory
     private $mq_factory;
 
     /**
-     * @param Config $config
+     * @param \Hodor\JobQueue\Config $config
      */
     public function __construct(Config $config)
     {

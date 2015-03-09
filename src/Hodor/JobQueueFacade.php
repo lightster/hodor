@@ -45,7 +45,7 @@ class JobQueueFacade
     }
 
     /**
-     * @return \Hodor\Config
+     * @return \Hodor\JobQueue\Config
      */
     public static function getConfig()
     {

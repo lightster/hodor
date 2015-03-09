@@ -2,7 +2,7 @@
 
 namespace Hodor\Config;
 
-use Hodor\Config;
+use Hodor\JobQueue\Config;
 
 use Exception;
 
@@ -10,7 +10,7 @@ class PhpConfigLoader implements LoaderInterface
 {
     /**
      * @param  string $file_path
-     * @return \Hodor\Config
+     * @return \Hodor\JobQueue\Config
      */
     public function loadFromFile($file_path)
     {

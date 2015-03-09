@@ -11,7 +11,7 @@ class LoaderFacade
 
     /**
      * @param  string $file_path
-     * @return \Hodor\Config
+     * @return \Hodor\JobQueue\Config
      */
     public static function loadFromFile($file_path)
     {

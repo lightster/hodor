@@ -1,6 +1,6 @@
 <?php
 
-namespace Hodor;
+namespace Hodor\JobQueue;
 
 use Exception;
 

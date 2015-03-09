@@ -10,7 +10,7 @@ class JobQueueFacadeTest extends PHPUnit_Framework_TestCase
     {
         JobQueueFacade::setConfigFile(__DIR__ . '/Config/PhpConfig.php');
         $this->assertTrue(
-            JobQueueFacade::getConfig() instanceof \Hodor\Config
+            JobQueueFacade::getConfig() instanceof \Hodor\JobQueue\Config
         );
     }
 

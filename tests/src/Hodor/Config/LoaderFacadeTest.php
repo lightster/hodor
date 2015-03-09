@@ -29,7 +29,7 @@ class LoaderFacadeTest extends PHPUnit_Framework_TestCase
 
         LoaderFacade::setLoaderFactory(null);
         $this->assertInstanceOf(
-            '\Hodor\Config',
+            '\Hodor\JobQueue\Config',
             LoaderFacade::loadFromFile($file_path)
         );
     }

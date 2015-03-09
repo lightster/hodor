@@ -2,8 +2,6 @@
 
 namespace Hodor\MessageQueue;
 
-use Hodor\Config;
-
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPConnection;
 

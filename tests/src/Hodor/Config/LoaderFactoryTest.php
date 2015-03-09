@@ -42,7 +42,7 @@ class LoaderFactoryTest extends PHPUnit_Framework_TestCase
     public function testItIsPossibleToLoadFromAPhpConfigFile()
     {
         $this->assertInstanceOf(
-            '\Hodor\Config',
+            '\Hodor\JobQueue\Config',
             $this->loader_factory->loadFromFile(__DIR__ . '/PhpConfig.php')
         );
     }
