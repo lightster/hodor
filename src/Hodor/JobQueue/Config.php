@@ -69,6 +69,24 @@ class Config
     }
 
     /**
+     * @return callable
+     */
+    public function getJobRunnerFactory()
+    {
+        $job_runner = $this->getOption('job_runner');
+
+        if (empty($job_runner)) {
+            throw new Exception("The 'job_runner' config parameter is required.");
+        } elseif (!is_callable($job_runner)) {
+            throw new Exception(
+                "The provided 'job_runner' config value is not a callable."
+            );
+        }
+
+        return $job_runner;
+    }
+
+    /**
      * @param  string $option
      * @param  mixed $default
      * @return mixed

@@ -32,14 +32,18 @@ class WorkerQueue
     }
 
     /**
-     * @param string $name the name of the job to run
-     * @param array $params the parameters to pass to the job
+     * @param  callable $job_runner
      */
-    public function runNext()
+    public function runNext(callable $job_runner)
     {
-        $this->queue->consume(function ($message) {
-            var_dump($message->getContent());
+        $this->queue->consume(function ($message) use ($job_runner) {
+            $content = $message->getContent();
+            $name = $content['name'];
+            $params = $content['params'];
+            call_user_func($job_runner, $name, $params);
+
             $message->acknowledge();
+
             exit(0);
         });
     }
