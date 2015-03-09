@@ -43,7 +43,7 @@ class Message
         if ($this->amqp_message->has('content_type')
             && 'application/json' === $this->amqp_message->get('content_type')
         ) {
-            $this->content = json_decode($this->content);
+            $this->content = json_decode($this->content, true);
         }
 
         return $this->content;
