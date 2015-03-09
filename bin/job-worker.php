@@ -8,9 +8,11 @@ use Hodor\Config\LoaderFacade as Config;
 use Hodor\JobQueue\QueueFactory as QueueFactory;
 
 $args = new Arguments();
-$config = Config::loadFromFile($args->getConfigFile());
+$config_file = $args->getConfigFile();
+$queue_name = $args->getQueueName();
 
+$config = Config::loadFromFile($config_file);
 $queue_factory = new QueueFactory($config);
-$worker_queue = $queue_factory->getWorkerQueue('default');
+$worker_queue = $queue_factory->getWorkerQueue($queue_name);
 
 $worker_queue->runNext();
