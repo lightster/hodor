@@ -37,31 +37,11 @@ class Config
      */
     public function getWorkerQueueConfig($queue_name)
     {
-        $worker_queues = $this->getOption('worker_queues');
-        if (!isset($worker_queues[$queue_name])) {
-            throw new Exception(
-                "Queue name '{$queue_name}' not found in 'worker_queues' config."
-            );
-        }
-
-        $config = array_merge(
-            $this->getOption('queue_defaults', [
-                'host'         => null,
-                'port'         => 5672,
-                'username'     => null,
-                'password'     => null,
-                'queue_prefix' => 'hodor-'
-            ]),
-            $this->getOption('worker_queue_defaults', [])
+        $config = $this->getQueueConfig(
+            $queue_name,
+            'worker_queues',
+            'worker_queue_defaults'
         );
-        $config = array_merge(
-            $config,
-            [
-                'queue_name' => "{$config['queue_prefix']}{$queue_name}",
-            ],
-            $worker_queues[$queue_name]
-        );
-
         $config['key_name'] = $queue_name;
         $config['fetch_count'] = 1;
 
@@ -84,6 +64,42 @@ class Config
         }
 
         return $job_runner;
+    }
+
+    /**
+     * @param  string $queue_name
+     * @param  string $queues_option
+     * @param  string $defaults_option
+     * @return array
+     */
+    private function getQueueConfig($queue_name, $queues_option, $defaults_option)
+    {
+        $queues = $this->getOption($queues_option);
+        if (!isset($queues[$queue_name])) {
+            throw new Exception(
+                "Queue name '{$queue_name}' not found in {$queues_option} config."
+            );
+        }
+
+        $config = array_merge(
+            $this->getOption('queue_defaults', [
+                'host'         => null,
+                'port'         => 5672,
+                'username'     => null,
+                'password'     => null,
+                'queue_prefix' => 'hodor-'
+            ]),
+            $this->getOption($defaults_option, [])
+        );
+        $config = array_merge(
+            $config,
+            [
+                'queue_name' => "{$config['queue_prefix']}{$queue_name}",
+            ],
+            $queues[$queue_name]
+        );
+
+        return $config;
     }
 
     /**
