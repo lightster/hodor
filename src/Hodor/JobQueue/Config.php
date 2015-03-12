@@ -49,6 +49,28 @@ class Config
     }
 
     /**
+     * @param  string $queue_name
+     * @return array
+     */
+    public function getBufferQueueConfig($queue_name)
+    {
+        $config = $this->getQueueConfig(
+            $queue_name,
+            'buffer_queues',
+            'buffer_queue_defaults'
+        );
+        $config = array_merge(
+            [
+                'fetch_count' => 1,
+            ],
+            $config
+        );
+        $config['key_name'] = $queue_name;
+
+        return $config;
+    }
+
+    /**
      * @return callable
      */
     public function getJobRunnerFactory()

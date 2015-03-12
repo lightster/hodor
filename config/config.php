@@ -2,7 +2,7 @@
 return [
     'database' => [
         'type' => 'pgsql',
-        'dsn'  => 'host=localhost user=hodor dbname=hodor',
+        'dsn'  => 'host=localhost user=lightster dbname=dev_hodor',
     ],
     'queue_defaults' => [
         'host'         => '127.0.0.1',
