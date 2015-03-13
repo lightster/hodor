@@ -89,6 +89,32 @@ class Config
     }
 
     /**
+     * @return callable
+     */
+    public function getQueueNameFactory()
+    {
+        $queue_name_factory = $this->getOption('queue_name_factory');
+
+        if (empty($queue_name_factory)) {
+            $queue_name_factory = function ($name, $params, $options) {
+                if (empty($options['queue_name'])) {
+                    throw new Exception(
+                        "Job option 'queue_name' is required when using the "
+                        . "default queue name factory."
+                    );
+                }
+                return $options['queue_name'];
+            };
+        } elseif (!is_callable($queue_name_factory)) {
+            throw new Exception(
+                "The provided 'queue_name_factory' config value is not a callable."
+            );
+        }
+
+        return $queue_name_factory;
+    }
+
+    /**
      * @param  string $queue_name
      * @param  string $queues_option
      * @param  string $defaults_option

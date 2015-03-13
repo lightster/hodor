@@ -152,6 +152,59 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testQueueNameFactoryThrowsExceptionIfItIsNotCallable()
+    {
+        $config = new Config([
+            'queue_name_factory' => 'blah',
+        ]);
+
+        $callback = $config->getQueueNameFactory();
+    }
+
+    /**
+     * @dataProvider configProvider
+     */
+    public function testQueueNameFactoryIsDefaultedToQueueNameOptionsCallback($options)
+    {
+        unset($options['queue_name_factory']);
+        $config = new Config($options);
+
+        $callback = $config->getQueueNameFactory();
+
+        $this->assertTrue(is_callable($callback));
+        $this->assertEquals(
+            'default',
+            call_user_func($callback, 'n/a', [], ['queue_name' => 'default'])
+        );
+        $this->assertEquals(
+            'other',
+            call_user_func($callback, 'n/a', [], ['queue_name' => 'other'])
+        );
+    }
+
+    /**
+     * @dataProvider configProvider
+     */
+    public function testQueueNameFactoryCanBeProvided($options)
+    {
+        $config = new Config($options);
+
+        $callback = $config->getQueueNameFactory();
+
+        $this->assertTrue(is_callable($callback));
+        $this->assertEquals(
+            'non-default',
+            call_user_func($callback, 'non-default', [], ['queue_name' => 'default'])
+        );
+        $this->assertEquals(
+            'another',
+            call_user_func($callback, 'another', [], ['queue_name' => 'other'])
+        );
+    }
+
     public function configProvider()
     {
         return [
@@ -178,6 +231,9 @@ class ConfigTest extends PHPUnit_Framework_TestCase
                         'workers_per_server' => 5,
                     ],
                 ],
+                'queue_name_factory' => function($name, $params, $options) {
+                    return $name;
+                },
             ]],
         ];
     }
