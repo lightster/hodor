@@ -26,7 +26,7 @@ class WorkerQueue
     public function push($name, array $params = [])
     {
         $this->queue->push([
-            'name' => $name,
+            'name'   => $name,
             'params' => $params,
         ]);
     }
