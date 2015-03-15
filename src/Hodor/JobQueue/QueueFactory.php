@@ -11,6 +11,11 @@ use PhpAmqpLib\Connection\AMQPConnection;
 class QueueFactory
 {
     /**
+     * @param \Hodor\JobQueue\Config
+     */
+    private $config;
+
+    /**
      * @var array
      */
     private $worker_queues = [];
