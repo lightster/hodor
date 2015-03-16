@@ -46,7 +46,6 @@ class JobQueueFacadeTest extends PHPUnit_Framework_TestCase
 
         JobQueueFacade::setQueueFactory($queue_factory);
         JobQueueFacade::push(
-            $queue_name,
             $job_name,
             $job_params,
             $job_options

@@ -23,12 +23,11 @@ class JobQueueFacade
     private static $queue_factory;
 
     /**
-     * @param string $queue_name the name of the queue to push the job to
      * @param string $job_name the name of the job to run
      * @param array $params the parameters to pass to the job
      * @param array $options the options to use when running the job
      */
-    public static function push($queue_name, $job_name, array $params = [], array $options = [])
+    public static function push($job_name, array $params = [], array $options = [])
     {
         self::getQueueFactory()->getBufferQueue('default')->push(
             $job_name,
