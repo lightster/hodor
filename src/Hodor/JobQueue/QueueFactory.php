@@ -18,6 +18,11 @@ class QueueFactory
     /**
      * @var array
      */
+    private $buffer_queues = [];
+
+    /**
+     * @var array
+     */
     private $worker_queues = [];
 
     /**
@@ -31,6 +36,25 @@ class QueueFactory
     public function __construct(Config $config)
     {
         $this->config = $config;
+    }
+
+    /**
+     * @param  string $queue_name [description]
+     * @return \Hodor\JobQueue\BufferQueue
+     */
+    public function getBufferQueue($queue_name)
+    {
+        if (isset($this->buffer_queues[$queue_name])) {
+            return $this->buffer_queues[$queue_name];
+        }
+
+        $queue_config = $this->config->getBufferQueueConfig($queue_name);
+        $this->buffer_queues[$queue_name] = new BufferQueue(
+            $this->getMessageQueue($queue_config),
+            $this
+        );
+
+        return $this->buffer_queues[$queue_name];
     }
 
     /**
