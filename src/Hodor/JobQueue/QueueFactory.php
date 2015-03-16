@@ -52,6 +52,24 @@ class QueueFactory
     }
 
     /**
+     * @param  string $name
+     * @param  array  $params
+     * @param  array  $options
+     * @return \Hodor\JobQueue\WorkerQueue
+     */
+    public function getWorkerQueueForJob($name, array $params, array $options)
+    {
+        $queue_name = call_user_func(
+            $this->config->getQueueNameFactory(),
+            $name,
+            $params,
+            $options
+        );
+
+        return $this->getWorkerQueue($queue_name);
+    }
+
+    /**
      * @param  array  $queue_config
      * @return \Hodor\MessageQueue\Queue
      */
