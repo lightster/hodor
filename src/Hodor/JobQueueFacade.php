@@ -30,9 +30,10 @@ class JobQueueFacade
      */
     public static function push($queue_name, $job_name, array $params = [], array $options = [])
     {
-        self::getQueueFactory()->getWorkerQueue($queue_name)->push(
+        self::getQueueFactory()->getBufferQueue('default')->push(
             $job_name,
-            $params
+            $params,
+            $options
         );
     }
 
