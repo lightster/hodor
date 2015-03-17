@@ -1,20 +1,27 @@
 <?php
 
-namespace Hodor;
+namespace Hodor\JobQueue;
 
 use PHPUnit_Framework_TestCase;
 
-class JobQueueFacadeTest extends PHPUnit_Framework_TestCase
+class JobQueueTest extends PHPUnit_Framework_TestCase
 {
+    private $job_queue;
+
+    public function setUp()
+    {
+        $this->job_queue = new JobQueue();
+    }
+
     public function testConfigCanBeLoadedFromFile()
     {
-        JobQueueFacade::setConfigFile(__DIR__ . '/Config/PhpConfig.php');
+        $this->job_queue->setConfigFile(__DIR__ . '/../Config/PhpConfig.php');
         $this->assertTrue(
-            JobQueueFacade::getConfig() instanceof \Hodor\JobQueue\Config
+            $this->job_queue->getConfig() instanceof \Hodor\JobQueue\Config
         );
     }
 
-    public function testFacadeCallsBufferPush()
+    public function testJobQueuePushCallsBufferPush()
     {
         $queue_name = 'some_queue_name';
         $job_name = 'some_job_name';
@@ -44,8 +51,8 @@ class JobQueueFacadeTest extends PHPUnit_Framework_TestCase
             )
             ->will($this->returnValue($buffer_queue));
 
-        JobQueueFacade::setQueueFactory($queue_factory);
-        JobQueueFacade::push(
+        $this->job_queue->setQueueFactory($queue_factory);
+        $this->job_queue->push(
             $job_name,
             $job_params,
             $job_options
