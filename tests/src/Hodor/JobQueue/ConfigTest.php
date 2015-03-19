@@ -158,7 +158,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     public function testWorkerQueueNameFactoryThrowsExceptionIfItIsNotCallable()
     {
         $config = new Config([
-            'queue_name_factory' => 'blah',
+            'worker_queue_name_factory' => 'blah',
         ]);
 
         $callback = $config->getWorkerQueueNameFactory();
@@ -169,7 +169,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testWorkerQueueNameFactoryIsDefaultedToQueueNameOptionsCallback($options)
     {
-        unset($options['queue_name_factory']);
+        unset($options['worker_queue_name_factory']);
         $config = new Config($options);
 
         $callback = $config->getWorkerQueueNameFactory();
@@ -231,7 +231,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
                         'workers_per_server' => 5,
                     ],
                 ],
-                'queue_name_factory' => function($name, $params, $options) {
+                'worker_queue_name_factory' => function($name, $params, $options) {
                     return $name;
                 },
             ]],

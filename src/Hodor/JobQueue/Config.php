@@ -93,10 +93,10 @@ class Config
      */
     public function getWorkerQueueNameFactory()
     {
-        $queue_name_factory = $this->getOption('queue_name_factory');
+        $worker_queue_name_factory = $this->getOption('worker_queue_name_factory');
 
-        if (empty($queue_name_factory)) {
-            $queue_name_factory = function ($name, $params, $options) {
+        if (empty($worker_queue_name_factory)) {
+            $worker_queue_name_factory = function ($name, $params, $options) {
                 if (empty($options['queue_name'])) {
                     throw new Exception(
                         "Job option 'queue_name' is required when using the "
@@ -105,13 +105,13 @@ class Config
                 }
                 return $options['queue_name'];
             };
-        } elseif (!is_callable($queue_name_factory)) {
+        } elseif (!is_callable($worker_queue_name_factory)) {
             throw new Exception(
-                "The provided 'queue_name_factory' config value is not a callable."
+                "The provided 'worker_queue_name_factory' config value is not a callable."
             );
         }
 
-        return $queue_name_factory;
+        return $worker_queue_name_factory;
     }
 
     /**
