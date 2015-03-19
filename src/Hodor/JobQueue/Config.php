@@ -91,7 +91,7 @@ class Config
     /**
      * @return callable
      */
-    public function getQueueNameFactory()
+    public function getWorkerQueueNameFactory()
     {
         $queue_name_factory = $this->getOption('queue_name_factory');
 

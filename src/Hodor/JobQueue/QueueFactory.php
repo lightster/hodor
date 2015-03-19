@@ -84,7 +84,7 @@ class QueueFactory
     public function getWorkerQueueForJob($name, array $params, array $options)
     {
         $queue_name = call_user_func(
-            $this->config->getQueueNameFactory(),
+            $this->config->getWorkerQueueNameFactory(),
             $name,
             $params,
             $options

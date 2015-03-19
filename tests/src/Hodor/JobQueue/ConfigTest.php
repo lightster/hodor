@@ -155,24 +155,24 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      */
-    public function testQueueNameFactoryThrowsExceptionIfItIsNotCallable()
+    public function testWorkerQueueNameFactoryThrowsExceptionIfItIsNotCallable()
     {
         $config = new Config([
             'queue_name_factory' => 'blah',
         ]);
 
-        $callback = $config->getQueueNameFactory();
+        $callback = $config->getWorkerQueueNameFactory();
     }
 
     /**
      * @dataProvider configProvider
      */
-    public function testQueueNameFactoryIsDefaultedToQueueNameOptionsCallback($options)
+    public function testWorkerQueueNameFactoryIsDefaultedToQueueNameOptionsCallback($options)
     {
         unset($options['queue_name_factory']);
         $config = new Config($options);
 
-        $callback = $config->getQueueNameFactory();
+        $callback = $config->getWorkerQueueNameFactory();
 
         $this->assertTrue(is_callable($callback));
         $this->assertEquals(
@@ -188,11 +188,11 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider configProvider
      */
-    public function testQueueNameFactoryCanBeProvided($options)
+    public function testWorkerQueueNameFactoryCanBeProvided($options)
     {
         $config = new Config($options);
 
-        $callback = $config->getQueueNameFactory();
+        $callback = $config->getWorkerQueueNameFactory();
 
         $this->assertTrue(is_callable($callback));
         $this->assertEquals(
