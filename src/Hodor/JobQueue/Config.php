@@ -115,6 +115,26 @@ class Config
     }
 
     /**
+     * @return callable
+     */
+    public function getBufferQueueNameFactory()
+    {
+        $buffer_queue_name_factory = $this->getOption('buffer_queue_name_factory');
+
+        if (empty($buffer_queue_name_factory)) {
+            $buffer_queue_name_factory = function ($name, $params, $options) {
+                return 'default';
+            };
+        } elseif (!is_callable($buffer_queue_name_factory)) {
+            throw new Exception(
+                "The provided 'buffer_queue_name_factory' config value is not a callable."
+            );
+        }
+
+        return $buffer_queue_name_factory;
+    }
+
+    /**
      * @param  string $queue_name
      * @param  string $queues_option
      * @param  string $defaults_option

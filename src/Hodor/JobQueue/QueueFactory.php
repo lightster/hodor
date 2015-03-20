@@ -58,6 +58,24 @@ class QueueFactory
     }
 
     /**
+     * @param  string $name
+     * @param  array  $params
+     * @param  array  $options
+     * @return \Hodor\JobQueue\BufferQueue
+     */
+    public function getBufferQueueForJob($name, array $params, array $options)
+    {
+        $queue_name = call_user_func(
+            $this->config->getBufferQueueNameFactory(),
+            $name,
+            $params,
+            $options
+        );
+
+        return $this->getBufferQueue($queue_name);
+    }
+
+    /**
      * @param  string $queue_name [description]
      * @return \Hodor\JobQueue\WorkerQueue
      */

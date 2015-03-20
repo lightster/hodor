@@ -42,12 +42,14 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
 
         $queue_factory = $this->getMockBuilder('\Hodor\JobQueue\QueueFactory')
             ->disableOriginalConstructor()
-            ->setMethods(['getBufferQueue'])
+            ->setMethods(['getBufferQueueForJob'])
             ->getMock();
         $queue_factory->expects($this->once())
-            ->method('getBufferQueue')
+            ->method('getBufferQueueForJob')
             ->with(
-                'default'
+                $job_name,
+                $job_params,
+                $job_options
             )
             ->will($this->returnValue($buffer_queue));
 

@@ -205,6 +205,59 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testBufferQueueNameFactoryThrowsExceptionIfItIsNotCallable()
+    {
+        $config = new Config([
+            'worker_queue_name_factory' => 'blah',
+        ]);
+
+        $callback = $config->getBufferQueueNameFactory();
+    }
+
+    /**
+     * @dataProvider configProvider
+     */
+    public function testBufferQueueNameFactoryIsDefaultedToDefaultQueue($options)
+    {
+        unset($options['buffer_queue_name_factory']);
+        $config = new Config($options);
+
+        $callback = $config->getBufferQueueNameFactory();
+
+        $this->assertTrue(is_callable($callback));
+        $this->assertEquals(
+            'default',
+            call_user_func($callback, 'n/a', [], ['queue_name' => 'default'])
+        );
+        $this->assertEquals(
+            'default',
+            call_user_func($callback, 'n/a', [], ['queue_name' => 'other'])
+        );
+    }
+
+    /**
+     * @dataProvider configProvider
+     */
+    public function testBufferQueueNameFactoryCanBeProvided($options)
+    {
+        $config = new Config($options);
+
+        $callback = $config->getBufferQueueNameFactory();
+
+        $this->assertTrue(is_callable($callback));
+        $this->assertEquals(
+            'non-default',
+            call_user_func($callback, 'non-default', [], ['queue_name' => 'default'])
+        );
+        $this->assertEquals(
+            'another',
+            call_user_func($callback, 'another', [], ['queue_name' => 'other'])
+        );
+    }
+
     public function configProvider()
     {
         return [
@@ -232,6 +285,9 @@ class ConfigTest extends PHPUnit_Framework_TestCase
                     ],
                 ],
                 'worker_queue_name_factory' => function($name, $params, $options) {
+                    return $name;
+                },
+                'buffer_queue_name_factory' => function($name, $params, $options) {
                     return $name;
                 },
             ]],

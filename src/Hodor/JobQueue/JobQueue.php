@@ -29,7 +29,13 @@ class JobQueue
      */
     public function push($job_name, array $params = [], array $options = [])
     {
-        $this->getQueueFactory()->getBufferQueue('default')->push(
+        $buffer_queue = $this->getQueueFactory()->getBufferQueueForJob(
+            $job_name,
+            $params,
+            $options
+        );
+
+        $buffer_queue->push(
             $job_name,
             $params,
             $options
