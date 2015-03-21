@@ -40,9 +40,11 @@ class WorkerQueue
             $content = $message->getContent();
             $name = $content['name'];
             $params = $content['params'];
-            call_user_func($job_runner, $name, $params);
-
-            $message->acknowledge();
+            try {
+                call_user_func($job_runner, $name, $params);
+            } finally {
+                $message->acknowledge();
+            }
 
             exit(0);
         });
