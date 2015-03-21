@@ -22,6 +22,11 @@ class Message
     private $content;
 
     /**
+     * @var bool
+     */
+    private $was_acked = false;
+
+    /**
      * @param AMQPMessage $amqp_message
      */
     public function __construct(AMQPMessage $amqp_message)
@@ -51,7 +56,13 @@ class Message
 
     public function acknowledge()
     {
+        if ($this->was_acked) {
+            return;
+        }
+
         $this->amqp_message->delivery_info['channel']
             ->basic_ack($this->amqp_message->delivery_info['delivery_tag']);
+
+        $this->was_acked = true;
     }
 }
