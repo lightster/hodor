@@ -37,14 +37,18 @@ class WorkerQueue
     public function runNext(callable $job_runner)
     {
         $this->queue->consume(function ($message) use ($job_runner) {
+            register_shutdown_function(function ($message) {
+                if (error_get_last()) {
+                    $message->acknowledge();
+                }
+            }, $message);
+
             $content = $message->getContent();
             $name = $content['name'];
             $params = $content['params'];
-            try {
-                call_user_func($job_runner, $name, $params);
-            } finally {
-                $message->acknowledge();
-            }
+            call_user_func($job_runner, $name, $params);
+
+            $message->acknowledge();
 
             exit(0);
         });
