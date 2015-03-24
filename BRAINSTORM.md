@@ -239,3 +239,25 @@ Taken from experiences working with @zacharyrankin and @twenty7:
          instead would potentially cause problems since a job could take 5 hours
          to run and be ran at an interval of 1 hour, which would mean the job
          would be scheduled to immediately re-run.
+
+### supervisor config
+
+```
+[program:program-name]
+command=/path/to/process
+process_name=%(program_name)s
+numprocs=5
+autostart=true
+autorestart=true
+startsecs=0
+startretries=3
+stopsignal=TERM
+stopwaitsecs=10
+redirect_stderr=false
+stdout_logfile=/path/to/debug_log
+stdout_logfile_maxbytes=10MB
+stdout_logfile_backups=10
+stderr_logfile=/path/to/error_log
+stderr_logfile_maxbytes=10MB
+stderr_logfile_backups=10
+```
