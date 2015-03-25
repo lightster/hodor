@@ -37,6 +37,10 @@ class BufferQueue
             'name'    => $name,
             'params'  => $params,
             'options' => $options,
+            'meta'    => [
+                'buffered_at'   => gmdate('c'),
+                'buffered_from' => gethostname(),
+            ],
         ]);
     }
 
@@ -47,6 +51,7 @@ class BufferQueue
             $name    = $content['name'];
             $params  = $content['params'];
             $options = $content['options'];
+            $meta    = $content['meta'];
 
             $worker_queue = $this->queue_factory->getWorkerQueueForJob(
                 $name,
@@ -56,7 +61,8 @@ class BufferQueue
 
             $worker_queue->push(
                 $name,
-                $params
+                $params,
+                $meta
             );
 
             $message->acknowledge();

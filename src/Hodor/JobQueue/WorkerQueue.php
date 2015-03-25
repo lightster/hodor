@@ -22,12 +22,14 @@ class WorkerQueue
     /**
      * @param string $name the name of the job to run
      * @param array $params the parameters to pass to the job
+     * @param array $meta meta-information about the job
      */
-    public function push($name, array $params = [])
+    public function push($name, array $params = [], array $meta = [])
     {
         $this->queue->push([
             'name'   => $name,
             'params' => $params,
+            'meta'   => $meta,
         ]);
     }
 
