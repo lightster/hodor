@@ -17,18 +17,6 @@ class Config
     public function __construct(array $config)
     {
         $this->config = $config;
-
-        if (!isset($this->config['database'])) {
-            throw new Exception("Required config option 'database' not provided.");
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function getDatabaseConfig()
-    {
-        return $this->getOption('database');
     }
 
     /**
