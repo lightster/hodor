@@ -211,7 +211,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     public function testBufferQueueNameFactoryThrowsExceptionIfItIsNotCallable()
     {
         $config = new Config([
-            'worker_queue_name_factory' => 'blah',
+            'buffer_queue_name_factory' => 'blah',
         ]);
 
         $callback = $config->getBufferQueueNameFactory();
