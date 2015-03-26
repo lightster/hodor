@@ -1,4 +1,4 @@
 vendor
-config/autoload/*.local.php
+config/*.php
 tests/config/config.php
 tests/log
