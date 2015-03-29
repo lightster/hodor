@@ -1,8 +1,12 @@
 <?php
 return [
-    'database' => [
-        'type' => 'pgsql',
-        'dsn'  => 'host=localhost user=hodor dbname=hodor',
+    'superqueuers' => [
+        'default' => [
+            'database' => [
+                'type' => 'pgsql',
+                'dsn'  => 'host=localhost user=hodor dbname=hodor',
+            ],
+        ],
     ],
     'queue_defaults' => [
         'host'         => '127.0.0.1',
@@ -14,6 +18,7 @@ return [
     'buffer_queue_defaults' => [
         'queue_prefix'         => 'hodor-buffer-',
         'bufferers_per_server' => 10,
+        'superqueuer'          => 'default',
     ],
     'buffer_queues' => [
         'default' => [],
