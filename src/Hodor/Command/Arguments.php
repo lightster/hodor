@@ -56,16 +56,21 @@ class Arguments
             ]
         );
 
-        if (!empty($args['config'])) {
-            $this->loaded_arguments['config'] = $args['config'];
-        } elseif (!empty($args['c'])) {
-            $this->loaded_arguments['config'] = $args['c'];
-        }
+        $this->processArgument($args, 'config', 'c');
+        $this->processArgument($args, 'queue', 'q');
+    }
 
-        if (!empty($args['queue'])) {
-            $this->loaded_arguments['queue'] = $args['queue'];
-        } elseif (!empty($args['q'])) {
-            $this->loaded_arguments['queue'] = $args['q'];
+    /**
+     * @param  array  $args
+     * @param  string $long
+     * @param  string $short
+     */
+    private function processArgument(array $args, $long, $short)
+    {
+        if (!empty($args[$long])) {
+            $this->loaded_arguments[$long] = $args[$long];
+        } elseif (!empty($args[$short])) {
+            $this->loaded_arguments[$long] = $args[$short];
         }
     }
 }
