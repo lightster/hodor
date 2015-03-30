@@ -16,9 +16,7 @@
     },
     "require": {
         "davedevelopment/phpmig": "~1.1.0",
-        "lightster/lstr-silex": "~0.2.1",
         "php": ">=5.5.18",
-        "silex/silex": "~1.2",
         "videlalvaro/php-amqplib": "~2.4.1"
     },
     "require-dev": {
