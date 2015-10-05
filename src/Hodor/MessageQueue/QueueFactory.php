@@ -3,7 +3,6 @@
 namespace Hodor\MessageQueue;
 
 use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Connection\AMQPConnection;
 
 class QueueFactory
 {
@@ -88,7 +87,14 @@ class QueueFactory
             return $this->connections[$connection_key];
         }
 
-        $this->connections[$connection_key] = new AMQPConnection(
+        $connection_class = '\PhpAmqpLib\Connection\AMQPConnection';
+        if (isset($queue_config['connection_type'])
+            && 'socket' === $queue_config['connection_type']
+        ) {
+            $connection_class = '\PhpAmqpLib\Connection\AMQPSocketConnection';
+        }
+
+        $this->connections[$connection_key] = new $connection_class(
             $queue_config['host'],
             $queue_config['port'],
             $queue_config['username'],

@@ -9,11 +9,12 @@ return [
         ],
     ],
     'queue_defaults' => [
-        'host'         => '127.0.0.1',
-        'port'         => 5672,
-        'username'     => 'guest',
-        'password'     => 'guest',
-        'queue_prefix' => 'hodor-',
+        'host'            => '127.0.0.1',
+        'port'            => 5672,
+        'username'        => 'guest',
+        'password'        => 'guest',
+        'queue_prefix'    => 'hodor-',
+        'connection_type' => 'stream',
     ],
     'buffer_queue_defaults' => [
         'queue_prefix'         => 'hodor-buffer-',
