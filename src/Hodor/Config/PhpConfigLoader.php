@@ -24,6 +24,6 @@ class PhpConfigLoader implements LoaderInterface
             throw new Exception("Config file '{$file_path}' does not return a PHP array.");
         }
 
-        return new Config($config_array);
+        return new Config($file_path, $config_array);
     }
 }

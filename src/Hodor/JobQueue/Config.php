@@ -7,16 +7,31 @@ use Exception;
 class Config
 {
     /**
+     * @var string
+     */
+    private $config_path;
+
+    /**
      * @var array
      */
     private $config;
 
     /**
+     * @param array $string
      * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct($config_path, array $config)
     {
+        $this->config_path = $config_path;
         $this->config = $config;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConfigPath()
+    {
+        return $this->config_path;
     }
 
     /**
@@ -32,6 +47,8 @@ class Config
         );
         $config['key_name'] = $queue_name;
         $config['fetch_count'] = 1;
+        $config['queue_type'] = 'worker';
+        $config['process_count'] = $config['workers_per_server'];
 
         return $config;
     }
@@ -54,6 +71,8 @@ class Config
             $config
         );
         $config['key_name'] = $queue_name;
+        $config['queue_type'] = 'bufferer';
+        $config['process_count'] = $config['bufferers_per_server'];
 
         return $config;
     }
@@ -120,6 +139,30 @@ class Config
         }
 
         return $buffer_queue_name_factory;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDaemonConfig()
+    {
+        return $this->getOption('daemon');
+    }
+
+    /**
+     * @return array
+     */
+    public function getWorkerQueueNames()
+    {
+        return array_keys($this->getOption('worker_queues'));
+    }
+
+    /**
+     * @return array
+     */
+    public function getBufferQueueNames()
+    {
+        return array_keys($this->getOption('buffer_queues'));
     }
 
     /**
