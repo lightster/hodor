@@ -47,6 +47,8 @@ class Config
         );
         $config['key_name'] = $queue_name;
         $config['fetch_count'] = 1;
+        $config['queue_type'] = 'worker';
+        $config['process_count'] = $config['workers_per_server'];
 
         return $config;
     }
@@ -69,6 +71,8 @@ class Config
             $config
         );
         $config['key_name'] = $queue_name;
+        $config['queue_type'] = 'bufferer';
+        $config['process_count'] = $config['bufferers_per_server'];
 
         return $config;
     }
@@ -135,6 +139,30 @@ class Config
         }
 
         return $buffer_queue_name_factory;
+    }
+
+    /**
+     * @return array
+     */
+    public function getDaemonConfig()
+    {
+        return $this->getOption('daemon');
+    }
+
+    /**
+     * @return array
+     */
+    public function getWorkerQueueNames()
+    {
+        return array_keys($this->getOption('worker_queues'));
+    }
+
+    /**
+     * @return array
+     */
+    public function getBufferQueueNames()
+    {
+        return array_keys($this->getOption('buffer_queues'));
     }
 
     /**
