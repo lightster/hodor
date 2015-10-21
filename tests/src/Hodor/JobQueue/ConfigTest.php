@@ -9,9 +9,24 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider configProvider
      */
+    public function testConfigPathIsSet($options)
+    {
+        $path = __FILE__ . '.' . uniqid();
+
+        $config = new Config($path, $options);
+
+        $this->assertEquals(
+            $path,
+            $config->getConfigPath()
+        );
+    }
+
+    /**
+     * @dataProvider configProvider
+     */
     public function testBufferQueueConfigIsComposedOfDefaultsAndSpecifics($options)
     {
-        $config = new Config($options);
+        $config = new Config(__FILE__, $options);
 
         $queue_config = $config->getBufferQueueConfig('default');
 
@@ -34,7 +49,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testBufferQueueKeyNameIsSet($options)
     {
-        $config = new Config($options);
+        $config = new Config(__FILE__, $options);
 
         $queue_config = $config->getBufferQueueConfig('default');
 
@@ -49,7 +64,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testBufferQueueNameDefaultsToPrefixAndQueueKey($options)
     {
-        $config = new Config($options);
+        $config = new Config(__FILE__, $options);
 
         $queue_config = $config->getBufferQueueConfig('default');
 
@@ -64,7 +79,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testBufferQueueFetchCountIsDefaulted($options)
     {
-        $config = new Config($options);
+        $config = new Config(__FILE__, $options);
 
         $queue_config = $config->getBufferQueueConfig('default');
 
@@ -79,7 +94,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testWorkerConfigIsComposedOfDefaultsAndSpecifics($options)
     {
-        $config = new Config($options);
+        $config = new Config(__FILE__, $options);
 
         $queue_config = $config->getWorkerQueueConfig('default');
 
@@ -102,7 +117,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testWorkerKeyNameIsSet($options)
     {
-        $config = new Config($options);
+        $config = new Config(__FILE__, $options);
 
         $queue_config = $config->getWorkerQueueConfig('default');
 
@@ -117,7 +132,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testWorkerQueueNameDefaultsToPrefixAndQueueKey($options)
     {
-        $config = new Config($options);
+        $config = new Config(__FILE__, $options);
 
         $queue_config = $config->getWorkerQueueConfig('default');
 
@@ -132,7 +147,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testWorkerQueueFetchCountIsOne($options)
     {
-        $config = new Config($options);
+        $config = new Config(__FILE__, $options);
 
         $queue_config = $config->getWorkerQueueConfig('default');
 
@@ -147,7 +162,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testWorkerQueueNameFactoryThrowsExceptionIfItIsNotCallable()
     {
-        $config = new Config([
+        $config = new Config(__FILE__, [
             'worker_queue_name_factory' => 'blah',
         ]);
 
@@ -160,7 +175,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     public function testWorkerQueueNameFactoryIsDefaultedToQueueNameOptionsCallback($options)
     {
         unset($options['worker_queue_name_factory']);
-        $config = new Config($options);
+        $config = new Config(__FILE__, $options);
 
         $callback = $config->getWorkerQueueNameFactory();
 
@@ -180,7 +195,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testWorkerQueueNameFactoryCanBeProvided($options)
     {
-        $config = new Config($options);
+        $config = new Config(__FILE__, $options);
 
         $callback = $config->getWorkerQueueNameFactory();
 
@@ -200,7 +215,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testBufferQueueNameFactoryThrowsExceptionIfItIsNotCallable()
     {
-        $config = new Config([
+        $config = new Config(__FILE__, [
             'buffer_queue_name_factory' => 'blah',
         ]);
 
@@ -213,7 +228,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     public function testBufferQueueNameFactoryIsDefaultedToDefaultQueue($options)
     {
         unset($options['buffer_queue_name_factory']);
-        $config = new Config($options);
+        $config = new Config(__FILE__, $options);
 
         $callback = $config->getBufferQueueNameFactory();
 
@@ -233,7 +248,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testBufferQueueNameFactoryCanBeProvided($options)
     {
-        $config = new Config($options);
+        $config = new Config(__FILE__, $options);
 
         $callback = $config->getBufferQueueNameFactory();
 

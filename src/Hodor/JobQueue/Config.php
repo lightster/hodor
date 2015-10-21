@@ -7,16 +7,31 @@ use Exception;
 class Config
 {
     /**
+     * @var string
+     */
+    private $config_path;
+
+    /**
      * @var array
      */
     private $config;
 
     /**
+     * @param array $string
      * @param array $config
      */
-    public function __construct(array $config)
+    public function __construct($config_path, array $config)
     {
+        $this->config_path = $config_path;
         $this->config = $config;
+    }
+
+    /**
+     * @return string
+     */
+    public function getConfigPath()
+    {
+        return $this->config_path;
     }
 
     /**
