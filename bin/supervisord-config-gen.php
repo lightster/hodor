@@ -12,5 +12,9 @@ $config_file = $args->getConfigFile();
 
 $config = Config::loadFromFile($config_file);
 $daemonizer = new ManagerFactory($config);
-echo json_encode($daemonizer->getManager()->getDaemonConfig());
-
+$manager = $daemonizer->getManager();
+if ($args->isJson()) {
+    echo json_encode($manager->getDaemonConfig()) . "\n";
+} else {
+    $manager->setupDaemon();
+}

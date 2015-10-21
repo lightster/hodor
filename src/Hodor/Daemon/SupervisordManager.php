@@ -2,6 +2,7 @@
 
 namespace Hodor\Daemon;
 
+use Exception;
 use Hodor\JobQueue\Config;
 
 class SupervisordManager implements ManagerInterface
@@ -24,6 +25,17 @@ class SupervisordManager implements ManagerInterface
      */
     public function setupDaemon()
     {
+        $raw_daemon_config = $this->getRawDaemonConfig();
+        $config_path = $raw_daemon_config['config_path'];
+        $config_contents = '';
+
+        foreach ($this->getDaemonConfig() as $program) {
+            $config_contents .= $this->generateProgramText($program) . "\n";
+        }
+
+        if (!file_put_contents($config_path, $config_contents)) {
+            throw new Exception("Could not write to config file '{$config_path}'.\n");
+        }
     }
 
     /**
@@ -176,5 +188,22 @@ class SupervisordManager implements ManagerInterface
             'stdout_logfile_maxbytes' => $queue_program_config['logs']['debug']['max_size'],
             'stdout_logfile_backups'  => $queue_program_config['logs']['debug']['rotate_count'],
         ];
+    }
+
+    /**
+     * @param  array $program
+     * @return string
+     */
+    private function generateProgramText(array $program)
+    {
+        $text = "[program:{$program['program_name']}]\n";
+
+        unset($program['program_name']);
+
+        foreach ($program as $key => $value) {
+            $text .= "{$key}={$value}\n";
+        }
+
+        return $text;
     }
 }

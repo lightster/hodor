@@ -28,6 +28,16 @@ class Arguments
     }
 
     /**
+     * @return boolean
+     */
+    public function isJson()
+    {
+        $this->processArguments();
+
+        return array_key_exists('json', $this->loaded_arguments);
+    }
+
+    /**
      * @param  string $name
      * @return string
      */
@@ -53,11 +63,13 @@ class Arguments
             [
                 'config:',
                 'queue:',
+                'json',
             ]
         );
 
         $this->processArgument($args, 'config', 'c');
         $this->processArgument($args, 'queue', 'q');
+        $this->processArgument($args, 'json', '');
     }
 
     /**
@@ -67,9 +79,9 @@ class Arguments
      */
     private function processArgument(array $args, $long, $short)
     {
-        if (!empty($args[$long])) {
+        if (array_key_exists($long, $args)) {
             $this->loaded_arguments[$long] = $args[$long];
-        } elseif (!empty($args[$short])) {
+        } elseif (array_key_exists($short, $args)) {
             $this->loaded_arguments[$long] = $args[$short];
         }
     }
