@@ -146,12 +146,12 @@ class SupervisordManager implements ManagerInterface
             'logs'           => [
                 'error' => [
                     'path'         => '/var/log/hodor/%(program_name)s_%(process_num)d.error.log',
-                    'max_size'     => '10M',
+                    'max_size'     => '10MB',
                     'rotate_count' => 2,
                 ],
                 'debug' => [
                     'path'         => '/var/log/hodor/%(program_name)s_%(process_num)d.debug.log',
-                    'max_size'     => '10M',
+                    'max_size'     => '10MB',
                     'rotate_count' => 2,
                 ],
             ],
