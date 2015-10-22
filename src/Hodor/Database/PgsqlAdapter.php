@@ -2,6 +2,7 @@
 
 namespace Hodor\Database;
 
+use Hodor\Database\Driver\PgsqlDriver;
 use Hodor\Database\Phpmig\PgsqlPhpmigAdapter;
 
 use Exception;
@@ -14,9 +15,9 @@ class PgsqlAdapter implements AdapterInterface
     private $config;
 
     /**
-     * @var resource
+     * @var PgsqlDriver
      */
-    private $connection;
+    private $driver;
 
     /**
      * @param array $config
@@ -48,7 +49,7 @@ class PgsqlAdapter implements AdapterInterface
 
     public function getPhpmigAdapter()
     {
-        return new PgsqlPhpmigAdapter($this->getConnection());
+        return new PgsqlPhpmigAdapter($this->getDriver());
     }
 
     public function beginTransaction()
@@ -63,27 +64,26 @@ class PgsqlAdapter implements AdapterInterface
     {
     }
 
-    public function getConnection()
+    /**
+     * @param string $sql
+     * @return void
+     */
+    public function queryMultiple($sql)
     {
-        if ($this->connection) {
-            return $this->connection;
+        return $this->getDriver()->queryMultiple($sql);
+    }
+
+    /**
+     * @return PgsqlDriver
+     */
+    private function getDriver()
+    {
+        if ($this->driver) {
+            return $this->driver;
         }
 
-        if (empty($this->config['dsn'])) {
-            throw new Exception("The 'dsn' part of the database config was not provided.");
-        }
+        $this->driver = new PgsqlDriver($this->config);
 
-        $this->connection = pg_connect($this->config['dsn']);
-
-        if (!$this->connection) {
-            // TODO: figure out how to get the error message
-            // $error = pg_last_error();
-            $error = '';
-            throw new Exception(
-                "Could not connect to Postgres server with given DSN:\n  {$error}"
-            );
-        }
-
-        return $this->connection;
+        return $this->driver;
     }
 }

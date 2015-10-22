@@ -17,6 +17,7 @@
     "require": {
         "davedevelopment/phpmig": "~1.1.0",
         "php": ">=5.5.18",
+        "pimple/pimple": "^1.1.1",
         "videlalvaro/php-amqplib": "~2.4"
     },
     "require-dev": {
