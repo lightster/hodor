@@ -35,6 +35,21 @@ class Config
     }
 
     /**
+     * @return array
+     */
+    public function getDatabaseConfig()
+    {
+        $superqueuer_config = $this->getOption('superqueuer');
+        if (!isset($superqueuer_config['database'])) {
+            throw new Exception(
+                "The 'database' config was not found in the 'superqueuer' config."
+            );
+        }
+
+        return $superqueuer_config['database'];
+    }
+
+    /**
      * @param  string $queue_name
      * @return array
      */

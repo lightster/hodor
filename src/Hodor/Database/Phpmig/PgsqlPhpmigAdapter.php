@@ -142,4 +142,12 @@ SQL;
 
         return $this;
     }
+
+    /**
+     * @return string
+     */
+    public function getMigrationsPath()
+    {
+        return __DIR__ . '/../../../../migrations/postgres';
+    }
 }
