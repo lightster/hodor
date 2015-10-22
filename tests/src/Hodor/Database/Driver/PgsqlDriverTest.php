@@ -1,12 +1,12 @@
 <?php
 
-namespace Hodor\Database;
+namespace Hodor\Database\Driver;
 
 use Exception;
 
 use PHPUnit_Framework_TestCase;
 
-class PgsqlAdapterTest extends PHPUnit_Framework_TestCase
+class PgsqlDriverTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var array
@@ -17,7 +17,7 @@ class PgsqlAdapterTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $config_path = __DIR__ . '/../../../config/config.php';
+        $config_path = __DIR__ . '/../../../../config/config.php';
         if (!file_exists($config_path)) {
             throw new Exception("'{$config_path}' not found");
         }
@@ -30,7 +30,7 @@ class PgsqlAdapterTest extends PHPUnit_Framework_TestCase
      */
     public function testRequestingAConnectionWithoutADsnThrowsAnException()
     {
-        $db = new PgsqlAdapter([]);
+        $db = new PgsqlDriver([]);
         $db->getConnection();
     }
 
@@ -39,13 +39,13 @@ class PgsqlAdapterTest extends PHPUnit_Framework_TestCase
      */
     public function testAConnectionFailureThrowsAnException()
     {
-        $db = new PgsqlAdapter(['dsn' => 'host=localhost user=nonexistent']);
+        $db = new PgsqlDriver(['dsn' => 'host=localhost user=nonexistent']);
         $db->getConnection();
     }
 
     public function testAConnectionCanBeMade()
     {
-        $db = new PgsqlAdapter($this->config['test']['db']['pgsql']);
+        $db = new PgsqlDriver($this->config['test']['db']['pgsql']);
         $this->assertEquals('resource', gettype($db->getConnection()));
     }
 }
