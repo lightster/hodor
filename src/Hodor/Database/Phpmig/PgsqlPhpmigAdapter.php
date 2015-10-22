@@ -2,25 +2,28 @@
 
 namespace Hodor\Database\Phpmig;
 
-use Phpmig\Adapter\AdapterInterface;
+use Hodor\Database\Driver\PgsqlDriver;
 use Phpmig\Migration\Migration;
+use ReflectionClass;
 
 class PgsqlPhpmigAdapter implements AdapterInterface
 {
     /**
-     * connection returned by pg_connect()
-     * @var resource
+     * @var PgsqlDriver
      */
-    private $connection;
+    private $driver;
 
     /**
-     * @param resource $connection - connection returned by pg_connect()
+     * @param PgsqlDriver $driver
      */
-    public function __construct($connection)
+    public function __construct(PgsqlDriver $driver)
     {
-        $this->connection = $connection;
+        $this->driver = $driver;
     }
 
+    /**
+     * @return array
+     */
     public function fetchAll()
     {
         $sql = <<<SQL
@@ -30,40 +33,89 @@ ORDER BY version
 SQL;
 
         $versions = [];
-        $result = pg_query($this->connection, $sql);
-        while ($row = pg_fetch_assoc($result)) {
+        $row_generator = $this->driver->selectRowGenerator($sql);
+        foreach ($row_generator() as $row) {
             $versions[] = $row['version'];
         }
 
         return $versions;
     }
 
+    /**
+     * @param  Migration $migration
+     * @return fluent
+     */
     public function up(Migration $migration)
     {
+        $migration_reflection = new ReflectionClass(get_class($migration));
 
+        $this->driver->insert('migrations.migrations', [
+            'version'        => $migration->getVersion(),
+            'migration_hash' => hash_file('sha256', $migration_reflection->getFileName()),
+        ]);
+
+        return $this;
     }
 
+    /**
+     * @param  Migration $migration
+     * @return fluent
+     */
     public function down(Migration $migration)
     {
+        $version = $migration->getVersion();
+        $e_version = $this->driver->escapeValue($version);
+        $sql = <<<SQL
+SELECT *
+FROM migrations.migrations
+WHERE version = {$e_version}
+ORDER BY version
+SQL;
+
+        $version_row = $this->driver->selectOne($sql);
+        if (!$version_row) {
+            throw new Exception(
+                "Migration '{$version}' cannot be rolled back because it is not currently applied."
+            );
+        }
+
+        $migration_reflection = new ReflectionClass(get_class($migration));
+        $this->driver->insert('migrations.rollbacks', [
+            'version'        => $version_row['version'],
+            'migrated_at'    => $version_row['migrated_at'],
+            'migration_hash' => $version_row['migration_hash'],
+            'rollback_hash'  => hash_file('sha256', $migration_reflection->getFileName()),
+        ]);
+        $this->driver->delete('migrations.migrations', [
+            'version' => $migration->getVersion(),
+        ]);
+
+        return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function hasSchema()
     {
         $sql = <<<SQL
-SELECT 1
+SELECT 1 AS schema_exists
 FROM pg_tables
 WHERE schemaname = 'migrations'
     AND tablename = 'migrations'
 SQL;
 
-        $result = pg_query($this->connection, $sql);
-        if ($row = pg_fetch_row($result)) {
-            return (bool) $row[0];
+        $row = $this->driver->selectOne($sql);
+        if ($row) {
+            return (bool) $row['schema_exists'];
         }
 
         return false;
     }
 
+    /**
+     * @return fluent
+     */
     public function createSchema()
     {
         $sql = <<<SQL
@@ -86,7 +138,7 @@ CREATE TABLE migrations.rollbacks
 );
 SQL;
 
-        pg_query($this->connection, $sql);
+        $this->driver->queryMultiple($sql);
 
         return $this;
     }
