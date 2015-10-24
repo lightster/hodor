@@ -26,9 +26,9 @@ CREATE TABLE buffered_jobs
     inserted_from VARCHAR NOT NULL
 );
 
-CREATE TABLE superqueued_jobs
+CREATE TABLE queued_jobs
 (
-    superqueued_job_id SERIAL PRIMARY KEY,
+    queued_job_id SERIAL PRIMARY KEY,
     buffered_job_id INT NOT NULL,
     queue_name VARCHAR NOT NULL,
     job_name VARCHAR NOT NULL,
@@ -101,7 +101,7 @@ SQL;
     {
         $sql = <<<SQL
 DROP TABLE buffered_jobs;
-DROP TABLE superqueued_jobs;
+DROP TABLE queued_jobs;
 DROP TABLE successful_jobs;
 DROP TABLE failed_jobs;
 SQL;
