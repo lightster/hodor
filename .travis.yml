@@ -1,0 +1,21 @@
+language: php
+
+php:
+  - 5.5
+  - 5.6
+
+services:
+  - postgres
+
+addons:
+  postgresql: "9.3"
+
+before_script:
+  - psql -c 'create database travisci_hodor;' -U postgres
+  - cp tests/config/dist/config.travis.php tests/config/config.php
+
+install:
+  - composer install
+
+after_script:
+  - vendor/bin/test-reporter --coverage-report=tests/log/coverage.xml
