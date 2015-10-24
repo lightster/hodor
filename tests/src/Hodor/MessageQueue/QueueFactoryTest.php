@@ -34,11 +34,12 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     {
         $config_template = $this->config['test']['rabbitmq'];
         $config = [
-            'host'       => $config_template['host'],
-            'port'       => $config_template['port'],
-            'username'   => $config_template['username'],
-            'password'   => $config_template['password'],
-            'queue_name' => $config_template['queue_prefix'] . uniqid(),
+            'host'        => $config_template['host'],
+            'port'        => $config_template['port'],
+            'username'    => $config_template['username'],
+            'password'    => $config_template['password'],
+            'queue_name'  => $config_template['queue_prefix'] . uniqid(),
+            'fetch_count' => 1,
         ];
 
         $this->assertInstanceOf(
