@@ -17,7 +17,7 @@ class PgsqlDriverTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $config_path = __DIR__ . '/../../../../config/config.php';
+        $config_path = __DIR__ . '/../../../../../config/config.test.php';
         if (!file_exists($config_path)) {
             throw new Exception("'{$config_path}' not found");
         }

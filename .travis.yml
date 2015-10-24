@@ -12,7 +12,7 @@ addons:
 
 before_script:
   - psql -c 'create database travisci_hodor;' -U postgres
-  - cp tests/config/dist/config.travis.php tests/config/config.php
+  - cp config/dist/config.travis.php config/config.test.php
 
 install:
   - composer install
