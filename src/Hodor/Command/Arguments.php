@@ -9,7 +9,7 @@ class Arguments
     /**
      * @var array
      */
-    private $loaded_arguments;
+    private $loaded_arguments = [];
 
     /**
      * @return string
@@ -40,6 +40,7 @@ class Arguments
     /**
      * @param  string $name
      * @return string
+     * @throws Exception
      */
     private function getRequiredArgument($name)
     {
@@ -52,13 +53,31 @@ class Arguments
         return $this->loaded_arguments[$name];
     }
 
+    /**
+     * @return void
+     */
     private function processArguments()
     {
         if ($this->loaded_arguments) {
             return;
         }
 
-        $args = getopt(
+        $args = $this->getCliOpts();
+
+        $this->processArgument($args, 'config', 'c');
+        $this->processArgument($args, 'queue', 'q');
+        $this->processArgument($args, 'json', '');
+    }
+
+    /**
+     * This method is defined as protected so the test suite
+     * can override the method with a mock.
+     *
+     * @return array
+     */
+    protected function getCliOpts()
+    {
+        return getopt(
             'c:q:',
             [
                 'config:',
@@ -66,10 +85,6 @@ class Arguments
                 'json',
             ]
         );
-
-        $this->processArgument($args, 'config', 'c');
-        $this->processArgument($args, 'queue', 'q');
-        $this->processArgument($args, 'json', '');
     }
 
     /**
