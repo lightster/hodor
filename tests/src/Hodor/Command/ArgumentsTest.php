@@ -12,7 +12,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
      */
     public function testRetrievingConfigWhenNotProvidedThrowsAnException()
     {
-        $arguments = $this->getMockedArguments([]);
+        $arguments = $this->getArgumentsObject([]);
 
         $arguments->getConfigFile();
     }
@@ -22,7 +22,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
      */
     public function testRetrievingConfigWhenBlankThrowsAnException()
     {
-        $arguments = $this->getMockedArguments([
+        $arguments = $this->getArgumentsObject([
             'config' => null,
         ]);
 
@@ -32,7 +32,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     public function testRetrievingConfigWhenProvidedWithLongOpt()
     {
         $config_path = 'config.php';
-        $arguments = $this->getMockedArguments([
+        $arguments = $this->getArgumentsObject([
             'config' => $config_path,
         ]);
 
@@ -45,7 +45,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     public function testRetrievingConfigWhenProvidedWithShortOpt()
     {
         $config_path = 'config.php';
-        $arguments = $this->getMockedArguments([
+        $arguments = $this->getArgumentsObject([
             'c' => $config_path,
         ]);
 
@@ -59,7 +59,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
      */
     public function testRetrievingQueueNameWhenNotProvidedThrowsAnException()
     {
-        $arguments = $this->getMockedArguments([]);
+        $arguments = $this->getArgumentsObject([]);
 
         $arguments->getQueueName();
     }
@@ -69,7 +69,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
      */
     public function testRetrievingQueueNameWhenBlankThrowsAnException()
     {
-        $arguments = $this->getMockedArguments([
+        $arguments = $this->getArgumentsObject([
             'queue' => null,
         ]);
 
@@ -79,7 +79,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     public function testRetrievingQueueNameWhenProvidedWithLongOpt()
     {
         $queue_name = uniqid();
-        $arguments = $this->getMockedArguments([
+        $arguments = $this->getArgumentsObject([
             'queue' => $queue_name,
         ]);
 
@@ -92,7 +92,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     public function testRetrievingQueueNameWhenProvidedWithShortOpt()
     {
         $queue_name = uniqid();
-        $arguments = $this->getMockedArguments([
+        $arguments = $this->getArgumentsObject([
             'q' => $queue_name,
         ]);
 
@@ -104,7 +104,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
 
     public function testRetrievingIsJsonWhenProvided()
     {
-        $arguments = $this->getMockedArguments([
+        $arguments = $this->getArgumentsObject([
             'json' => false,
         ]);
 
@@ -115,7 +115,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
 
     public function testRetrievingIsJsonWhenNotProvided()
     {
-        $arguments = $this->getMockedArguments([]);
+        $arguments = $this->getArgumentsObject([]);
 
         $this->assertFalse(
             $arguments->isJson()
@@ -126,7 +126,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     {
         $config_path = 'config2.php';
         $queue_name = uniqid();
-        $arguments = $this->getMockedArguments([
+        $arguments = $this->getArgumentsObject([
             'config' => $config_path,
             'queue'  => $queue_name,
             'json'   => false,
@@ -149,14 +149,12 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
      * @param array $return_value
      * @return \PHPUnit_Framework_MockObject_MockObject
      */
-    private function getMockedArguments(array $return_value)
+    private function getArgumentsObject(array $return_value)
     {
-        $arguments = $this->getMockBuilder('\Hodor\Command\Arguments')
-            ->setMethods(['getCliOpts'])
-            ->getMock();
-        $arguments->expects($this->once())
-            ->method('getCliOpts')
-            ->will($this->returnValue($return_value));
+        $arguments = new Arguments();
+        $arguments->setCliOptsLoader(function () use ($return_value) {
+            return $return_value;
+        });
 
         return $arguments;
     }

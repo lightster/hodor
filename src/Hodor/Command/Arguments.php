@@ -7,6 +7,11 @@ use Exception;
 class Arguments
 {
     /**
+     * @var callable
+     */
+    private $cli_opts_loader;
+
+    /**
      * @var array
      */
     private $loaded_arguments = [];
@@ -62,7 +67,8 @@ class Arguments
             return;
         }
 
-        $args = $this->getCliOpts();
+        $args_loader = $this->getCliOptsLoader();
+        $args = $args_loader();
 
         $this->processArgument($args, 'config', 'c');
         $this->processArgument($args, 'queue', 'q');
@@ -70,21 +76,34 @@ class Arguments
     }
 
     /**
-     * This method is defined as protected so the test suite
-     * can override the method with a mock.
-     *
-     * @return array
+     * @param callable $cli_opts_loader
      */
-    protected function getCliOpts()
+    public function setCliOptsLoader(callable $cli_opts_loader)
     {
-        return getopt(
-            'c:q:',
-            [
-                'config:',
-                'queue:',
-                'json',
-            ]
-        );
+        $this->cli_opts_loader = $cli_opts_loader;
+    }
+
+    /**
+     * @return callable
+     */
+    private function getCliOptsLoader()
+    {
+        if ($this->cli_opts_loader) {
+            return $this->cli_opts_loader;
+        }
+
+        $this->cli_opts_loader = function () {
+            return getopt(
+                'c:q:',
+                [
+                    'config:',
+                    'queue:',
+                    'json',
+                ]
+            );
+        };
+
+        return $this->cli_opts_loader;
     }
 
     /**
