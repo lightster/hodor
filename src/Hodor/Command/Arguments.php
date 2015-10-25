@@ -43,6 +43,14 @@ class Arguments
     }
 
     /**
+     * @param callable $cli_opts_loader
+     */
+    public function setCliOptsLoader(callable $cli_opts_loader)
+    {
+        $this->cli_opts_loader = $cli_opts_loader;
+    }
+
+    /**
      * @param  string $name
      * @return string
      * @throws Exception
@@ -73,14 +81,6 @@ class Arguments
         $this->processArgument($args, 'config', 'c');
         $this->processArgument($args, 'queue', 'q');
         $this->processArgument($args, 'json', '');
-    }
-
-    /**
-     * @param callable $cli_opts_loader
-     */
-    public function setCliOptsLoader(callable $cli_opts_loader)
-    {
-        $this->cli_opts_loader = $cli_opts_loader;
     }
 
     /**
