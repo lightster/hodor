@@ -31,4 +31,7 @@
         <log type="testdox-html" target="tests/log/testdox.html"/>
         <log type="coverage-clover" target="tests/log/coverage.xml" />
     </logging>
+    <php>
+        <ini name="error_reporting" value="E_ALL" />
+    </php>
 </phpunit>
