@@ -233,6 +233,24 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider configProvider
+     * @expectedException \Exception
+     */
+    public function testDefaultWorkerQueueNameThrowsAnExceptionIfQueueNameIsNotProvided($options)
+    {
+        unset($options['worker_queue_name_factory']);
+        $config = new Config(__FILE__, $options);
+
+        $callback = $config->getWorkerQueueNameFactory();
+
+        $this->assertTrue(is_callable($callback));
+        $this->assertEquals(
+            'other',
+            call_user_func($callback, 'n/a', [], ['not_queue_name' => 'other'])
+        );
+    }
+
+    /**
+     * @dataProvider configProvider
      */
     public function testWorkerQueueNameFactoryCanBeProvided($options)
     {
