@@ -1,11 +1,9 @@
 <?php
 return [
-    'superqueuers' => [
-        'default' => [
-            'database' => [
-                'type' => 'pgsql',
-                'dsn'  => 'host=localhost user=hodor dbname=hodor',
-            ],
+    'superqueuer' => [
+        'database' => [
+            'type' => 'pgsql',
+            'dsn'  => 'host=localhost user=hodor dbname=hodor',
         ],
     ],
     'queue_defaults' => [

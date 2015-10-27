@@ -24,6 +24,47 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider configProvider
      */
+    public function testDatabaseConfigCanBeRetrieved($options)
+    {
+        $config = new Config(__FILE__, $options);
+
+        $db_config = $config->getDatabaseConfig();
+
+        $this->assertEquals(
+            [
+                'type' => $options['superqueuer']['database']['type'],
+                'dsn'  => $options['superqueuer']['database']['dsn'],
+            ],
+            [
+                'type' => $db_config['type'],
+                'dsn'  => $db_config['dsn'],
+            ]
+        );
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testRetrievingDatabaseConfigThrowsExceptionIfSuperqueuerConfigIsNotDefined()
+    {
+        $config = new Config(__FILE__, []);
+
+        $db_config = $config->getDatabaseConfig();
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testRetrievingDatabaseConfigThrowsExceptionIfDbConfigIsNotDefined()
+    {
+        $config = new Config(__FILE__, ['superqueuer' => []]);
+
+        $db_config = $config->getDatabaseConfig();
+    }
+
+    /**
+     * @dataProvider configProvider
+     */
     public function testBufferQueueConfigIsComposedOfDefaultsAndSpecifics($options)
     {
         $config = new Config(__FILE__, $options);
@@ -267,8 +308,11 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     {
         return [
             [[
-                'database' => [
-                    'username' => 'some_username',
+                'superqueuer' => [
+                    'database' => [
+                        'type' => 'pgsql',
+                        'dsn'  => 'host=localhost user=test_hodor dbname=test_hodor',
+                    ],
                 ],
                 'queue_defaults' => [
                     'host' => 'queue-default-host',
