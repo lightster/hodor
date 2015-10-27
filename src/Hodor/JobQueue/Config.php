@@ -223,10 +223,6 @@ class Config
      */
     private function getOption($option, $default = null)
     {
-        if (null === $this->config) {
-            $this->processConfig();
-        }
-
         if (!array_key_exists($option, $this->config)) {
             $this->config[$option] = $default;
         }
