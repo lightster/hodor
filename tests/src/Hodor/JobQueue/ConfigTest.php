@@ -382,6 +382,19 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @dataProvider configProvider
+     */
+    public function testDaemonConfigCanBeRetrieved($options)
+    {
+        $config = new Config(__FILE__, $options);
+
+        $this->assertEquals(
+            $options['daemon'],
+            $config->getDaemonConfig()
+        );
+    }
+
     public function configProvider()
     {
         return [
@@ -420,6 +433,9 @@ class ConfigTest extends PHPUnit_Framework_TestCase
                 'job_runner' => function($name, $params) {
                     return [$name, $params];
                 },
+                'daemon' => [
+                    'type' => 'supervisord',
+                ]
             ]],
         ];
     }
