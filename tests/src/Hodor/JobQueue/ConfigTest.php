@@ -24,6 +24,58 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @dataProvider configProvider
      */
+    public function testDatabaseConfigCanBeRetrieved($options)
+    {
+        $config = new Config(__FILE__, $options);
+
+        $db_config = $config->getDatabaseConfig();
+
+        $this->assertEquals(
+            [
+                'type' => $options['superqueuer']['database']['type'],
+                'dsn'  => $options['superqueuer']['database']['dsn'],
+            ],
+            [
+                'type' => $db_config['type'],
+                'dsn'  => $db_config['dsn'],
+            ]
+        );
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testRetrievingDatabaseConfigThrowsExceptionIfSuperqueuerConfigIsNotDefined()
+    {
+        $config = new Config(__FILE__, []);
+
+        $db_config = $config->getDatabaseConfig();
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testRetrievingDatabaseConfigThrowsExceptionIfDbConfigIsNotDefined()
+    {
+        $config = new Config(__FILE__, ['superqueuer' => []]);
+
+        $db_config = $config->getDatabaseConfig();
+    }
+
+    /**
+     * @dataProvider configProvider
+     * @expectedException Exception
+     */
+    public function testRequestingUndeclaredBufferConfigThrowsAnException($options)
+    {
+        $config = new Config(__FILE__, $options);
+
+        $queue_config = $config->getBufferQueueConfig('undeclared');
+    }
+
+    /**
+     * @dataProvider configProvider
+     */
     public function testBufferQueueConfigIsComposedOfDefaultsAndSpecifics($options)
     {
         $config = new Config(__FILE__, $options);
@@ -87,6 +139,17 @@ class ConfigTest extends PHPUnit_Framework_TestCase
             1,
             $queue_config['fetch_count']
         );
+    }
+
+    /**
+     * @dataProvider configProvider
+     * @expectedException Exception
+     */
+    public function testRequestingUndeclaredWorkerConfigThrowsAnException($options)
+    {
+        $config = new Config(__FILE__, $options);
+
+        $queue_config = $config->getWorkerQueueConfig('undeclared');
     }
 
     /**
@@ -158,6 +221,44 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException Exception
+     */
+    public function testAJobRunnerFactoryMustBeConfigured()
+    {
+        $config = new Config(__FILE__, []);
+
+        $config->getJobRunnerFactory();
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testTheJobRunnerFactoryMustBeACallable()
+    {
+        $config = new Config(__FILE__, [
+            'job_runner' => 'blah',
+        ]);
+
+        $config->getJobRunnerFactory();
+    }
+
+    /**
+     * @dataProvider configProvider
+     */
+    public function testTheJobRunnerFactoryIsReturnedIfProperlyConfigured($options)
+    {
+        $config = new Config(__FILE__, $options);
+
+        $callback = $config->getJobRunnerFactory();
+
+        $this->assertTrue(is_callable($callback));
+        $this->assertSame(
+            $options['job_runner'],
+            $callback
+        );
+    }
+
+    /**
      * @expectedException \Exception
      */
     public function testWorkerQueueNameFactoryThrowsExceptionIfItIsNotCallable()
@@ -187,6 +288,24 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             'other',
             call_user_func($callback, 'n/a', [], ['queue_name' => 'other'])
+        );
+    }
+
+    /**
+     * @dataProvider configProvider
+     * @expectedException \Exception
+     */
+    public function testDefaultWorkerQueueNameThrowsAnExceptionIfQueueNameIsNotProvided($options)
+    {
+        unset($options['worker_queue_name_factory']);
+        $config = new Config(__FILE__, $options);
+
+        $callback = $config->getWorkerQueueNameFactory();
+
+        $this->assertTrue(is_callable($callback));
+        $this->assertEquals(
+            'other',
+            call_user_func($callback, 'n/a', [], ['not_queue_name' => 'other'])
         );
     }
 
@@ -263,12 +382,58 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @dataProvider configProvider
+     */
+    public function testDaemonConfigCanBeRetrieved($options)
+    {
+        $config = new Config(__FILE__, $options);
+
+        $this->assertEquals(
+            $options['daemon'],
+            $config->getDaemonConfig()
+        );
+    }
+
+    public function testWorkerQueueNamesCanBeRetrieved()
+    {
+        $config = new Config(__FILE__, [
+            'worker_queues' => [
+                'abc' => [],
+                '123' => [],
+            ]
+        ]);
+
+        $this->assertEquals(
+            ['abc', '123'],
+            $config->getWorkerQueueNames()
+        );
+    }
+
+    public function testBufferQueueNamesCanBeRetrieved()
+    {
+        $config = new Config(__FILE__, [
+            'buffer_queues' => [
+                'xyz' => [],
+                '456' => [],
+            ]
+        ]);
+
+        $this->assertEquals(
+            ['xyz', '456'],
+            $config->getBufferQueueNames()
+        );
+    }
+
     public function configProvider()
     {
         return [
             [[
-                'database' => [
-                    'username' => 'some_username',
+                'superqueuer' => [
+                    'database' => [
+                        'type' => 'pgsql',
+                        'dsn'  => 'host=localhost user=test_hodor dbname=test_hodor',
+                    ],
                 ],
                 'queue_defaults' => [
                     'host' => 'queue-default-host',
@@ -295,6 +460,12 @@ class ConfigTest extends PHPUnit_Framework_TestCase
                 'buffer_queue_name_factory' => function($name, $params, $options) {
                     return $name;
                 },
+                'job_runner' => function($name, $params) {
+                    return [$name, $params];
+                },
+                'daemon' => [
+                    'type' => 'supervisord',
+                ]
             ]],
         ];
     }
