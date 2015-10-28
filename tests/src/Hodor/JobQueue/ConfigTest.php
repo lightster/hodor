@@ -395,6 +395,36 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testWorkerQueueNamesCanBeRetrieved()
+    {
+        $config = new Config(__FILE__, [
+            'worker_queues' => [
+                'abc' => [],
+                '123' => [],
+            ]
+        ]);
+
+        $this->assertEquals(
+            ['abc', '123'],
+            $config->getWorkerQueueNames()
+        );
+    }
+
+    public function testBufferQueueNamesCanBeRetrieved()
+    {
+        $config = new Config(__FILE__, [
+            'buffer_queues' => [
+                'xyz' => [],
+                '456' => [],
+            ]
+        ]);
+
+        $this->assertEquals(
+            ['xyz', '456'],
+            $config->getBufferQueueNames()
+        );
+    }
+
     public function configProvider()
     {
         return [
