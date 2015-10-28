@@ -64,6 +64,17 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider configProvider
+     * @expectedException Exception
+     */
+    public function testRequestingUndeclaredBufferConfigThrowsAnException($options)
+    {
+        $config = new Config(__FILE__, $options);
+
+        $queue_config = $config->getBufferQueueConfig('undeclared');
+    }
+
+    /**
+     * @dataProvider configProvider
      */
     public function testBufferQueueConfigIsComposedOfDefaultsAndSpecifics($options)
     {
@@ -128,6 +139,17 @@ class ConfigTest extends PHPUnit_Framework_TestCase
             1,
             $queue_config['fetch_count']
         );
+    }
+
+    /**
+     * @dataProvider configProvider
+     * @expectedException Exception
+     */
+    public function testRequestingUndeclaredWorkerConfigThrowsAnException($options)
+    {
+        $config = new Config(__FILE__, $options);
+
+        $queue_config = $config->getWorkerQueueConfig('undeclared');
     }
 
     /**
