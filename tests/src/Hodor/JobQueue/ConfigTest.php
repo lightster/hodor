@@ -221,6 +221,44 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException Exception
+     */
+    public function testAJobRunnerFactoryMustBeConfigured()
+    {
+        $config = new Config(__FILE__, []);
+
+        $config->getJobRunnerFactory();
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testTheJobRunnerFactoryMustBeACallable()
+    {
+        $config = new Config(__FILE__, [
+            'job_runner' => 'blah',
+        ]);
+
+        $config->getJobRunnerFactory();
+    }
+
+    /**
+     * @dataProvider configProvider
+     */
+    public function testTheJobRunnerFactoryIsReturnedIfProperlyConfigured($options)
+    {
+        $config = new Config(__FILE__, $options);
+
+        $callback = $config->getJobRunnerFactory();
+
+        $this->assertTrue(is_callable($callback));
+        $this->assertSame(
+            $options['job_runner'],
+            $callback
+        );
+    }
+
+    /**
      * @expectedException \Exception
      */
     public function testWorkerQueueNameFactoryThrowsExceptionIfItIsNotCallable()
@@ -378,6 +416,9 @@ class ConfigTest extends PHPUnit_Framework_TestCase
                 },
                 'buffer_queue_name_factory' => function($name, $params, $options) {
                     return $name;
+                },
+                'job_runner' => function($name, $params) {
+                    return [$name, $params];
                 },
             ]],
         ];
