@@ -109,7 +109,7 @@ class PgsqlDriver
      */
     public function delete($table, array $condition)
     {
-        $result = pg_delete($this->getConnection(), $table, $condition);
+        $result = @pg_delete($this->getConnection(), $table, $condition);
 
         if (($error = $this->hasError($result))) {
             throw new Exception(
