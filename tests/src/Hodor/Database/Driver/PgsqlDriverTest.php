@@ -82,6 +82,29 @@ SQL;
     }
 
     /**
+     * @dataProvider adapterProvider
+     */
+    public function testSelectOneReturnsResults($adapter)
+    {
+        $sql = <<<SQL
+SELECT 5 AS col
+SQL;
+        $this->assertEquals(['col' => '5'], $adapter->selectOne($sql));
+    }
+
+    /**
+     * @dataProvider adapterProvider
+     * @expectedException Exception
+     */
+    public function testSelectOneThrowsAnExceptionOnError($adapter)
+    {
+        $sql = <<<SQL
+SELECT 1 FROM not_there;
+SQL;
+        $adapter->selectOne($sql);
+    }
+
+    /**
      * @expectedException \Exception
      */
     public function testRequestingAConnectionWithoutADsnThrowsAnException()
