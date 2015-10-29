@@ -105,6 +105,47 @@ SQL;
     }
 
     /**
+     * @dataProvider adapterProvider
+     */
+    public function testInsertedRowCanBeRetrieved($adapter)
+    {
+        $tablename = 'test_insert_' . uniqid();
+
+        $sql = <<<SQL
+CREATE TABLE {$tablename}
+(
+    some_id INT NOT NULL,
+    some_string VARCHAR NOT NULL
+);
+SQL;
+        $adapter->queryMultiple($sql);
+
+        $row = [
+            'some_id' => '5',
+            'some_string' => 'yep'
+        ];
+        $adapter->insert(
+            $tablename,
+            $row
+        );
+
+        $sql = <<<SQL
+SELECT *
+FROM {$tablename}
+SQL;
+        $this->assertEquals($row, $adapter->selectOne($sql));
+    }
+
+    /**
+     * @dataProvider adapterProvider
+     * @expectedException Exception
+     */
+    public function testInsertThrowsAnExceptionOnError($adapter)
+    {
+        $adapter->insert('some_table', ['no_row' => true]);
+    }
+
+    /**
      * @expectedException \Exception
      */
     public function testRequestingAConnectionWithoutADsnThrowsAnException()

@@ -92,7 +92,7 @@ class PgsqlDriver
      */
     public function insert($table, array $row)
     {
-        $result = pg_insert($this->getConnection(), $table, $row);
+        $result = @pg_insert($this->getConnection(), $table, $row);
 
         if (($error = $this->hasError($result))) {
             throw new Exception(
