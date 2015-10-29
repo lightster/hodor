@@ -31,7 +31,7 @@ class PgsqlDriver
      */
     public function queryMultiple($sql)
     {
-        $result = pg_query($this->getConnection(), $sql);
+        $result = @pg_query($this->getConnection(), $sql);
 
         if (($error = $this->hasError($result))) {
             throw new Exception(
@@ -55,7 +55,7 @@ class PgsqlDriver
      */
     public function selectRowGenerator($sql)
     {
-        $result = pg_query($this->getConnection(), $sql);
+        $result = @pg_query($this->getConnection(), $sql);
         if (($error = $this->hasError($result))) {
             throw new Exception(
                 "A query error occurred!\nError: {$error}\nQuery: {$sql}"
@@ -75,7 +75,7 @@ class PgsqlDriver
      */
     public function selectOne($sql)
     {
-        $result = pg_query($this->getConnection(), $sql);
+        $result = @pg_query($this->getConnection(), $sql);
         if (($error = $this->hasError($result))) {
             throw new Exception(
                 "A query error occurred!\nError: {$error}\nQuery: {$sql}"
@@ -92,7 +92,7 @@ class PgsqlDriver
      */
     public function insert($table, array $row)
     {
-        $result = pg_insert($this->getConnection(), $table, $row);
+        $result = @pg_insert($this->getConnection(), $table, $row);
 
         if (($error = $this->hasError($result))) {
             throw new Exception(
@@ -109,7 +109,7 @@ class PgsqlDriver
      */
     public function delete($table, array $condition)
     {
-        $result = pg_delete($this->getConnection(), $table, $condition);
+        $result = @pg_delete($this->getConnection(), $table, $condition);
 
         if (($error = $this->hasError($result))) {
             throw new Exception(
