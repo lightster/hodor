@@ -31,7 +31,7 @@ class PgsqlDriver
      */
     public function queryMultiple($sql)
     {
-        $result = pg_query($this->getConnection(), $sql);
+        $result = @pg_query($this->getConnection(), $sql);
 
         if (($error = $this->hasError($result))) {
             throw new Exception(
