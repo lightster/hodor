@@ -52,6 +52,36 @@ SQL;
     }
 
     /**
+     * @dataProvider adapterProvider
+     */
+    public function testSelectRowGeneratorGeneratesResults($adapter)
+    {
+        $sql = <<<SQL
+SELECT 1 AS col UNION
+SELECT 2 AS col UNION
+SELECT 3 AS col
+SQL;
+        $row_generator = $adapter->selectRowGenerator($sql);
+        $count = 1;
+        foreach ($row_generator() as $row) {
+            $this->assertEquals($row['col'], $count);
+            ++$count;
+        }
+    }
+
+    /**
+     * @dataProvider adapterProvider
+     * @expectedException Exception
+     */
+    public function testSelectRowGeneratorThrowsAnExceptionOnError($adapter)
+    {
+        $sql = <<<SQL
+SELECT 1 FROM not_there;
+SQL;
+        $adapter->selectRowGenerator($sql);
+    }
+
+    /**
      * @expectedException \Exception
      */
     public function testRequestingAConnectionWithoutADsnThrowsAnException()

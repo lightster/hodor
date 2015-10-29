@@ -55,7 +55,7 @@ class PgsqlDriver
      */
     public function selectRowGenerator($sql)
     {
-        $result = pg_query($this->getConnection(), $sql);
+        $result = @pg_query($this->getConnection(), $sql);
         if (($error = $this->hasError($result))) {
             throw new Exception(
                 "A query error occurred!\nError: {$error}\nQuery: {$sql}"
