@@ -121,13 +121,10 @@ SQL;
         $adapter->queryMultiple($sql);
 
         $row = [
-            'some_id' => '5',
-            'some_string' => 'yep'
+            'some_id'     => '5',
+            'some_string' => 'yep',
         ];
-        $adapter->insert(
-            $tablename,
-            $row
-        );
+        $adapter->insert($tablename, $row);
 
         $sql = <<<SQL
 SELECT *
@@ -162,13 +159,10 @@ SQL;
         $adapter->queryMultiple($sql);
 
         $row = [
-            'some_id' => '5',
+            'some_id'     => '5',
             'some_string' => 'yep',
         ];
-        $adapter->insert(
-            $tablename,
-            $row
-        );
+        $adapter->insert($tablename, $row);
 
         $sql = <<<SQL
 SELECT *
@@ -179,10 +173,7 @@ SQL;
         $row = [
             'some_id' => '5',
         ];
-        $adapter->delete(
-            $tablename,
-            $row
-        );
+        $adapter->delete($tablename, $row);
 
         $sql = <<<SQL
 SELECT *
