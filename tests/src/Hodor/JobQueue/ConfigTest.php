@@ -32,8 +32,8 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             [
-                'type' => $options['superqueuer']['database']['type'],
-                'dsn'  => $options['superqueuer']['database']['dsn'],
+                'type' => $options['superqueue']['database']['type'],
+                'dsn'  => $options['superqueue']['database']['dsn'],
             ],
             [
                 'type' => $db_config['type'],
@@ -429,7 +429,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     {
         return [
             [[
-                'superqueuer' => [
+                'superqueue' => [
                     'database' => [
                         'type' => 'pgsql',
                         'dsn'  => 'host=localhost user=test_hodor dbname=test_hodor',
