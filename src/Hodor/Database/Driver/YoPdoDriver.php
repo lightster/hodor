@@ -52,11 +52,12 @@ class YoPdoDriver
 
     /**
      * @param  string $sql
+     * @param  array $params
      * @return callable
      */
-    public function selectOne($sql)
+    public function selectOne($sql, $params = array())
     {
-        $result = $this->getYoPdo()->query($sql);
+        $result = $this->getYoPdo()->query($sql, $params);
 
         return $result->fetch();
     }

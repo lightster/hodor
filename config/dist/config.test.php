@@ -2,10 +2,7 @@
 return [
     'test' => [
         'db' => [
-            'pgsql' => [
-                'dsn' => 'host=localhost',
-            ],
-            'yo-pdo' => [
+            'yo-pdo-pgsql' => [
                 'dsn'      => 'pgsql:host=localhost;dbname=test_hodor',
                 'username' => 'postgres',
                 'password' => '',
