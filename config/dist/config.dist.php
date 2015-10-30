@@ -2,8 +2,10 @@
 return [
     'superqueuer' => [
         'database' => [
-            'type' => 'pgsql',
-            'dsn'  => 'host=localhost user=hodor dbname=hodor',
+            'type'     => 'yo-pdo',
+            'dsn'      => 'pgsql:host=localhost;dbname=hodor',
+            'username' => 'hodor',
+            'password' => '',
         ],
     ],
     'queue_defaults' => [

@@ -188,6 +188,7 @@ SQL;
 
         return [
             [new PgsqlDriver($config['test']['db']['pgsql'])],
+            [new YoPdoDriver($config['test']['db']['yo-pdo'])],
         ];
     }
 }
