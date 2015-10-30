@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "ca26824e1732af6d4cdd9e46742a1184",
-    "content-hash": "372185fcec7511312718fc29f12c2963",
+    "hash": "a09da54c53ad934cf2fda5f21903c760",
+    "content-hash": "07b38317a25359d320d8c9d2f70910da",
     "packages": [
         {
             "name": "davedevelopment/phpmig",
@@ -71,6 +71,44 @@
                 "migrations"
             ],
             "time": "2014-12-08 20:59:23"
+        },
+        {
+            "name": "lightster/yo-pdo",
+            "version": "v0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lightster/yo-pdo.git",
+                "reference": "e34ab5c3a5a153f2db0e4dbd6c36b693fa0b9b55"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lightster/yo-pdo/zipball/e34ab5c3a5a153f2db0e4dbd6c36b693fa0b9b55",
+                "reference": "e34ab5c3a5a153f2db0e4dbd6c36b693fa0b9b55",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "dev-master",
+                "phpunit/phpunit": "^4.8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Lstr\\YoPdo\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Useful add-ons to PDO",
+            "homepage": "http://lightdatasys.com",
+            "keywords": [
+                "database",
+                "lightster",
+                "lstr",
+                "pdo"
+            ],
+            "time": "2015-10-30 06:40:10"
         },
         {
             "name": "pimple/pimple",
