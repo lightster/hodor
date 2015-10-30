@@ -2,7 +2,7 @@
 return [
     'superqueuer' => [
         'database' => [
-            'type'     => 'yo-pdo',
+            'type'     => 'pgsql',
             'dsn'      => 'pgsql:host=localhost;dbname=hodor',
             'username' => 'hodor',
             'password' => '',

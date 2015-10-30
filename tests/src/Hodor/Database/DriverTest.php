@@ -187,8 +187,7 @@ SQL;
         $config = require $config_path;
 
         return [
-            [new PgsqlDriver($config['test']['db']['pgsql'])],
-            [new YoPdoDriver($config['test']['db']['yo-pdo'])],
+            [new YoPdoDriver($config['test']['db']['yo-pdo-pgsql'])],
         ];
     }
 }
