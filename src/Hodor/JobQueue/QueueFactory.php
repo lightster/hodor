@@ -39,6 +39,21 @@ class QueueFactory
     }
 
     /**
+     * @return Superqueue
+     */
+    public function getSuperqueue()
+    {
+        if (isset($this->superqueue)) {
+            return $this->superqueue;
+        }
+
+        $queue_config = $this->config->getSuperqueueConfig();
+        $this->superqueue = new Superqueue($queue_config, $this);
+
+        return $this->superqueue;
+    }
+
+    /**
      * @param  string $queue_name [description]
      * @return \Hodor\JobQueue\BufferQueue
      */
@@ -99,16 +114,14 @@ class QueueFactory
      * @param  array  $options
      * @return \Hodor\JobQueue\WorkerQueue
      */
-    public function getWorkerQueueForJob($name, array $params, array $options)
+    public function getWorkerQueueNameForJob($name, array $params, array $options)
     {
-        $queue_name = call_user_func(
+        return call_user_func(
             $this->config->getWorkerQueueNameFactory(),
             $name,
             $params,
             $options
         );
-
-        return $this->getWorkerQueue($queue_name);
     }
 
     /**

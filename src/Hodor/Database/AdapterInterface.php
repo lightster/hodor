@@ -4,7 +4,7 @@ namespace Hodor\Database;
 
 interface AdapterInterface
 {
-    public function createJob($job);
+    public function bufferJob($queue_name, array $job);
 
     public function getJobsToRun();
 

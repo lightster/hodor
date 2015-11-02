@@ -27,8 +27,26 @@ class PgsqlAdapter implements AdapterInterface
         $this->config = $config;
     }
 
-    public function createJob($job)
+    /**
+     * @param string $queue_name
+     * @param array $job
+     */
+    public function bufferJob($queue_name, array $job)
     {
+        $row = [
+            'queue_name'    => $queue_name,
+            'job_name'      => $job['name'],
+            'job_params'    => json_encode($job['params']),
+            'buffered_at'   => $job['meta']['buffered_at'],
+            'buffered_from' => $job['meta']['buffered_from'],
+            'inserted_from' => gethostname(),
+        ];
+
+        if (isset($job['run_after'])) {
+            $row['run_after'] = $job['run_after'];
+        }
+
+        $this->getDriver()->insert('buffered_jobs', $row);
     }
 
     public function getJobsToRun()
