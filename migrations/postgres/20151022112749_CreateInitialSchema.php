@@ -29,7 +29,7 @@ CREATE TABLE buffered_jobs
 CREATE TABLE queued_jobs
 (
     queued_job_id SERIAL PRIMARY KEY,
-    buffered_job_id INT NOT NULL,
+    buffered_job_id INT NOT NULL UNIQUE,
     queue_name VARCHAR NOT NULL,
     job_name VARCHAR NOT NULL,
     job_params JSON NOT NULL,
@@ -46,7 +46,7 @@ CREATE TABLE queued_jobs
 CREATE TABLE successful_jobs
 (
     successful_job_id SERIAL PRIMARY KEY,
-    buffered_job_id INT NOT NULL,
+    buffered_job_id INT NOT NULL UNIQUE,
     queue_name VARCHAR NOT NULL,
     job_name VARCHAR NOT NULL,
     job_params JSON NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE successful_jobs
 CREATE TABLE failed_jobs
 (
     failed_job_id SERIAL PRIMARY KEY,
-    buffered_job_id INT NOT NULL,
+    buffered_job_id INT NOT NULL UNIQUE,
     queue_name VARCHAR NOT NULL,
     job_name VARCHAR NOT NULL,
     job_params JSON NOT NULL,
