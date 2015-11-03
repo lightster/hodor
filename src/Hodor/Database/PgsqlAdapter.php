@@ -115,14 +115,17 @@ SQL;
 
     public function beginTransaction()
     {
+        $this->queryMultiple('BEGIN');
     }
 
     public function commitTransaction()
     {
+        $this->queryMultiple('COMMIT');
     }
 
     public function rollbackTransaction()
     {
+        $this->queryMultiple('ROLLBACK');
     }
 
     /**
