@@ -6,6 +6,7 @@ php:
 
 services:
   - postgres
+  - rabbitmq
 
 addons:
   postgresql: "9.3"
