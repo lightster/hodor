@@ -124,8 +124,8 @@ class Superqueue
 
         $mark_finished($meta);
 
-        $message->acknowledge();
         $db->commitTransaction();
+        $message->acknowledge();
     }
 
     /**
