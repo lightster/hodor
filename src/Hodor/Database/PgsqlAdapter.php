@@ -92,12 +92,20 @@ SQL;
         return ['buffered_job_id' => $job['buffered_job_id']];
     }
 
-    public function markJobAsCompleted($job)
+    /**
+     * @param array $meta
+     */
+    public function markJobAsSuccessful(array $meta)
     {
+        return $this->markJobAsFinished('successful', $meta);
     }
 
-    public function markJobAsFailed($job)
+    /**
+     * @param array $meta
+     */
+    public function markJobAsFailed(array $meta)
     {
+        return $this->markJobAsFinished('failed', $meta);
     }
 
     public function getPhpmigAdapter()
@@ -124,6 +132,34 @@ SQL;
     public function queryMultiple($sql)
     {
         return $this->getDriver()->queryMultiple($sql);
+    }
+
+    /**
+     * @param $status
+     * @param array $meta
+     */
+    private function markJobAsFinished($status, array $meta)
+    {
+        $sql = <<<SQL
+SELECT *
+FROM queued_jobs
+WHERE buffered_job_id = :buffered_job_id
+SQL;
+
+        $job = $this->getDriver()->selectOne(
+            $sql,
+            ['buffered_job_id' => $meta['buffered_job_id']]
+        );
+        $job['started_running_at'] = $meta['started_running_at'];
+        $job['ran_from'] = gethostname();
+        $job['dequeued_from'] = gethostname();
+        unset($job['queued_job_id']);
+
+        $this->getDriver()->delete(
+            'queued_jobs',
+            ['buffered_job_id' => $job['buffered_job_id']]
+        );
+        $this->getDriver()->insert("{$status}_jobs", $job);
     }
 
     /**

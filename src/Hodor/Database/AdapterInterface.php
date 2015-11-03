@@ -10,8 +10,8 @@ interface AdapterInterface
 
     public function markJobAsQueued(array $job);
 
-    public function markJobAsCompleted($job);
-    public function markJobAsFailed($job);
+    public function markJobAsSuccessful(array $meta);
+    public function markJobAsFailed(array $meta);
 
     public function getPhpmigAdapter();
 

@@ -2,6 +2,7 @@
 
 namespace Hodor\JobQueue;
 
+use DateTime;
 use Hodor\Database\AdapterFactory as DbAdapterFactory;
 use Hodor\MessageQueue\Message;
 
@@ -71,6 +72,51 @@ class Superqueue
             $queue->push($job['queue_name'], $job['job_params'], $meta);
         }
 
+        $db->commitTransaction();
+    }
+
+    /**
+     * @param Message $message
+     * @param DateTime $started_running_at
+     */
+    public function markJobAsSuccessful(Message $message, DateTime $started_running_at)
+    {
+        $this->markJobAsFinished($message, $started_running_at, function ($meta) {
+            $this->getDatabase()->markJobAsSuccessful($meta);
+        });
+    }
+
+    /**
+     * @param Message $message
+     * @param DateTime $started_running_at
+     */
+    public function markJobAsFailed(Message $message, DateTime $started_running_at)
+    {
+        $this->markJobAsFinished($message, $started_running_at, function ($meta) {
+            $this->getDatabase()->markJobAsFailed($meta);
+        });
+    }
+
+    /**
+     * @param Message $message
+     * @param DateTime $started_running_at
+     * @param callable $mark_finished
+     */
+    private function markJobAsFinished(
+        Message $message,
+        DateTime $started_running_at,
+        callable $mark_finished
+    ) {
+        $content = $message->getContent();
+        $meta = $content['meta'];
+        $meta['started_running_at'] = $started_running_at->format('c');
+
+        $db = $this->getDatabase();
+        $db->beginTransaction();
+
+        $mark_finished($meta);
+
+        $message->acknowledge();
         $db->commitTransaction();
     }
 
