@@ -58,6 +58,22 @@ class Superqueue
         $message->acknowledge();
     }
 
+    public function queueJobsFromDatabaseToWorkerQueue()
+    {
+        $db = $this->getDatabase();
+
+        $db->beginTransaction();
+        $job_generator = $db->getJobsToRunGenerator();
+        foreach ($job_generator() as $job) {
+            $db->markJobAsQueued($job);
+
+            $queue = $this->queue_factory->getWorkerQueue($job['queue_name']);
+            $queue->push($job['queue_name'], $job['job_params']);
+        }
+
+        $db->commitTransaction();
+    }
+
     /**
      * @return DbAdapterInterface
      */

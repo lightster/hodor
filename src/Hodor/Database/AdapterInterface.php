@@ -6,9 +6,9 @@ interface AdapterInterface
 {
     public function bufferJob($queue_name, array $job);
 
-    public function getJobsToRun();
+    public function getJobsToRunGenerator();
 
-    public function markJobAsStarted($job);
+    public function markJobAsQueued(array $job);
 
     public function markJobAsCompleted($job);
     public function markJobAsFailed($job);

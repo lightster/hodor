@@ -49,12 +49,44 @@ class PgsqlAdapter implements AdapterInterface
         $this->getDriver()->insert('buffered_jobs', $row);
     }
 
-    public function getJobsToRun()
+    /**
+     * @return callable
+     */
+    public function getJobsToRunGenerator()
     {
+        return function () {
+            $sql = <<<SQL
+SELECT *
+FROM buffered_jobs
+WHERE run_after <= NOW()
+ORDER BY
+    job_rank,
+    buffered_at
+SQL;
+
+            $row_generator = $this->getDriver()->selectRowGenerator($sql);
+            foreach ($row_generator() as $job) {
+                $job['job_params'] = json_decode($job['job_params'], true);
+                yield $job;
+            }
+        };
     }
 
-    public function markJobAsStarted($job)
+    /**
+     * @param array $job
+     */
+    public function markJobAsQueued(array $job)
     {
+        $this->getDriver()->delete(
+            'buffered_jobs',
+            ['buffered_job_id' => $job['buffered_job_id']]
+        );
+        $job['job_params'] = json_encode($job['job_params']);
+        $job['superqueued_from'] = gethostname();
+        $this->getDriver()->insert(
+            'queued_jobs',
+            $job
+        );
     }
 
     public function markJobAsCompleted($job)
