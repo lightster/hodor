@@ -2,21 +2,21 @@
 
 namespace Hodor\Database\Phpmig;
 
-use Hodor\Database\Driver\PgsqlDriver;
+use Hodor\Database\Driver\YoPdoDriver;
 use Phpmig\Migration\Migration;
 use ReflectionClass;
 
 class PgsqlPhpmigAdapter implements AdapterInterface
 {
     /**
-     * @var PgsqlDriver
+     * @var YoPdoDriver
      */
     private $driver;
 
     /**
-     * @param PgsqlDriver $driver
+     * @param YoPdoDriver $driver
      */
-    public function __construct(PgsqlDriver $driver)
+    public function __construct(YoPdoDriver $driver)
     {
         $this->driver = $driver;
     }
@@ -64,15 +64,14 @@ SQL;
     public function down(Migration $migration)
     {
         $version = $migration->getVersion();
-        $e_version = $this->driver->escapeValue($version);
         $sql = <<<SQL
 SELECT *
 FROM migrations.migrations
-WHERE version = {$e_version}
+WHERE version = :version
 ORDER BY version
 SQL;
 
-        $version_row = $this->driver->selectOne($sql);
+        $version_row = $this->driver->selectOne($sql, ['version' => $version]);
         if (!$version_row) {
             throw new Exception(
                 "Migration '{$version}' cannot be rolled back because it is not currently applied."

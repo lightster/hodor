@@ -2,8 +2,8 @@
 
 namespace Hodor\Database;
 
-use Hodor\Database\Driver\PgsqlDriver;
 use Hodor\Database\Phpmig\PgsqlPhpmigAdapter;
+use Hodor\Database\Driver\YoPdoDriver;
 
 use Exception;
 
@@ -15,7 +15,7 @@ class PgsqlAdapter implements AdapterInterface
     private $config;
 
     /**
-     * @var PgsqlDriver
+     * @var YoPdoDriver
      */
     private $driver;
 
@@ -74,7 +74,7 @@ class PgsqlAdapter implements AdapterInterface
     }
 
     /**
-     * @return PgsqlDriver
+     * @return YoPdoDriver
      */
     private function getDriver()
     {
@@ -82,7 +82,7 @@ class PgsqlAdapter implements AdapterInterface
             return $this->driver;
         }
 
-        $this->driver = new PgsqlDriver($this->config);
+        $this->driver = new YoPdoDriver($this->config);
 
         return $this->driver;
     }

@@ -7,9 +7,14 @@ use Exception;
 class Arguments
 {
     /**
+     * @var callable
+     */
+    private $cli_opts_loader;
+
+    /**
      * @var array
      */
-    private $loaded_arguments;
+    private $loaded_arguments = [];
 
     /**
      * @return string
@@ -38,8 +43,17 @@ class Arguments
     }
 
     /**
+     * @param callable $cli_opts_loader
+     */
+    public function setCliOptsLoader(callable $cli_opts_loader)
+    {
+        $this->cli_opts_loader = $cli_opts_loader;
+    }
+
+    /**
      * @param  string $name
      * @return string
+     * @throws Exception
      */
     private function getRequiredArgument($name)
     {
@@ -52,24 +66,44 @@ class Arguments
         return $this->loaded_arguments[$name];
     }
 
+    /**
+     * @return void
+     */
     private function processArguments()
     {
         if ($this->loaded_arguments) {
             return;
         }
 
-        $args = getopt(
-            'c:q:',
-            [
-                'config:',
-                'queue:',
-                'json',
-            ]
-        );
+        $args_loader = $this->getCliOptsLoader();
+        $args = $args_loader();
 
         $this->processArgument($args, 'config', 'c');
         $this->processArgument($args, 'queue', 'q');
         $this->processArgument($args, 'json', '');
+    }
+
+    /**
+     * @return callable
+     */
+    private function getCliOptsLoader()
+    {
+        if ($this->cli_opts_loader) {
+            return $this->cli_opts_loader;
+        }
+
+        $this->cli_opts_loader = function () {
+            return getopt(
+                'c:q:',
+                [
+                    'config:',
+                    'queue:',
+                    'json',
+                ]
+            );
+        };
+
+        return $this->cli_opts_loader;
     }
 
     /**
