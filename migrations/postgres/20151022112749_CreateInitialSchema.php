@@ -59,9 +59,8 @@ CREATE TABLE successful_jobs
     superqueued_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     superqueued_from VARCHAR NOT NULL,
     started_running_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    started_running_from VARCHAR NOT NULL,
     finished_running_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    finished_running_from VARCHAR NOT NULL,
+    ran_from VARCHAR NOT NULL,
     dequeued_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     dequeued_from VARCHAR NOT NULL
 );
@@ -82,9 +81,8 @@ CREATE TABLE failed_jobs
     superqueued_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     superqueued_from VARCHAR NOT NULL,
     started_running_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    started_running_from VARCHAR NOT NULL,
     finished_running_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-    finished_running_from VARCHAR NOT NULL,
+    ran_from VARCHAR NOT NULL,
     dequeued_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
     dequeued_from VARCHAR NOT NULL
 );
