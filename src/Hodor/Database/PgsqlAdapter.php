@@ -74,6 +74,7 @@ SQL;
 
     /**
      * @param array $job
+     * @return array
      */
     public function markJobAsQueued(array $job)
     {
@@ -87,6 +88,8 @@ SQL;
             'queued_jobs',
             $job
         );
+
+        return ['buffered_job_id' => $job['buffered_job_id']];
     }
 
     public function markJobAsCompleted($job)
