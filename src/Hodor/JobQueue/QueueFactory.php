@@ -102,7 +102,8 @@ class QueueFactory
 
         $queue_config = $this->config->getWorkerQueueConfig($queue_name);
         $this->worker_queues[$queue_name] = new WorkerQueue(
-            $this->getMessageQueue($queue_config)
+            $this->getMessageQueue($queue_config),
+            $this
         );
 
         return $this->worker_queues[$queue_name];
