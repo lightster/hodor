@@ -20,3 +20,8 @@ install:
 
 after_script:
   - vendor/bin/test-reporter --coverage-report=tests/log/coverage.xml
+
+notifications:
+  slack:
+    rooms:
+      - secure: Xz32+0GDG7A1VdI59XuoaaLwS3dbgzEQVVzPJ8/T7JfQrze2brL8cu2HImvuIiuIXP/PKirFh3/jRQnDhRBp7/sXHDy7HiWbEzfTQBZ7S5/kAvZulofIZRfdIQc9ixdkFUEXI/T/qWUncoA98o8j3O8Ck1te8I9YeCCTLTHwThiOLhXpjFr3W3P7tyMpOMJ3aaHO/Y/ra+l0K+9sgSEDID+iFhFViL91L1b/VsV4ysL5NPIOhzMvrzZPUSdoJHqAS9x0TjEqY5RNHhtV8Pj6skGI0/NMfX8Gs46eQ19YpQe8nrApSU3NAGb7erAprnUPquGn6aB45SXgv7TKU3xLS6/5JLWKkjT0Qx5/lnb4IKrN8zsYaA0P80woJL9rcDFxu5CjOtZB+N6EDla3jaJSA1XTggRrUq+aB4OGNBYdXu3lIAkOMAguOqL+K6L7/H+/ohQn+4d57yiAUTbx/Ftad8Mu85UU5q2i82I4t8pNANdXSjm0Pld+8SNUa2Wli+MN5CrEXxgEi1rOBuwVko2sjAnvTEJBa74XkeuJTZB6+yDuHgPA2dVv/FUZb2w1N3+3mMgPh8L1D6wF8eH25w5nazv7/QE8rrSH2sOwdc8idD2+q+c9WjaqNAmwDVPJsRO+JNgrT2ia09wTAVfZBiLELrviqo7p+6SUgMwof82DIo4=
