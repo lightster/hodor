@@ -18,4 +18,11 @@ interface AdapterInterface
     public function beginTransaction();
     public function commitTransaction();
     public function rollbackTransaction();
+
+    /**
+     * @param $category
+     * @param $name
+     * @return bool
+     */
+    public function requestAdvisoryLock($category, $name);
 }

@@ -60,6 +60,14 @@ class Superqueue
     }
 
     /**
+     * @return bool
+     */
+    public function requestProcessLock()
+    {
+        return $this->getDatabase()->requestAdvisoryLock('superqueuer', 'default');
+    }
+
+    /**
      * @return int
      */
     public function queueJobsFromDatabaseToWorkerQueue()

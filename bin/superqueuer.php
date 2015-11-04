@@ -14,6 +14,10 @@ $config = Config::loadFromFile($config_file);
 $queue_factory = new QueueFactory($config);
 $superqueue = $queue_factory->getSuperqueue();
 
+if (!$superqueue->requestProcessLock()) {
+    sleep(5);
+}
+
 if (!$superqueue->queueJobsFromDatabaseToWorkerQueue()) {
     sleep(2);
 }

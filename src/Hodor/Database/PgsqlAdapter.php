@@ -129,6 +129,27 @@ SQL;
     }
 
     /**
+     * @param $category
+     * @param $name
+     * @return bool
+     */
+    public function requestAdvisoryLock($category, $name)
+    {
+        $category_crc = crc32($category) - 0x80000000;
+        $name_crc = crc32($name) - 0x80000000;
+
+        $row = $this->getDriver()->selectOne(
+            'SELECT pg_try_advisory_lock(:category_crc, :name_crc) AS is_granted',
+            [
+                'category_crc' => $category_crc,
+                'name_crc'     => $name_crc,
+            ]
+        );
+
+        return $row['is_granted'];
+    }
+
+    /**
      * @param string $sql
      * @return void
      */
