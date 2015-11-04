@@ -48,12 +48,16 @@ class Superqueue
             $content['options']
         );
 
-        $db->bufferJob($queue_name, [
+        $job_data = [
             'name'    => $content['name'],
             'params'  => $content['params'],
             'options' => $content['options'],
             'meta'    => $content['meta'],
-        ]);
+        ];
+        if (isset($content['options']['run_after'])) {
+            $job_data['run_after'] = $content['options']['run_after'];
+        }
+        $db->bufferJob($queue_name, $job_data);
 
         $db->commitTransaction();
         $message->acknowledge();
