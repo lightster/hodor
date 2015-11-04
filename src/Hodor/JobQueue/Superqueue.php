@@ -81,7 +81,7 @@ class Superqueue
             $meta = $db->markJobAsQueued($job);
 
             $queue = $this->queue_factory->getWorkerQueue($job['queue_name']);
-            $queue->push($job['queue_name'], $job['job_params'], $meta);
+            $queue->push($job['job_name'], $job['job_params'], $meta);
 
             ++$jobs_queued;
         }
