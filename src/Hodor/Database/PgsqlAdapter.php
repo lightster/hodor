@@ -40,8 +40,8 @@ class PgsqlAdapter implements AdapterInterface
             'inserted_from' => gethostname(),
         ];
 
-        if (isset($job['run_after'])) {
-            $row['run_after'] = $job['run_after'];
+        if (isset($job['options']['run_after'])) {
+            $row['run_after'] = $job['options']['run_after'];
         }
 
         $this->getDriver()->insert('buffered_jobs', $row);
