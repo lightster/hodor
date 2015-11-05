@@ -47,4 +47,40 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
             $this->queue_factory->getQueue($config)
         );
     }
+
+    public function testQueueIsReusedIfReferredToMultipleTimes()
+    {
+        $config_template = $this->config['test']['rabbitmq'];
+        $config = [
+            'host'        => $config_template['host'],
+            'port'        => $config_template['port'],
+            'username'    => $config_template['username'],
+            'password'    => $config_template['password'],
+            'queue_name'  => $config_template['queue_prefix'] . uniqid(),
+            'fetch_count' => 1,
+        ];
+
+        $this->assertSame(
+            $this->queue_factory->getQueue($config),
+            $this->queue_factory->getQueue($config)
+        );
+    }
+
+    public function test()
+    {
+        $config_template = $this->config['test']['rabbitmq'];
+        $config = [
+            'host'        => $config_template['host'],
+            'port'        => $config_template['port'],
+            'username'    => $config_template['username'],
+            'password'    => $config_template['password'],
+            'queue_name'  => $config_template['queue_prefix'] . uniqid(),
+            'fetch_count' => 1,
+        ];
+
+        $this->assertSame(
+            $this->queue_factory->getQueue($config),
+            $this->queue_factory->getQueue($config)
+        );
+    }
 }
