@@ -21,66 +21,52 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $config_path = __DIR__ . '/../../../../config/config.test.php';
-        if (!file_exists($config_path)) {
-            throw new Exception("'{$config_path}' not found");
-        }
-
-        $this->config = require $config_path;
         $this->queue_factory = new QueueFactory();
     }
 
-    public function testQueueCanBeGenerated()
+    /**
+     * @dataProvider queueConfigProvider
+     * @param array $config
+     */
+    public function testQueueCanBeGenerated(array $config)
     {
-        $config_template = $this->config['test']['rabbitmq'];
-        $config = [
-            'host'        => $config_template['host'],
-            'port'        => $config_template['port'],
-            'username'    => $config_template['username'],
-            'password'    => $config_template['password'],
-            'queue_name'  => $config_template['queue_prefix'] . uniqid(),
-            'fetch_count' => 1,
-        ];
-
         $this->assertInstanceOf(
             '\Hodor\MessageQueue\Queue',
             $this->queue_factory->getQueue($config)
         );
     }
 
-    public function testQueueIsReusedIfReferredToMultipleTimes()
+    /**
+     * @dataProvider queueConfigProvider
+     * @param array $config
+     */
+    public function testQueueIsReusedIfReferredToMultipleTimes(array $config)
     {
-        $config_template = $this->config['test']['rabbitmq'];
-        $config = [
-            'host'        => $config_template['host'],
-            'port'        => $config_template['port'],
-            'username'    => $config_template['username'],
-            'password'    => $config_template['password'],
-            'queue_name'  => $config_template['queue_prefix'] . uniqid(),
-            'fetch_count' => 1,
-        ];
-
         $this->assertSame(
             $this->queue_factory->getQueue($config),
             $this->queue_factory->getQueue($config)
         );
     }
 
-    public function test()
+    public function queueConfigProvider()
     {
-        $config_template = $this->config['test']['rabbitmq'];
-        $config = [
-            'host'        => $config_template['host'],
-            'port'        => $config_template['port'],
-            'username'    => $config_template['username'],
-            'password'    => $config_template['password'],
-            'queue_name'  => $config_template['queue_prefix'] . uniqid(),
-            'fetch_count' => 1,
-        ];
+        $config_path = __DIR__ . '/../../../../config/config.test.php';
+        if (!file_exists($config_path)) {
+            throw new Exception("'{$config_path}' not found");
+        }
 
-        $this->assertSame(
-            $this->queue_factory->getQueue($config),
-            $this->queue_factory->getQueue($config)
-        );
+        $config = require $config_path;
+        $config_template = $config['test']['rabbitmq'];
+
+        return [
+            [[
+                'host'        => $config_template['host'],
+                'port'        => $config_template['port'],
+                'username'    => $config_template['username'],
+                'password'    => $config_template['password'],
+                'queue_name'  => $config_template['queue_prefix'] . uniqid(),
+                'fetch_count' => 1,
+            ]],
+        ];
     }
 }
