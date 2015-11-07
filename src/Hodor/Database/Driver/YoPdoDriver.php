@@ -2,9 +2,8 @@
 
 namespace Hodor\Database\Driver;
 
-use Exception;
-use Lstr\YoPdo\YoPdo;
 use Lstr\YoPdo\Factory as YoPdoFactory;
+use Lstr\YoPdo\YoPdo;
 
 class YoPdoDriver
 {

@@ -2,9 +2,8 @@
 
 namespace Hodor\Config;
 
-use Hodor\JobQueue\Config;
-
 use Exception;
+use Hodor\JobQueue\Config;
 
 class PhpConfigLoader implements LoaderInterface
 {
