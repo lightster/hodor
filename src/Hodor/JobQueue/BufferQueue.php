@@ -47,25 +47,8 @@ class BufferQueue
     public function processBuffer()
     {
         $this->message_queue->consume(function ($message) {
-            $content = $message->getContent();
-            $name    = $content['name'];
-            $params  = $content['params'];
-            $options = $content['options'];
-            $meta    = $content['meta'];
-
-            $worker_queue = $this->queue_factory->getWorkerQueueForJob(
-                $name,
-                $params,
-                $options
-            );
-
-            $worker_queue->push(
-                $name,
-                $params,
-                $meta
-            );
-
-            $message->acknowledge();
+            $superqueue = $this->queue_factory->getSuperqueue();
+            $superqueue->bufferJobFromBufferQueueToDatabase($message);
 
             exit(0);
         });

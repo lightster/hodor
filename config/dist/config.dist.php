@@ -1,6 +1,6 @@
 <?php
 return [
-    'superqueuer' => [
+    'superqueue' => [
         'database' => [
             'type'     => 'pgsql',
             'dsn'      => 'pgsql:host=localhost;dbname=hodor',

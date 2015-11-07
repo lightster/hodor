@@ -2,6 +2,7 @@
 
 namespace Hodor\JobQueue;
 
+use DateTime;
 use Hodor\MessageQueue\Queue;
 
 class WorkerQueue
@@ -9,14 +10,21 @@ class WorkerQueue
     /**
      * @var Queue
      */
-    private $queue;
+    private $message_queue;
 
     /**
-     * @param Queue $queue
+     * @var QueueFactory
      */
-    public function __construct(Queue $queue)
+    private $queue_factory;
+
+    /**
+     * @param Queue $message_queue
+     * @param QueueFactory $queue_factory
+     */
+    public function __construct(Queue $message_queue, QueueFactory $queue_factory)
     {
-        $this->queue = $queue;
+        $this->message_queue = $message_queue;
+        $this->queue_factory = $queue_factory;
     }
 
     /**
@@ -26,7 +34,7 @@ class WorkerQueue
      */
     public function push($name, array $params = [], array $meta = [])
     {
-        $this->queue->push([
+        $this->message_queue->push([
             'name'   => $name,
             'params' => $params,
             'meta'   => $meta,
@@ -38,19 +46,26 @@ class WorkerQueue
      */
     public function runNext(callable $job_runner)
     {
-        $this->queue->consume(function ($message) use ($job_runner) {
-            register_shutdown_function(function ($message) {
+        $this->message_queue->consume(function ($message) use ($job_runner) {
+            $start_time = new DateTime;
+
+            register_shutdown_function(function ($message, $start_time, $queue_factory) {
                 if (error_get_last()) {
-                    $message->acknowledge();
+                    $queue_factory->getSuperqueue()->markJobAsFailed(
+                        $message,
+                        $start_time
+                    );
+                    exit(1);
                 }
-            }, $message);
+            }, $message, $start_time, $this->queue_factory);
 
             $content = $message->getContent();
             $name = $content['name'];
             $params = $content['params'];
             call_user_func($job_runner, $name, $params);
 
-            $message->acknowledge();
+            $superqueue = $this->queue_factory->getSuperqueue();
+            $superqueue->markJobAsSuccessful($message, $start_time);
 
             exit(0);
         });

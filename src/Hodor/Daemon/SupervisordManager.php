@@ -45,15 +45,30 @@ class SupervisordManager implements ManagerInterface
     {
         $programs = [];
         $programs += $this->generateQueuePrograms(
+            ['default'],
+            function ($queue_name) {
+                return [
+                    'command'       => $this->getBinFilePath('superqueuer.php'),
+                    'key_name'      => $queue_name,
+                    'queue_type'    => 'superqueuer',
+                    'process_count' => 1,
+                ];
+            }
+        );
+        $programs += $this->generateQueuePrograms(
             $this->config->getBufferQueueNames(),
             function ($queue_name) {
-                return $this->config->getBufferQueueConfig($queue_name);
+                $config = $this->config->getBufferQueueConfig($queue_name);
+                $config['command'] = $this->getBinFilePath('buffer-worker.php');
+                return $config;
             }
         );
         $programs += $this->generateQueuePrograms(
             $this->config->getWorkerQueueNames(),
             function ($queue_name) {
-                return $this->config->getWorkerQueueConfig($queue_name);
+                $config = $this->config->getWorkerQueueConfig($queue_name);
+                $config['command'] = $this->getBinFilePath('job-worker.php');
+                return $config;
             }
         );
 
@@ -92,21 +107,27 @@ class SupervisordManager implements ManagerInterface
      */
     private function generateCommandString(array $program_config)
     {
-        if ('bufferer' === $program_config['queue_type']) {
-            $bin_file = 'buffer-worker.php';
-        } else {
-            $bin_file = 'job-worker.php';
-        }
-
         $program_config['program_prefix'] = '';
         $command_pieces = [
             '/usr/bin/env php',
-            escapeshellarg(__DIR__ . '/../../../bin/' . $bin_file),
+            escapeshellarg($program_config['command']),
             '-c ' . escapeshellarg($this->config->getConfigPath()),
-            '-q ' . escapeshellarg($program_config['key_name']),
         ];
 
+        if ('superqueuer' !== $program_config['queue_type']) {
+            $command_pieces[] = '-q ' . escapeshellarg($program_config['key_name']);
+        }
+
         return implode(" ", $command_pieces);
+    }
+
+    /**
+     * @param $bin_file
+     * @return string
+     */
+    private function getBinFilePath($bin_file)
+    {
+        return __DIR__ . '/../../../bin/' . $bin_file;
     }
 
     /**

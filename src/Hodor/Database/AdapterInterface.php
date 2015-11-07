@@ -4,18 +4,25 @@ namespace Hodor\Database;
 
 interface AdapterInterface
 {
-    public function createJob($job);
+    public function bufferJob($queue_name, array $job);
 
-    public function getJobsToRun();
+    public function getJobsToRunGenerator();
 
-    public function markJobAsStarted($job);
+    public function markJobAsQueued(array $job);
 
-    public function markJobAsCompleted($job);
-    public function markJobAsFailed($job);
+    public function markJobAsSuccessful(array $meta);
+    public function markJobAsFailed(array $meta);
 
     public function getPhpmigAdapter();
 
     public function beginTransaction();
     public function commitTransaction();
     public function rollbackTransaction();
+
+    /**
+     * @param $category
+     * @param $name
+     * @return bool
+     */
+    public function requestAdvisoryLock($category, $name);
 }
