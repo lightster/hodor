@@ -35,7 +35,7 @@ class PhpConfigLoaderTest extends PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
             '\Hodor\JobQueue\Config',
-            $this->loader->loadFromFile(__DIR__ . '/PhpConfig.php')
+            $this->loader->loadFromFile(__DIR__ . '/../../../../config/config.test.php')
         );
     }
 }
