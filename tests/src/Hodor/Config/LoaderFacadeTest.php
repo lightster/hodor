@@ -25,7 +25,7 @@ class LoaderFacadeTest extends PHPUnit_Framework_TestCase
 
     public function testFacadeReturnsConfig()
     {
-        $file_path = __DIR__ . '/PhpConfig.php';
+        $file_path = __DIR__ . '/../../../../config/config.test.php';
 
         LoaderFacade::setLoaderFactory(null);
         $this->assertInstanceOf(

@@ -15,7 +15,7 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
 
     public function testConfigCanBeLoadedFromFile()
     {
-        $this->job_queue->setConfigFile(__DIR__ . '/../Config/PhpConfig.php');
+        $this->job_queue->setConfigFile(__DIR__ . '/../../../../config/config.test.php');
         $this->assertTrue(
             $this->job_queue->getConfig() instanceof \Hodor\JobQueue\Config
         );
