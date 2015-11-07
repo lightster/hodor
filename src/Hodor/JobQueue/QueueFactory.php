@@ -2,11 +2,7 @@
 
 namespace Hodor\JobQueue;
 
-use Hodor\JobQueue\Config;
 use Hodor\MessageQueue\QueueFactory as MqFactory;
-
-use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Connection\AMQPConnection;
 
 class QueueFactory
 {

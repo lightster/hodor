@@ -2,8 +2,8 @@
 
 namespace Hodor\JobQueue;
 
-use Hodor\Config\LoaderFactory;
 use Exception;
+use Hodor\Config\LoaderFactory;
 
 class JobQueue
 {

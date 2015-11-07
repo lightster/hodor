@@ -2,10 +2,8 @@
 
 namespace Hodor\Database;
 
-use Hodor\Database\Phpmig\PgsqlPhpmigAdapter;
 use Hodor\Database\Driver\YoPdoDriver;
-
-use Exception;
+use Hodor\Database\Phpmig\PgsqlPhpmigAdapter;
 
 class PgsqlAdapter implements AdapterInterface
 {
