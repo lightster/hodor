@@ -43,7 +43,7 @@ class LoaderFactoryTest extends PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
             '\Hodor\JobQueue\Config',
-            $this->loader_factory->loadFromFile(__DIR__ . '/PhpConfig.php')
+            $this->loader_factory->loadFromFile(__DIR__ . '/../../../../config/config.test.php')
         );
     }
 }
