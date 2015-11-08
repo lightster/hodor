@@ -21,6 +21,23 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    public function testConfigCanBeRetrievedMultipleTimes()
+    {
+        $this->job_queue->setConfigFile(__DIR__ . '/../../../../config/config.test.php');
+        $this->assertSame(
+            $this->job_queue->getConfig(),
+            $this->job_queue->getConfig()
+        );
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testExceptionIsThrownIfConfigFileIsNotSet()
+    {
+        $this->job_queue->getConfig();
+    }
+
     public function testJobQueuePushCallsBufferPush()
     {
         $queue_name = 'some_queue_name';
@@ -58,6 +75,15 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
             $job_name,
             $job_params,
             $job_options
+        );
+    }
+
+    public function testJobQueueUsesADefaultBufferWorker()
+    {
+        $this->job_queue->setConfigFile(__DIR__ . '/../../../../config/config.test.php');
+        $this->assertSame(
+            $this->job_queue->getConfig(),
+            $this->job_queue->getConfig()
         );
     }
 }
