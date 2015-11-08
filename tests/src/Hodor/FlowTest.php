@@ -42,12 +42,27 @@ class FlowTest extends PHPUnit_Framework_TestCase
     public function testJobCanBeRan()
     {
         $bin_path = __DIR__ . '/../../../bin';
-        $this->runCommand("php {$bin_path}/test-publisher.php -c {$this->e_config_file} -q default");
+
+        $job_name = 'job-name-' . uniqid();
+        $job_params = ['the_time' => date('c'), 'known_value' => 'donuts'];
+        $e_job_name = escapeshellarg($job_name);
+        $e_job_params = escapeshellarg(json_encode($job_params));
+
+        $this->runCommand(
+            "php {$bin_path}/test-publisher.php"
+            . " -c {$this->e_config_file}"
+            . " -q default"
+            . " --job-name {$e_job_name}"
+            . " --job-params {$e_job_params}"
+        );
         $this->runCommand("php {$bin_path}/buffer-worker.php -c {$this->e_config_file} -q default");
         $this->runCommand("php {$bin_path}/superqueuer.php -c {$this->e_config_file}");
 
-        $this->assertContains(
-            'some_job_name',
+        $this->assertEquals(
+            json_encode([
+                'name'   => $job_name,
+                'params' => $job_params,
+            ]),
             $this->runCommand("php {$bin_path}/job-worker.php -c {$this->e_config_file} -q default")
         );
     }
@@ -175,7 +190,10 @@ PHP;
     {
         return <<<'PHP'
 function($name, $params) {
-    var_dump($name, $params);
+    echo json_encode([
+        'name'   => $name,
+        'params' => $params,
+    ]);
 }
 PHP;
     }
