@@ -122,6 +122,100 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @expectedException Exception
+     */
+    public function testRetrievingJobNameWhenNotProvidedThrowsAnException()
+    {
+        $arguments = $this->getArgumentsObject([]);
+
+        $arguments->getJobName();
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testRetrievingJobNameWhenBlankThrowsAnException()
+    {
+        $arguments = $this->getArgumentsObject([
+            'job-name' => null,
+        ]);
+
+        $arguments->getJobName();
+    }
+
+    public function testRetrievingJobNameWhenProvidedWithLongOpt()
+    {
+        $job_name = uniqid();
+        $arguments = $this->getArgumentsObject([
+            'job-name' => $job_name,
+        ]);
+
+        $this->assertEquals(
+            $job_name,
+            $arguments->getJobName()
+        );
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testRetrievingJobParamsWhenNotProvidedThrowsAnException()
+    {
+        $arguments = $this->getArgumentsObject([]);
+
+        $arguments->getJobParams();
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testRetrievingJobParamsWhenBlankThrowsAnException()
+    {
+        $arguments = $this->getArgumentsObject([
+            'job-params' => null,
+        ]);
+
+        $arguments->getJobParams();
+    }
+
+    public function testRetrievingJobParamsWhenStringIsProvided()
+    {
+        $job_params = uniqid();
+        $arguments = $this->getArgumentsObject([
+            'job-params' => json_encode($job_params),
+        ]);
+
+        $this->assertEquals(
+            $job_params,
+            $arguments->getJobParams()
+        );
+    }
+
+    public function testRetrievingJobParamsWhenNullIsProvided()
+    {
+        $job_params = null;
+        $arguments = $this->getArgumentsObject([
+            'job-params' => json_encode($job_params),
+        ]);
+
+        $this->assertNull(
+            $arguments->getJobParams()
+        );
+    }
+
+    /**
+     * @expectedException Exception
+     */
+    public function testRetrievingJobParamsWhenInvalidJsonIsProvided()
+    {
+        $arguments = $this->getArgumentsObject([
+            'job-params' => 'invalid',
+        ]);
+
+        $arguments->getJobParams();
+    }
+
     public function testMultipleArgumentsCanBeRetrieved()
     {
         $config_path = 'config2.php';

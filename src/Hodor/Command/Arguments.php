@@ -43,6 +43,32 @@ class Arguments
     }
 
     /**
+     * @return string
+     */
+    public function getJobName()
+    {
+        return $this->getRequiredArgument('job-name');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getJobParams()
+    {
+        $job_params = $this->getRequiredArgument('job-params');
+        if ('null' === $job_params) {
+            return null;
+        }
+
+        $decoded_json = json_decode($job_params, true);
+        if (null === $decoded_json) {
+            throw new Exception('job-params JSON is invalid');
+        }
+
+        return $decoded_json;
+    }
+
+    /**
      * @param callable $cli_opts_loader
      */
     public function setCliOptsLoader(callable $cli_opts_loader)
@@ -81,6 +107,8 @@ class Arguments
         $this->processArgument($args, 'config', 'c');
         $this->processArgument($args, 'queue', 'q');
         $this->processArgument($args, 'json', '');
+        $this->processArgument($args, 'job-name', '');
+        $this->processArgument($args, 'job-params', '');
     }
 
     /**
