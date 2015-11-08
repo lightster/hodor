@@ -127,6 +127,8 @@ class Arguments
                     'config:',
                     'queue:',
                     'json',
+                    'job-name:',
+                    'job-params:',
                 ]
             );
         };
