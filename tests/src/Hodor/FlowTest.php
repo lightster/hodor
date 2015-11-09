@@ -51,7 +51,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
         $this->runCommand(
             "php {$bin_path}/test-publisher.php"
             . " -c {$this->e_config_file}"
-            . " -q default"
+            . " -q the-worker-q-name"
             . " --job-name {$e_job_name}"
             . " --job-params {$e_job_params}"
         );
@@ -63,7 +63,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
                 'name'   => $job_name,
                 'params' => $job_params,
             ]),
-            $this->runCommand("php {$bin_path}/job-worker.php -c {$this->e_config_file} -q default")
+            $this->runCommand("php {$bin_path}/job-worker.php -c {$this->e_config_file} -q the-worker-q-name")
         );
     }
 
@@ -75,7 +75,6 @@ class FlowTest extends PHPUnit_Framework_TestCase
     {
         $output_lines = null;
         $return_var = null;
-
         exec("{$command} 2>&1", $output_lines, $exit_code);
 
         $output = implode("\n", $output_lines);
@@ -151,6 +150,9 @@ PHP;
         ];
         $config['buffer_queue_defaults']['queue_prefix'] = $buffer_queue_prefix;
         $config['worker_queue_defaults']['queue_prefix'] = $worker_queue_prefix;
+        $config['worker_queues']['the-worker-q-name'] = [
+            'workers_per_server' => 1,
+        ];
         $config['job_runner'] = '__JOB_RUNNER__';
 
         return $config;
