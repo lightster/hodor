@@ -87,13 +87,8 @@ class Config
             'buffer_queues',
             'buffer_queue_defaults'
         );
-        $config = array_merge(
-            [
-                'fetch_count' => 1,
-            ],
-            $config
-        );
         $config['key_name'] = $queue_name;
+        $config['fetch_count'] = 1;
         $config['queue_type'] = 'bufferer';
         $config['process_count'] = $config['bufferers_per_server'];
 
