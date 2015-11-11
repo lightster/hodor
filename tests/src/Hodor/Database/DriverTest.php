@@ -46,7 +46,8 @@ SELECT 3 AS col
 SQL;
         $row_generator = $adapter->selectRowGenerator($sql);
         $count = 1;
-        foreach ($row_generator() as $row) {
+
+        foreach ($row_generator as $row) {
             $this->assertEquals($row['col'], $count);
             ++$count;
         }
@@ -59,9 +60,13 @@ SQL;
     public function testSelectRowGeneratorThrowsAnExceptionOnError($adapter)
     {
         $sql = <<<SQL
-SELECT 1 FROM not_there;
+SELECT 1 FROM not_here;
 SQL;
-        $adapter->selectRowGenerator($sql);
+
+        foreach ($adapter->selectRowGenerator($sql) as $row) {
+            // an exception will be thrown as soon as
+            // we try to retrieve the results
+        }
     }
 
     /**

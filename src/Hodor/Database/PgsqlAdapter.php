@@ -48,7 +48,7 @@ class PgsqlAdapter implements AdapterInterface
     }
 
     /**
-     * @return callable
+     * @return generator
      */
     public function getJobsToRunGenerator()
     {
@@ -63,7 +63,7 @@ ORDER BY
 SQL;
 
             $row_generator = $this->getDriver()->selectRowGenerator($sql);
-            foreach ($row_generator() as $job) {
+            foreach ($row_generator as $job) {
                 $job['job_params'] = json_decode($job['job_params'], true);
                 yield $job;
             }
