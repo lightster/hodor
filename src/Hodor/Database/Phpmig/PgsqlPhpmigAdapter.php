@@ -34,7 +34,7 @@ SQL;
 
         $versions = [];
         $row_generator = $this->driver->selectRowGenerator($sql);
-        foreach ($row_generator() as $row) {
+        foreach ($row_generator as $row) {
             $versions[] = $row['version'];
         }
 

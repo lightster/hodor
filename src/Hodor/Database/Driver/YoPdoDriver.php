@@ -36,17 +36,15 @@ class YoPdoDriver
 
     /**
      * @param  string $sql
-     * @return callable generator
+     * @return generator
      */
     public function selectRowGenerator($sql)
     {
         $result = $this->getYoPdo()->query($sql);
 
-        return function () use ($result) {
-            while ($row = $result->fetch()) {
-                yield $row;
-            }
-        };
+        while ($row = $result->fetch()) {
+            yield $row;
+        }
     }
 
     /**
