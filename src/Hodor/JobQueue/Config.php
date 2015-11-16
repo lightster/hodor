@@ -17,6 +17,22 @@ class Config
     private $config;
 
     /**
+     * @var array
+     */
+    private $queue_types = [
+        'worker' => [
+            'queue_key'         => 'worker_queues',
+            'defaults_key'      => 'worker_queue_defaults',
+            'process_count_key' => 'workers_per_server',
+        ],
+        'bufferer' => [
+            'queue_key'         => 'buffer_queues',
+            'defaults_key'      => 'buffer_queue_defaults',
+            'process_count_key' => 'bufferers_per_server',
+        ],
+    ];
+
+    /**
      * @param array $string
      * @param array $config
      */
@@ -63,17 +79,7 @@ class Config
      */
     public function getWorkerQueueConfig($queue_name)
     {
-        $config = $this->getQueueConfig(
-            $queue_name,
-            'worker_queues',
-            'worker_queue_defaults'
-        );
-        $config['key_name'] = $queue_name;
-        $config['fetch_count'] = 1;
-        $config['queue_type'] = 'worker';
-        $config['process_count'] = $config['workers_per_server'];
-
-        return $config;
+        return $this->getQueueConfig($queue_name, 'worker');
     }
 
     /**
@@ -82,17 +88,7 @@ class Config
      */
     public function getBufferQueueConfig($queue_name)
     {
-        $config = $this->getQueueConfig(
-            $queue_name,
-            'buffer_queues',
-            'buffer_queue_defaults'
-        );
-        $config['key_name'] = $queue_name;
-        $config['fetch_count'] = 1;
-        $config['queue_type'] = 'bufferer';
-        $config['process_count'] = $config['bufferers_per_server'];
-
-        return $config;
+        return $this->getQueueConfig($queue_name, 'bufferer');
     }
 
     /**
@@ -185,12 +181,16 @@ class Config
 
     /**
      * @param  string $queue_name
-     * @param  string $queues_option
-     * @param  string $defaults_option
+     * @param  string $queue_type
      * @return array
+     * @throws Exception
      */
-    private function getQueueConfig($queue_name, $queues_option, $defaults_option)
+    private function getQueueConfig($queue_name, $queue_type)
     {
+        $queue_type_keys = $this->queue_types[$queue_type];
+
+        $queues_option = $queue_type_keys['queue_key'];
+
         $queues = $this->getOption($queues_option);
         if (!isset($queues[$queue_name])) {
             throw new Exception(
@@ -206,7 +206,7 @@ class Config
                 'password'     => null,
                 'queue_prefix' => 'hodor-'
             ]),
-            $this->getOption($defaults_option, [])
+            $this->getOption($queue_type_keys['defaults_key'], [])
         );
         $config = array_merge(
             $config,
@@ -215,6 +215,10 @@ class Config
             ],
             $queues[$queue_name]
         );
+        $config['key_name'] = $queue_name;
+        $config['fetch_count'] = 1;
+        $config['queue_type'] = $queue_type;
+        $config['process_count'] = $config[$queue_type_keys['process_count_key']];
 
         return $config;
     }
