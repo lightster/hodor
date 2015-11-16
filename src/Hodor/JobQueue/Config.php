@@ -23,13 +23,11 @@ class Config
         'worker' => [
             'queue_key'         => 'worker_queues',
             'defaults_key'      => 'worker_queue_defaults',
-            'queue_type'        => 'worker',
             'process_count_key' => 'workers_per_server',
         ],
         'bufferer' => [
             'queue_key'         => 'buffer_queues',
             'defaults_key'      => 'buffer_queue_defaults',
-            'queue_type'        => 'bufferer',
             'process_count_key' => 'bufferers_per_server',
         ],
     ];
