@@ -2,12 +2,13 @@
 
 namespace Hodor\JobQueue;
 
+use Hodor\MessageQueue\Queue as MessageQueue;
 use Hodor\MessageQueue\QueueFactory as MqFactory;
 
 class QueueFactory
 {
     /**
-     * @param \Hodor\JobQueue\Config
+     * @param Config
      */
     private $config;
 
@@ -22,12 +23,12 @@ class QueueFactory
     private $worker_queues = [];
 
     /**
-     * @var \Hodor\MessageQueue\QueueFactory
+     * @var QueueFactory
      */
     private $mq_factory;
 
     /**
-     * @param \Hodor\JobQueue\Config $config
+     * @param Config $config
      */
     public function __construct(Config $config)
     {
@@ -50,8 +51,8 @@ class QueueFactory
     }
 
     /**
-     * @param  string $queue_name [description]
-     * @return \Hodor\JobQueue\BufferQueue
+     * @param  string $queue_name
+     * @return BufferQueue
      */
     public function getBufferQueue($queue_name)
     {
@@ -72,7 +73,7 @@ class QueueFactory
      * @param  string $name
      * @param  array  $params
      * @param  array  $options
-     * @return \Hodor\JobQueue\BufferQueue
+     * @return BufferQueue
      */
     public function getBufferQueueForJob($name, array $params, array $options)
     {
@@ -88,7 +89,7 @@ class QueueFactory
 
     /**
      * @param  string $queue_name [description]
-     * @return \Hodor\JobQueue\WorkerQueue
+     * @return WorkerQueue
      */
     public function getWorkerQueue($queue_name)
     {
@@ -109,7 +110,7 @@ class QueueFactory
      * @param  string $name
      * @param  array  $params
      * @param  array  $options
-     * @return \Hodor\JobQueue\WorkerQueue
+     * @return WorkerQueue
      */
     public function getWorkerQueueNameForJob($name, array $params, array $options)
     {
@@ -123,7 +124,7 @@ class QueueFactory
 
     /**
      * @param  array  $queue_config
-     * @return \Hodor\MessageQueue\Queue
+     * @return MessageQueue
      */
     private function getMessageQueue(array $queue_config)
     {
@@ -131,7 +132,7 @@ class QueueFactory
     }
 
     /**
-     * @return \Hodor\MessageQueue\QueueFactory
+     * @return QueueFactory
      */
     private function getMessageQueueFactory()
     {

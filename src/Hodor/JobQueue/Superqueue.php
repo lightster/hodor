@@ -24,6 +24,7 @@ class Superqueue
     private $database;
 
     /**
+     * @param array $config
      * @param QueueFactory $queue_factory
      */
     public function __construct(array $config, QueueFactory $queue_factory)

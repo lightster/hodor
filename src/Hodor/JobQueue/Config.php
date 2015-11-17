@@ -33,7 +33,7 @@ class Config
     ];
 
     /**
-     * @param array $string
+     * @param array config_path
      * @param array $config
      */
     public function __construct($config_path, array $config)
@@ -52,6 +52,7 @@ class Config
 
     /**
      * @return array
+     * @throws Exception
      */
     public function getDatabaseConfig()
     {
@@ -93,6 +94,7 @@ class Config
 
     /**
      * @return callable
+     * @throws Exception
      */
     public function getJobRunnerFactory()
     {
@@ -111,6 +113,7 @@ class Config
 
     /**
      * @return callable
+     * @throws Exception
      */
     public function getWorkerQueueNameFactory()
     {
@@ -137,6 +140,7 @@ class Config
 
     /**
      * @return callable
+     * @throws Exception
      */
     public function getBufferQueueNameFactory()
     {
