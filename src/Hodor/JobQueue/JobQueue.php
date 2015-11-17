@@ -13,12 +13,12 @@ class JobQueue
     private $config_file;
 
     /**
-     * @var \Hodor\Config\LoaderFactory
+     * @var LoaderFactory
      */
     private $config;
 
     /**
-     * @var \Hodor\JobQueue\QueueFactory
+     * @var QueueFactory
      */
     private $queue_factory;
 
@@ -51,7 +51,8 @@ class JobQueue
     }
 
     /**
-     * @return \Hodor\JobQueue\Config
+     * @return Config
+     * @throws Exception
      */
     public function getConfig()
     {
@@ -72,7 +73,7 @@ class JobQueue
     }
 
     /**
-     * @param \Hodor\JobQueue\QueueFactory $queue_factory
+     * @param QueueFactory $queue_factory
      */
     public function setQueueFactory(QueueFactory $queue_factory)
     {
@@ -80,7 +81,7 @@ class JobQueue
     }
 
     /**
-     * @return \Hodor\JobQueue\QueueFactory
+     * @return QueueFactory
      */
     private function getQueueFactory()
     {
