@@ -29,6 +29,7 @@ class ManagerFactory
 
     /**
      * @return ManagerInterface
+     * @throws Exception
      */
     public function getManager()
     {

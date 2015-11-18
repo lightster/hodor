@@ -21,7 +21,7 @@ class SupervisordManager implements ManagerInterface
     }
 
     /**
-     * @return void
+     * @throws Exception
      */
     public function setupDaemon()
     {
