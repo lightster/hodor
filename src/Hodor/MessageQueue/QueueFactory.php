@@ -22,8 +22,8 @@ class QueueFactory
     private $queues = [];
 
     /**
-     * @param  array $queue_name
-     * @return \Hodor\MessageQueue\Queue
+     * @param array $queue_config
+     * @return Queue
      */
     public function getQueue(array $queue_config)
     {
