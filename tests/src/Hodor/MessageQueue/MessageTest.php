@@ -51,6 +51,9 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $message->acknowledge();
     }
 
+    /**
+     * @return Message
+     */
     private function getAcknowledgeableMessage()
     {
         $delivery_tag = 'hey_there!';
