@@ -18,10 +18,16 @@ class MessageTest extends PHPUnit_Framework_TestCase
     public function testMessageContentCanBeRetrieved()
     {
         $expected_value = 'some_string';
-        $amqp_message = new AMQPMessage($expected_value);
-        $message = new Message($amqp_message);
+        $message = $this->getBasicMessage($expected_value);
 
         $this->assertEquals($expected_value, $message->getContent());
+    }
+
+    public function testMessageContentCanBeRetrievedMultipleTimes()
+    {
+        $message = $this->getBasicMessage('some_other_string');
+
+        $this->assertEquals($message->getContent(), $message->getContent());
     }
 
     public function testJsonMessageContentIsDecodedIfContentTypeIsAppropriatelySet()
@@ -49,6 +55,15 @@ class MessageTest extends PHPUnit_Framework_TestCase
 
         $message->acknowledge();
         $message->acknowledge();
+    }
+
+    /**
+     * @param $body
+     * @return Message
+     */
+    private function getBasicMessage($body)
+    {
+        return new Message(new AMQPMessage($body));
     }
 
     /**

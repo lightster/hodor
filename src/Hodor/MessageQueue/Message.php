@@ -51,6 +51,8 @@ class Message
             $this->content = json_decode($this->content, true);
         }
 
+        $this->is_loaded = true;
+
         return $this->content;
     }
 
