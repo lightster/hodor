@@ -78,7 +78,7 @@ class Superqueue
         $db->beginTransaction();
         $job_generator = $db->getJobsToRunGenerator();
         $jobs_queued = 0;
-        foreach ($job_generator() as $job) {
+        foreach ($job_generator as $job) {
             $meta = $db->markJobAsQueued($job);
 
             $queue = $this->queue_factory->getWorkerQueue($job['queue_name']);
