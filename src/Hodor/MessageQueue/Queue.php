@@ -32,7 +32,7 @@ class Queue
     public function push($message)
     {
         $amqp_message = new AMQPMessage(
-            json_encode($message),
+            json_encode($message, JSON_FORCE_OBJECT),
             [
                 'content_type' => 'application/json',
                 'delivery_mode' => 2

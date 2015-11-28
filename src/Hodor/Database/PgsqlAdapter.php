@@ -34,7 +34,7 @@ class PgsqlAdapter implements AdapterInterface
         $row = [
             'queue_name'    => $queue_name,
             'job_name'      => $job['name'],
-            'job_params'    => json_encode($job['params']),
+            'job_params'    => json_encode($job['params'], JSON_FORCE_OBJECT),
             'buffered_at'   => $job['meta']['buffered_at'],
             'buffered_from' => $job['meta']['buffered_from'],
             'inserted_from' => gethostname(),
@@ -78,7 +78,7 @@ SQL;
             'buffered_jobs',
             ['buffered_job_id' => $job['buffered_job_id']]
         );
-        $job['job_params'] = json_encode($job['job_params']);
+        $job['job_params'] = json_encode($job['job_params'], JSON_FORCE_OBJECT);
         $job['superqueued_from'] = gethostname();
         $this->getDriver()->insert(
             'queued_jobs',
