@@ -15,7 +15,8 @@ class LoaderFactory
 
     /**
      * @param  string $extension
-     * @return \Hodor\Config\LoaderInterface
+     * @return LoaderInterface
+     * @throws Exception
      */
     public function getLoaderFromExtension($extension)
     {
