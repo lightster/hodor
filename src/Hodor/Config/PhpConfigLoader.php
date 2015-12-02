@@ -9,7 +9,8 @@ class PhpConfigLoader implements LoaderInterface
 {
     /**
      * @param  string $file_path
-     * @return \Hodor\JobQueue\Config
+     * @return Config
+     * @throws Exception
      */
     public function loadFromFile($file_path)
     {

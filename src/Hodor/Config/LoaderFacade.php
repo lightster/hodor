@@ -5,7 +5,7 @@ namespace Hodor\Config;
 class LoaderFacade
 {
     /**
-     * @var \Hodor\LoaderFactory
+     * @var LoaderFactory
      */
     private static $loader_factory;
 
@@ -19,7 +19,7 @@ class LoaderFacade
     }
 
     /**
-     * @param \Hodor\Config\LoaderFactory $loader_factory
+     * @param LoaderFactory $loader_factory
      */
     public static function setLoaderFactory(LoaderFactory $loader_factory = null)
     {
@@ -27,7 +27,7 @@ class LoaderFacade
     }
 
     /**
-     * @return \Hodor\Config\LoaderFactory
+     * @return LoaderFactory
      */
     private static function getLoaderFactory()
     {
