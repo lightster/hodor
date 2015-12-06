@@ -53,6 +53,6 @@ return [
 Then setup supervisord to manage your job queue processes:
 
 ```bash
-sudo php bin/supervisord-config-gen.php --config=hodor/config.php
+sudo php bin/supervisord-config-gen.php --config=config/hodor.php
 sudo service supervisord reload
 ```
