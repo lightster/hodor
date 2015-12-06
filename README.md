@@ -56,3 +56,17 @@ Then setup supervisord to manage your job queue processes:
 sudo php bin/supervisord-config-gen.php --config=config/hodor.php
 sudo service supervisord reload
 ```
+
+## Usage
+
+```php
+use Hodor\JobQueue\JobQueue;
+
+$job_queue = new JobQueue();
+$job_queue->setConfigFile(__DIR__ . '/../../../config/hodor.php');
+$job_queue->push(
+    'Vendor\Project\SomeJob',           // job_name
+    ['number' => 123, 'name' => 'Bob'], // job_params
+    ['queue_name' => 'default']         // job_options
+);
+```
