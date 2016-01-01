@@ -49,8 +49,6 @@ class Superqueue
             $content['options']
         );
 
-        $this->queue_factory->getJobOptionsValidator()->validateJobOptions($content['options']);
-
         $db->bufferJob($queue_name, [
             'name'    => $content['name'],
             'params'  => $content['params'],
