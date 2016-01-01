@@ -12,9 +12,15 @@ $queue_name = $args->getQueueName();
 $job_name = $args->getJobName();
 $job_params = $args->getJobParams();
 
+$job_options = ['queue_name' => $queue_name];
+
+if (!empty($job_params['job_options']['run_after'])) {
+    $job_options['run_after'] = new \DateTime($job_params['job_options']['run_after']);
+}
+
 Q::setConfigFile($config_file);
 Q::push(
     $job_name,
     $job_params,
-    ['queue_name' => $queue_name]
+    $job_options
 );
