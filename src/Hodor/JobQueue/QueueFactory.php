@@ -2,6 +2,7 @@
 
 namespace Hodor\JobQueue;
 
+use Hodor\JobQueue\JobOptions\Validator as JobOptionsValidator;
 use Hodor\MessageQueue\Queue as MessageQueue;
 use Hodor\MessageQueue\QueueFactory as MqFactory;
 
@@ -26,6 +27,11 @@ class QueueFactory
      * @var QueueFactory
      */
     private $mq_factory;
+
+    /**
+     * @var JobOptionsValidator
+     */
+    private $job_options_validator;
 
     /**
      * @param Config $config
@@ -120,6 +126,20 @@ class QueueFactory
             $params,
             $options
         );
+    }
+
+    /**
+     * @return JobOptionsValidator
+     */
+    public function getJobOptionsValidator()
+    {
+        if ($this->job_options_validator) {
+            return $this->job_options_validator;
+        }
+
+        $this->job_options_validator = new JobOptionsValidator($this->config);
+
+        return $this->job_options_validator;
     }
 
     /**
