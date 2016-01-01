@@ -33,14 +33,14 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     /**
      * @expectedException \Exception
      */
-    public function testRunAfterThrowsAnExceptionIfItIsNotAValidDateTimeString()
+    public function testRunAfterThrowsAnExceptionIfItIsNotADateTimeObject()
     {
-        $this->generateValidator()->validateJobOptions(['run_after' => 'haha']);
+        $this->generateValidator()->validateJobOptions(['run_after' => '2015-12-12']);
     }
 
     public function testRunAfterCanValidateWithoutAnException()
     {
-        $this->generateValidator()->validateJobOptions(['run_after' => date('c')]);
+        $this->generateValidator()->validateJobOptions(['run_after' => new DateTime()]);
     }
 
     /**

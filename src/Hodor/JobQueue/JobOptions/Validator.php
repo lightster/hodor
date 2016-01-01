@@ -79,10 +79,10 @@ class Validator
      */
     private function validateRunAfter(array $options)
     {
-        if (false !== strtotime($options['run_after'])) {
+        if ($options['run_after'] instanceof DateTime) {
             return;
         }
 
-        throw new Exception('\'run_after\' must be a date/time string');
+        throw new Exception('\'run_after\' must be an instance of \DateTime');
     }
 }
