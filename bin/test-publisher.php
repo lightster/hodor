@@ -17,6 +17,9 @@ $job_options = ['queue_name' => $queue_name];
 if (!empty($job_params['job_options']['run_after'])) {
     $job_options['run_after'] = new \DateTime($job_params['job_options']['run_after']);
 }
+if (!empty($job_params['job_options']['job_rank'])) {
+    $job_options['job_rank'] = $job_params['job_options']['job_rank'];
+}
 
 Q::setConfigFile($config_file);
 Q::push(

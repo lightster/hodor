@@ -49,6 +49,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
             'known_value' => 'donuts',
             'job_options' => [
                 'run_after' => date('c'),
+                'job_rank' => 5,
             ],
         ];
         $e_job_name = escapeshellarg($job_name);
