@@ -33,6 +33,8 @@ class BufferQueue
      */
     public function push($name, array $params = [], array $options = [])
     {
+        $this->queue_factory->getJobOptionsValidator()->validateJobOptions($options);
+
         $this->message_queue->push([
             'name'    => $name,
             'params'  => $params,
