@@ -161,7 +161,7 @@ SQL;
         $row = [
             'some_id' => '5',
         ];
-        $adapter->delete($tablename, $row);
+        $adapter->delete($tablename, 'some_id = :some_id', $row);
 
         $sql = <<<SQL
 SELECT *
@@ -176,7 +176,7 @@ SQL;
      */
     public function testDeleteThrowsAnExceptionOnError($adapter)
     {
-        $adapter->delete('some_table', ['no_row' => true]);
+        $adapter->delete('some_table', 'no_row = :no_row', ['no_row' => true]);
     }
 
     /**

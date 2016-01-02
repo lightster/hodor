@@ -85,9 +85,11 @@ SQL;
             'migration_hash' => $version_row['migration_hash'],
             'rollback_hash'  => hash_file('sha256', $migration_reflection->getFileName()),
         ]);
-        $this->driver->delete('migrations.migrations', [
-            'version' => $migration->getVersion(),
-        ]);
+        $this->driver->delete(
+            'migrations.migrations',
+            'version = :version',
+            ['version' => $migration->getVersion()]
+        );
 
         return $this;
     }

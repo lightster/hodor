@@ -79,6 +79,7 @@ SQL;
     {
         $this->getDriver()->delete(
             'buffered_jobs',
+            'buffered_job_id = :buffered_job_id',
             ['buffered_job_id' => $job['buffered_job_id']]
         );
         $job['job_params'] = json_encode($job['job_params'], JSON_FORCE_OBJECT);
@@ -180,6 +181,7 @@ SQL;
 
         $this->getDriver()->delete(
             'queued_jobs',
+            'buffered_job_id = :buffered_job_id',
             ['buffered_job_id' => $job['buffered_job_id']]
         );
         $this->getDriver()->insert("{$status}_jobs", $job);
