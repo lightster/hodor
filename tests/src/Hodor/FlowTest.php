@@ -44,7 +44,13 @@ class FlowTest extends PHPUnit_Framework_TestCase
         $bin_path = __DIR__ . '/../../../bin';
 
         $job_name = 'job-name-' . uniqid();
-        $job_params = ['the_time' => date('c'), 'known_value' => 'donuts'];
+        $job_params = [
+            'the_time'    => date('c'),
+            'known_value' => 'donuts',
+            'job_options' => [
+                'run_after' => date('c'),
+            ],
+        ];
         $e_job_name = escapeshellarg($job_name);
         $e_job_params = escapeshellarg(json_encode($job_params));
 

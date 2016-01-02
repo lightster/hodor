@@ -35,6 +35,10 @@ class BufferQueue
     {
         $this->queue_factory->getJobOptionsValidator()->validateJobOptions($options);
 
+        if (!empty($options['run_after'])) {
+            $options['run_after'] = $options['run_after']->format('c');
+        }
+
         $this->message_queue->push([
             'name'    => $name,
             'params'  => $params,
