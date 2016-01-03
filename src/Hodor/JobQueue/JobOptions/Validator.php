@@ -20,6 +20,7 @@ class Validator
         'queue_name' => 'validateQueueName',
         'run_after' => 'validateRunAfter',
         'job_rank' => 'validateJobRank',
+        'mutex_id' => 'validateMutexId',
     ];
 
     /**
@@ -100,5 +101,18 @@ class Validator
         }
 
         throw new Exception('\'job_rank\' must be an integer between -20 and 19');
+    }
+
+    /**
+     * @param array $options
+     * @throws Exception
+     */
+    private function validateMutexId(array $options)
+    {
+        if (is_scalar($options['mutex_id']) && strlen("{$options['mutex_id']}") >= 1) {
+            return;
+        }
+
+        throw new Exception('Custom \'mutex_id\' values must be strings of at least 1 character in length');
     }
 }
