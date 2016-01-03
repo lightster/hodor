@@ -44,6 +44,27 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \Exception
+     */
+    public function testJobRankThrowsAnExceptionIfANonIntegerIsPassedIn()
+    {
+        $this->generateValidator()->validateJobOptions(['job_rank' => 'abc']);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testJobRankThrowsAnExceptionIfAnOutOfRangeRankIsUsed()
+    {
+        $this->generateValidator()->validateJobOptions(['job_rank' => 25]);
+    }
+
+    public function testJobRankCanValidateWithoutAnException()
+    {
+        $this->generateValidator()->validateJobOptions(['job_rank' => 5]);
+    }
+
+    /**
      * @param Config|null $config
      * @return Validator
      */

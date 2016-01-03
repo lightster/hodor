@@ -43,6 +43,9 @@ class PgsqlAdapter implements AdapterInterface
         if (isset($job['options']['run_after'])) {
             $row['run_after'] = $job['options']['run_after'];
         }
+        if (isset($job['options']['job_rank'])) {
+            $row['job_rank'] = $job['options']['job_rank'];
+        }
 
         $this->getDriver()->insert('buffered_jobs', $row);
     }

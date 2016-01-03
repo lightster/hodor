@@ -19,6 +19,7 @@ class Validator
     private $validators = [
         'queue_name' => 'validateQueueName',
         'run_after' => 'validateRunAfter',
+        'job_rank' => 'validateJobRank',
     ];
 
     /**
@@ -84,5 +85,20 @@ class Validator
         }
 
         throw new Exception('\'run_after\' must be an instance of \DateTime');
+    }
+
+    /**
+     * @param array $options
+     * @throws Exception
+     */
+    private function validateJobRank(array $options)
+    {
+        if (is_int($options['job_rank'])
+            && -20 <= $options['job_rank'] && $options['job_rank'] <= 19
+        ) {
+            return;
+        }
+
+        throw new Exception('\'job_rank\' must be an integer between -20 and 19');
     }
 }
