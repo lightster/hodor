@@ -71,25 +71,13 @@ class YoPdoDriver
 
     /**
      * @param string $table
-     * @param array $condition
+     * @param string $where_sql
+     * @param array $values
      * @return void
      */
-    public function delete($table, array $condition)
+    public function delete($table, $where_sql, array $values)
     {
-        $placeholders = array();
-        foreach ($condition as $column => $value) {
-            $placeholders[] = "{$column} = :{$column}";
-        }
-
-        $placeholder_sql = implode("AND\n", $placeholders);
-
-        $this->getYoPdo()->query(
-            "
-                DELETE FROM {$table}
-                WHERE {$placeholder_sql}
-            ",
-            $condition
-        );
+        $this->getYoPdo()->delete($table, $where_sql, $values);
     }
 
     /**

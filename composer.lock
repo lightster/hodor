@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "a09da54c53ad934cf2fda5f21903c760",
-    "content-hash": "07b38317a25359d320d8c9d2f70910da",
+    "hash": "6fde2032d15f8ac9bd93a929ace56142",
+    "content-hash": "906bbfe9f063e1684f06ec194a52e6c7",
     "packages": [
         {
             "name": "davedevelopment/phpmig",
@@ -74,16 +74,16 @@
         },
         {
             "name": "lightster/yo-pdo",
-            "version": "v0.0.1",
+            "version": "v0.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/lightster/yo-pdo.git",
-                "reference": "e34ab5c3a5a153f2db0e4dbd6c36b693fa0b9b55"
+                "reference": "ec830e8402b3201b753c3f191d76979200da1650"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/lightster/yo-pdo/zipball/e34ab5c3a5a153f2db0e4dbd6c36b693fa0b9b55",
-                "reference": "e34ab5c3a5a153f2db0e4dbd6c36b693fa0b9b55",
+                "url": "https://api.github.com/repos/lightster/yo-pdo/zipball/ec830e8402b3201b753c3f191d76979200da1650",
+                "reference": "ec830e8402b3201b753c3f191d76979200da1650",
                 "shasum": ""
             },
             "require": {
@@ -108,7 +108,7 @@
                 "lstr",
                 "pdo"
             ],
-            "time": "2015-10-30 06:40:10"
+            "time": "2015-11-02 06:01:59"
         },
         {
             "name": "pimple/pimple",
@@ -477,7 +477,7 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/codeclimate/php-test-reporter/zipball/892163d67e3bd9c190d43655acb69657da765c7b",
+                "url": "https://api.github.com/repos/codeclimate/php-test-reporter/zipball/02790d733f9eb43d0a5981962c41846092fb387f",
                 "reference": "892163d67e3bd9c190d43655acb69657da765c7b",
                 "shasum": ""
             },
