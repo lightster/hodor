@@ -20,6 +20,9 @@ if (!empty($job_params['job_options']['run_after'])) {
 if (!empty($job_params['job_options']['job_rank'])) {
     $job_options['job_rank'] = $job_params['job_options']['job_rank'];
 }
+if (!empty($job_params['job_options']['mutex_id'])) {
+    $job_options['mutex_id'] = $job_params['job_options']['mutex_id'];
+}
 
 Q::setConfigFile($config_file);
 Q::push(

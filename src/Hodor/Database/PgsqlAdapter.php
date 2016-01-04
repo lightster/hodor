@@ -46,6 +46,9 @@ class PgsqlAdapter implements AdapterInterface
         if (isset($job['options']['job_rank'])) {
             $row['job_rank'] = $job['options']['job_rank'];
         }
+        if (isset($job['options']['mutex_id'])) {
+            $row['mutex_id'] = $job['options']['mutex_id'];
+        }
 
         $this->getDriver()->insert('buffered_jobs', $row);
     }
@@ -56,9 +59,27 @@ class PgsqlAdapter implements AdapterInterface
     public function getJobsToRunGenerator()
     {
         $sql = <<<SQL
+WITH mutexed_buffered_jobs AS (
+    SELECT
+        buffered_jobs.*,
+        RANK() OVER (
+            PARTITION BY mutex_id
+            ORDER BY job_rank, buffered_at, buffered_job_id
+        ) AS mutex_rank
+    FROM buffered_jobs
+    WHERE run_after <= NOW()
+        AND NOT EXISTS (
+            SELECT 1
+            FROM queued_jobs
+            WHERE queued_jobs.mutex_id = buffered_jobs.mutex_id
+        )
+    ORDER BY
+        job_rank,
+        buffered_at
+)
 SELECT *
-FROM buffered_jobs
-WHERE run_after <= NOW()
+FROM mutexed_buffered_jobs
+WHERE mutex_rank = 1
 ORDER BY
     job_rank,
     buffered_at
@@ -86,7 +107,20 @@ SQL;
         $job['superqueued_from'] = gethostname();
         $this->getDriver()->insert(
             'queued_jobs',
-            $job
+            [
+                'buffered_job_id'  => $job['buffered_job_id'],
+                'queue_name'       => $job['queue_name'],
+                'job_name'         => $job['job_name'],
+                'job_params'       => $job['job_params'],
+                'job_rank'         => $job['job_rank'],
+                'run_after'        => $job['run_after'],
+                'buffered_at'      => $job['buffered_at'],
+                'buffered_from'    => $job['buffered_from'],
+                'inserted_at'      => $job['inserted_at'],
+                'inserted_from'    => $job['inserted_from'],
+                'superqueued_from' => $job['superqueued_from'],
+                'mutex_id'         => $job['mutex_id'],
+            ]
         );
 
         return ['buffered_job_id' => $job['buffered_job_id']];
