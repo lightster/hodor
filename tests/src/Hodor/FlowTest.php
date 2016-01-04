@@ -53,13 +53,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
 
         $this->queueJobs($job_name, [$job_params]);
 
-        $this->assertEquals(
-            json_encode([
-                'name'   => $job_name,
-                'params' => $job_params,
-            ]),
-            $this->runJobWorker()
-        );
+        $this->assertJobRan($job_name, $job_params);
     }
 
     public function testMutexJobsAreProperlyMutexed()
@@ -74,15 +68,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
         $this->queueJobs($job_name, $jobs);
 
         foreach ([1, 3] as $job_idx) {
-            $this->assertEquals(
-                json_encode(
-                    [
-                        'name' => $job_name,
-                        'params' => $jobs[$job_idx],
-                    ]
-                ),
-                $this->runJobWorker()
-            );
+            $this->assertJobRan($job_name, $jobs[$job_idx]);
         }
     }
 
@@ -93,6 +79,23 @@ class FlowTest extends PHPUnit_Framework_TestCase
     private function getBinPath($bin)
     {
         return escapeshellarg(__DIR__ . '/../../../bin/' . $bin);
+    }
+
+    /**
+     * @param string $job_name
+     * @param array $job_params
+     */
+    private function assertJobRan($job_name, array $job_params)
+    {
+        $this->assertEquals(
+            json_encode(
+                [
+                    'name' => $job_name,
+                    'params' => $job_params,
+                ]
+            ),
+            $this->runJobWorker()
+        );
     }
 
     /**
