@@ -51,9 +51,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
             ],
         ];
 
-        $this->publishJob($job_name, $job_params);
-        $this->runBufferWorker();
-        $this->runSuperqueuer();
+        $this->queueJobs($job_name, [$job_params]);
 
         $this->assertEquals(
             json_encode([
@@ -73,11 +71,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
             3 => ['job_number' => 3, 'job_options' => ['mutex_id' => 'mutex-b', 'job_rank' => 6]],
         ];
 
-        foreach ($jobs as $job) {
-            $this->publishJob($job_name, $job);
-            $this->runBufferWorker();
-        }
-        $this->runSuperqueuer();
+        $this->queueJobs($job_name, $jobs);
 
         foreach ([1, 3] as $job_idx) {
             $this->assertEquals(
@@ -99,6 +93,19 @@ class FlowTest extends PHPUnit_Framework_TestCase
     private function getBinPath($bin)
     {
         return escapeshellarg(__DIR__ . '/../../../bin/' . $bin);
+    }
+
+    /**
+     * @param string $job_name
+     * @param array $jobs
+     */
+    private function queueJobs($job_name, array $jobs)
+    {
+        foreach ($jobs as $job) {
+            $this->publishJob($job_name, $job);
+            $this->runBufferWorker();
+        }
+        $this->runSuperqueuer();
     }
 
     /**
