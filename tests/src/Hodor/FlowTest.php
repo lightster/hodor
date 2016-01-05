@@ -41,8 +41,6 @@ class FlowTest extends PHPUnit_Framework_TestCase
 
     public function testJobCanBeRan()
     {
-        $bin_path = __DIR__ . '/../../../bin';
-
         $job_name = 'job-name-' . uniqid();
         $job_params = [
             'the_time'    => date('c'),
@@ -52,69 +50,117 @@ class FlowTest extends PHPUnit_Framework_TestCase
                 'job_rank' => 5,
             ],
         ];
-        $e_job_name = escapeshellarg($job_name);
-        $e_job_params = escapeshellarg(json_encode($job_params));
 
-        $this->runCommand(
-            "php {$bin_path}/test-publisher.php"
-            . " -c {$this->e_config_file}"
-            . " -q the-worker-q-name"
-            . " --job-name {$e_job_name}"
-            . " --job-params {$e_job_params}"
-        );
-        $this->runCommand("php {$bin_path}/buffer-worker.php -c {$this->e_config_file} -q default");
-        $this->runCommand("php {$bin_path}/superqueuer.php -c {$this->e_config_file}");
+        $this->queueJobs($job_name, [$job_params]);
 
-        $this->assertEquals(
-            json_encode([
-                'name'   => $job_name,
-                'params' => $job_params,
-            ]),
-            $this->runCommand("php {$bin_path}/job-worker.php -c {$this->e_config_file} -q the-worker-q-name")
-        );
+        $this->assertJobRan($job_name, $job_params);
     }
 
     public function testMutexJobsAreProperlyMutexed()
     {
-        $bin_path = __DIR__ . '/../../../bin';
-
         $job_name = 'job-name-' . uniqid();
         $jobs = [
             1 => ['job_number' => 1, 'job_options' => ['mutex_id' => 'mutex-a', 'job_rank' => 5]],
             2 => ['job_number' => 2, 'job_options' => ['mutex_id' => 'mutex-a', 'job_rank' => 5]],
             3 => ['job_number' => 3, 'job_options' => ['mutex_id' => 'mutex-b', 'job_rank' => 6]],
         ];
-        $e_job_name = escapeshellarg($job_name);
 
-        foreach ($jobs as $job) {
-            $e_job_params = escapeshellarg(json_encode($job));
-            $this->runCommand(
-                "php {$bin_path}/test-publisher.php"
-                . " -c {$this->e_config_file}"
-                . " -q the-worker-q-name"
-                . " --job-name {$e_job_name}"
-                . " --job-params {$e_job_params}"
-            );
-        }
-        for ($i = 0; $i < 3; $i++) {
-            $this->runCommand("php {$bin_path}/buffer-worker.php -c {$this->e_config_file} -q default");
-        }
-
-        $this->runCommand("php {$bin_path}/superqueuer.php -c {$this->e_config_file}");
+        $this->queueJobs($job_name, $jobs);
 
         foreach ([1, 3] as $job_idx) {
-            $this->assertEquals(
-                json_encode(
-                    [
-                        'name' => $job_name,
-                        'params' => $jobs[$job_idx],
-                    ]
-                ),
-                $this->runCommand(
-                    "php {$bin_path}/job-worker.php -c {$this->e_config_file} -q the-worker-q-name"
-                )
-            );
+            $this->assertJobRan($job_name, $jobs[$job_idx]);
         }
+    }
+
+    /**
+     * @param string $bin
+     * @return string
+     */
+    private function getBinPath($bin)
+    {
+        return escapeshellarg(__DIR__ . '/../../../bin/' . $bin);
+    }
+
+    /**
+     * @param string $job_name
+     * @param array $job_params
+     */
+    private function assertJobRan($job_name, array $job_params)
+    {
+        $this->assertEquals(
+            json_encode(
+                [
+                    'name' => $job_name,
+                    'params' => $job_params,
+                ]
+            ),
+            $this->runJobWorker()
+        );
+    }
+
+    /**
+     * @param string $job_name
+     * @param array $jobs
+     */
+    private function queueJobs($job_name, array $jobs)
+    {
+        foreach ($jobs as $job) {
+            $this->publishJob($job_name, $job);
+            $this->runBufferWorker();
+        }
+        $this->runSuperqueuer();
+    }
+
+    /**
+     * @param $job_name
+     * @param array $job_params
+     * @throws Exception
+     */
+    private function publishJob($job_name, array $job_params)
+    {
+        $e_job_name = escapeshellarg($job_name);
+        $e_job_params = escapeshellarg(json_encode($job_params));
+
+        $this->runCommand(
+            "php {$this->getBinPath('test-publisher.php')}"
+            . " -c {$this->e_config_file}"
+            . " -q the-worker-q-name"
+            . " --job-name {$e_job_name}"
+            . " --job-params {$e_job_params}"
+        );
+    }
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    private function runBufferWorker()
+    {
+        return $this->runCommand(
+            "php {$this->getBinPath('buffer-worker.php')} -c {$this->e_config_file} -q default"
+        );
+    }
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    private function runSuperqueuer()
+    {
+        return $this->runCommand(
+            "php {$this->getBinPath('superqueuer.php')} -c {$this->e_config_file}"
+        );
+    }
+
+    /**
+     * @return string
+     * @throws Exception
+     */
+    private function runJobWorker()
+    {
+        return $this->runCommand(
+            "php {$this->getBinPath('job-worker.php')} -c {$this->e_config_file} -q the-worker-q-name"
+        );
     }
 
     /**
