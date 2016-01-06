@@ -65,6 +65,27 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @expectedException \Exception
+     */
+    public function testMutexIdThrowsAnExceptionIfMutexIsNotAScalar()
+    {
+        $this->generateValidator()->validateJobOptions(['mutex_id' => new \stdClass()]);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testMutexIdThrowsAnExceptionIfMutexIsEmpty()
+    {
+        $this->generateValidator()->validateJobOptions(['mutex_id' => '']);
+    }
+
+    public function testMutexIdCanValidateWithoutAnException()
+    {
+        $this->generateValidator()->validateJobOptions(['mutex_id' => 'yay']);
+    }
+
+    /**
      * @param Config|null $config
      * @return Validator
      */
