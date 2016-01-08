@@ -46,7 +46,7 @@ return [
                 ],
                 'daemon' => [
                     'type'           => 'supervisord',
-                    'config_path'    => '/etc/supervisord/conf.d/hodor.conf',
+                    'config_path'    => __DIR__ . '/../tests/tmp/supervisord.' . uniqid() . '.conf',
                     'process_owner'  => 'apache',
                     'program_prefix' => 'hodor',
                     'logs'           => [
