@@ -74,15 +74,46 @@ class SupervisordManagerTest extends PHPUnit_Framework_TestCase
         return $rows;
     }
 
+    public function testSetupDaemonGeneratesSupervisordConfig()
+    {
+        $hodor_base_path = dirname(dirname(dirname(dirname(__DIR__))));
+
+        $supervisord_config_path = __DIR__ . '/../../../../tests/tmp/supervisord.' . uniqid() . '.conf';
+        $manager = $this->getSupervisordManager($supervisord_config_path);
+
+        $config_dir = dirname($supervisord_config_path);
+        if (!is_dir($config_dir) && !mkdir($config_dir)) {
+            throw new Exception("Could not create directory '{$config_dir}'.");
+        }
+
+        $manager->setupDaemon();
+
+        $expected_supervisord_config = str_replace(
+            '{{HODOR_BASE_PATH}}',
+            $hodor_base_path,
+            file_get_contents(__DIR__ . '/ExpectedSupervisordConfig.conf')
+        );
+
+        $this->assertEquals(
+            $expected_supervisord_config,
+            file_get_contents($supervisord_config_path)
+        );
+    }
+
     /**
+     * @param string $supervisord_config_path
      * @return SupervisordManager
      */
-    private function getSupervisordManager()
+    private function getSupervisordManager($supervisord_config_path = null)
     {
         $config_array = require __DIR__ . '/../../../../config/config.test.php';
+
+        $daemon_test_config = $config_array['test']['daemon']['supervisord'];
+        $daemon_test_config['daemon']['config_path'] = $supervisord_config_path;
+
         $config = new Config(
             dirname(__FILE__) . '/ExpectedSupervisordConfig.php',
-            $config_array['test']['daemon']['supervisord']
+            $daemon_test_config
         );
 
         return new SupervisordManager($config);
