@@ -33,7 +33,10 @@ class SupervisordManager implements ManagerInterface
             $config_contents .= $this->generateProgramText($program) . "\n";
         }
 
-        if (!file_put_contents($config_path, $config_contents)) {
+        if (!is_writable(dirname($config_path))
+            || (file_exists($config_path) && !is_writable($config_path))
+            || false === file_put_contents($config_path, $config_contents)
+        ) {
             throw new Exception("Could not write to config file '{$config_path}'.\n");
         }
     }

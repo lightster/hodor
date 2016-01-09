@@ -74,6 +74,19 @@ class SupervisordManagerTest extends PHPUnit_Framework_TestCase
         return $rows;
     }
 
+    /**
+     * @expectedException \Exception
+     */
+    public function testSetupDaemonThrowsAnExceptionIfConfigFileIsNotWritable()
+    {
+        $hodor_base_path = dirname(dirname(dirname(dirname(__DIR__))));
+
+        $supervisord_config_path = __DIR__ . '/../../../../tests/non-existent/supervisord.' . uniqid() . '.conf';
+        $manager = $this->getSupervisordManager($supervisord_config_path);
+
+        $manager->setupDaemon();
+    }
+
     public function testSetupDaemonGeneratesSupervisordConfig()
     {
         $hodor_base_path = dirname(dirname(dirname(dirname(__DIR__))));
