@@ -23,6 +23,12 @@ Install Hodor in your application via composer:
 composer require lightster/hodor:^0.0.2
 ```
 
+Create a database on your Postgres server to use with your
+instance of Hodor:
+```sql
+CREATE DATABASE hodor;
+```
+
 Copy the Hodor distribution config to wherever you keep your
 application configs:
 
@@ -48,6 +54,12 @@ return [
         $job_runner->runJob($name, $params);
     },
 ];
+```
+
+Run the database migrations after your database credentials
+are setup in your config:
+```
+HODOR_CONFIG=config/hodor.php php vendor/bin/phpmig migrate
 ```
 
 Then setup supervisord to manage your job queue processes:
