@@ -2,6 +2,7 @@
 
 namespace Hodor\MessageQueue;
 
+use Exception;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 
@@ -31,8 +32,13 @@ class Queue
      */
     public function push($message)
     {
+        $json_message = json_encode($message, JSON_FORCE_OBJECT);
+        if (false === $json_message) {
+            throw new Exception("Failed to json_encode message with name '{$message['name']}'.");
+        }
+
         $amqp_message = new AMQPMessage(
-            json_encode($message, JSON_FORCE_OBJECT),
+            $json_message,
             [
                 'content_type' => 'application/json',
                 'delivery_mode' => 2
