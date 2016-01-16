@@ -3,6 +3,7 @@
 namespace Hodor\Database;
 
 use Hodor\Database\Driver\YoPdoDriver;
+use Hodor\Database\Exception\BufferedJobNotFoundException;
 use Hodor\Database\Phpmig\PgsqlPhpmigAdapter;
 
 class PgsqlAdapter implements AdapterInterface
@@ -208,6 +209,14 @@ SQL;
             $sql,
             ['buffered_job_id' => $meta['buffered_job_id']]
         );
+        if (!$job) {
+            throw new BufferedJobNotFoundException(
+                "Could not mark buffered_job_id={$meta['buffered_job_id']} as finished. Job not found.",
+                $meta['buffered_job_id'],
+                $meta
+            );
+        }
+
         $job['started_running_at'] = $meta['started_running_at'];
         $job['ran_from'] = gethostname();
         $job['dequeued_from'] = gethostname();

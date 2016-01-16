@@ -4,6 +4,7 @@ namespace Hodor\JobQueue;
 
 use DateTime;
 use Hodor\Database\AdapterFactory as DbAdapterFactory;
+use Hodor\Database\Exception\BufferedJobNotFoundException;
 use Hodor\MessageQueue\Message;
 
 class Superqueue
@@ -128,13 +129,18 @@ class Superqueue
         $meta = $content['meta'];
         $meta['started_running_at'] = $started_running_at->format('c');
 
-        $db = $this->getDatabase();
-        $db->beginTransaction();
+        try {
+            $db = $this->getDatabase();
+            $db->beginTransaction();
 
-        $mark_finished($meta);
+            $mark_finished($meta);
 
-        $db->commitTransaction();
-        $message->acknowledge();
+            $db->commitTransaction();
+            $message->acknowledge();
+        } catch (BufferedJobNotFoundException $exception) {
+            $message->acknowledge();
+            throw $exception;
+        }
     }
 
     /**
