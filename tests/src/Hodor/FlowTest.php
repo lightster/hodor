@@ -72,6 +72,32 @@ class FlowTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    public function testJobMissingFromDbCanStillBeAcknowledged()
+    {
+        $job_name = 'job-name-' . uniqid();
+        $job_params = [
+            'the_time'    => date('c'),
+            'known_value' => 'donuts',
+            'job_options' => [
+                'run_after' => date('c'),
+                'job_rank' => 5,
+            ],
+        ];
+
+        $this->queueJobs($job_name, [$job_params]);
+        $this->runCommand("psql -c 'DELETE FROM queued_jobs;' -h {$this->e_db_host} -U postgres '{$this->db_name}'");
+        $this->queueJobs($job_name, [$job_params]);
+
+        // the first job should throw an exception because it is missing
+        // from the database, but the job should still be acknowledged
+        // and the second job should run as normal
+        try {
+            $this->runJobWorker();
+        } catch (Exception $exception) {
+            $this->assertJobRan($job_name, $job_params);
+        }
+    }
+
     /**
      * @param string $bin
      * @return string
