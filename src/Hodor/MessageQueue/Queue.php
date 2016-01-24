@@ -32,7 +32,7 @@ class Queue
      */
     public function push($message)
     {
-        $json_message = json_encode($message, JSON_FORCE_OBJECT);
+        $json_message = json_encode($message, JSON_FORCE_OBJECT, 100);
         if (false === $json_message) {
             throw new Exception("Failed to json_encode message with name '{$message['name']}'.");
         }
