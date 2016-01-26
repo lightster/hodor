@@ -16,8 +16,6 @@ $superqueue = $queue_factory->getSuperqueue();
 
 if (!$superqueue->requestProcessLock()) {
     sleep(5);
-}
-
-if (!$superqueue->queueJobsFromDatabaseToWorkerQueue()) {
+} elseif (!$superqueue->queueJobsFromDatabaseToWorkerQueue()) {
     sleep(2);
 }
