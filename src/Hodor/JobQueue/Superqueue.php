@@ -76,19 +76,21 @@ class Superqueue
     {
         $db = $this->getDatabase();
 
-        $db->beginTransaction();
         $job_generator = $db->getJobsToRunGenerator();
         $jobs_queued = 0;
         foreach ($job_generator as $job) {
+            $db->beginTransaction();
             $meta = $db->markJobAsQueued($job);
+            // the database transaction needs to be committed before the
+            // message is pushed to Rabbit MQ to prevent jobs from being
+            // processed by workers before they have been moved to buffered_jobs
+            $db->commitTransaction();
 
             $queue = $this->queue_factory->getWorkerQueue($job['queue_name']);
             $queue->push($job['job_name'], $job['job_params'], $meta);
 
             ++$jobs_queued;
         }
-
-        $db->commitTransaction();
 
         return $jobs_queued;
     }
