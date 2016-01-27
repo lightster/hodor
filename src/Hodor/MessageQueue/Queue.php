@@ -34,20 +34,8 @@ class Queue
      */
     public function push($message)
     {
-        $json_message = json_encode($message, JSON_FORCE_OBJECT, 100);
-        if (false === $json_message) {
-            throw new Exception("Failed to json_encode message with name '{$message['name']}'.");
-        }
-
-        $amqp_message = new AMQPMessage(
-            $json_message,
-            [
-                'content_type' => 'application/json',
-                'delivery_mode' => 2
-            ]
-        );
         $this->channel->basic_publish(
-            $amqp_message,
+            $this->generateAmqpMessage($message),
             '',
             $this->queue_config['queue_name']
         );
@@ -74,5 +62,26 @@ class Queue
         while (count($this->channel->callbacks)) {
             $this->channel->wait();
         }
+    }
+
+    /**
+     * @param $message
+     * @return AMQPMessage
+     * @throws Exception
+     */
+    private function generateAmqpMessage($message)
+    {
+        $json_message = json_encode($message, JSON_FORCE_OBJECT, 100);
+        if (false === $json_message) {
+            throw new Exception("Failed to json_encode message with name '{$message['name']}'.");
+        }
+
+        return new AMQPMessage(
+            $json_message,
+            [
+                'content_type' => 'application/json',
+                'delivery_mode' => 2
+            ]
+        );
     }
 }
