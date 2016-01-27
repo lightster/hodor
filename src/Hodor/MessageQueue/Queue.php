@@ -19,6 +19,7 @@ class Queue
     private $channel;
 
     /**
+     * @param array $queue_config
      * @param AMQPChannel $channel
      */
     public function __construct(array $queue_config, AMQPChannel $channel)
@@ -29,6 +30,7 @@ class Queue
 
     /**
      * @param  mixed $message
+     * @throws Exception
      */
     public function push($message)
     {
