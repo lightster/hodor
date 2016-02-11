@@ -42,6 +42,21 @@ class JobQueue
         );
     }
 
+    public function beginTransaction()
+    {
+        $this->getQueueFactory()->beginTransaction();
+    }
+
+    public function commitTransaction()
+    {
+        $this->getQueueFactory()->commitTransaction();
+    }
+
+    public function rollbackTransaction()
+    {
+        $this->getQueueFactory()->rollbackTransaction();
+    }
+
     /**
      * @param string $config_file
      */

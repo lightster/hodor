@@ -17,9 +17,14 @@ class QueueFactory
     private $channels = [];
 
     /**
-     * @var array
+     * @var Queue[]
      */
     private $queues = [];
+
+    /**
+     * @var bool
+     */
+    private $is_in_transaction = false;
 
     /**
      * @param array $queue_config
@@ -37,8 +42,35 @@ class QueueFactory
             $queue_config,
             $this->getAmqpChannel($queue_config)
         );
+        if ($this->is_in_transaction) {
+            $this->queues[$queue_name]->beginTransaction();
+        }
 
         return $this->queues[$queue_name];
+    }
+
+    public function beginTransaction()
+    {
+        array_walk($this->queues, function (Queue $queue) {
+            $queue->beginTransaction();
+        });
+        $this->is_in_transaction = true;
+    }
+
+    public function commitTransaction()
+    {
+        array_walk($this->queues, function (Queue $queue) {
+            $queue->commitTransaction();
+        });
+        $this->is_in_transaction = false;
+    }
+
+    public function rollbackTransaction()
+    {
+        array_walk($this->queues, function (Queue $queue) {
+            $queue->rollbackTransaction();
+        });
+        $this->is_in_transaction = false;
     }
 
     /**

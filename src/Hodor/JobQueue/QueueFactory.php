@@ -142,6 +142,21 @@ class QueueFactory
         return $this->job_options_validator;
     }
 
+    public function beginTransaction()
+    {
+        $this->getMessageQueueFactory()->beginTransaction();
+    }
+
+    public function commitTransaction()
+    {
+        $this->getMessageQueueFactory()->commitTransaction();
+    }
+
+    public function rollbackTransaction()
+    {
+        $this->getMessageQueueFactory()->rollbackTransaction();
+    }
+
     /**
      * @param  array  $queue_config
      * @return MessageQueue

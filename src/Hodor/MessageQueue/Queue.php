@@ -19,6 +19,16 @@ class Queue
     private $channel;
 
     /**
+     * @var bool
+     */
+    private $is_in_transaction = false;
+
+    /**
+     * @var array
+     */
+    private $messages = [];
+
+    /**
      * @param array $queue_config
      * @param AMQPChannel $channel
      */
@@ -34,6 +44,11 @@ class Queue
      */
     public function push($message)
     {
+        if ($this->is_in_transaction) {
+            $this->messages[] = $this->generateAmqpMessage($message);
+            return;
+        }
+
         $this->channel->basic_publish(
             $this->generateAmqpMessage($message),
             '',
@@ -62,6 +77,56 @@ class Queue
         while (count($this->channel->callbacks)) {
             $this->channel->wait();
         }
+    }
+
+    public function beginTransaction()
+    {
+        if ($this->is_in_transaction) {
+            throw new Exception("The queue is already in transaction.");
+        }
+
+        $this->is_in_transaction = true;
+    }
+
+    public function commitTransaction()
+    {
+        if (!$this->is_in_transaction) {
+            throw new Exception("The queue is not in transaction.");
+        }
+
+        $this->publishBatch($this->messages);
+
+        $this->is_in_transaction = false;
+        $this->messages = [];
+    }
+
+    public function rollbackTransaction()
+    {
+        if (!$this->is_in_transaction) {
+            throw new Exception("The queue is not in transaction.");
+        }
+
+        $this->is_in_transaction = false;
+        $this->messages = [];
+    }
+
+    /**
+     * @param array $messages
+     */
+    private function publishBatch(array $messages)
+    {
+        if (count($this->messages) == 0) {
+            return;
+        }
+
+        foreach ($this->messages as $message) {
+            $this->channel->batch_basic_publish(
+                $message,
+                '',
+                $this->queue_config['queue_name']
+            );
+        }
+        $this->channel->publish_batch();
     }
 
     /**
