@@ -42,19 +42,19 @@ class JobQueue
         );
     }
 
-    public function beginTransaction()
+    public function beginBatch()
     {
-        $this->getQueueFactory()->beginTransaction();
+        $this->getQueueFactory()->beginBatch();
     }
 
-    public function commitTransaction()
+    public function publishBatch()
     {
-        $this->getQueueFactory()->commitTransaction();
+        $this->getQueueFactory()->publishBatch();
     }
 
-    public function rollbackTransaction()
+    public function discardBatch()
     {
-        $this->getQueueFactory()->rollbackTransaction();
+        $this->getQueueFactory()->discardBatch();
     }
 
     /**

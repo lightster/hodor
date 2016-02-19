@@ -76,7 +76,7 @@ class Superqueue
     {
         $db = $this->getDatabase();
 
-        $this->queue_factory->beginTransaction();
+        $this->queue_factory->beginBatch();
         $db->beginTransaction();
 
         $job_generator = $db->getJobsToRunGenerator();
@@ -94,7 +94,7 @@ class Superqueue
         // message is pushed to Rabbit MQ to prevent jobs from being
         // processed by workers before they have been moved to buffered_jobs
         $db->commitTransaction();
-        $this->queue_factory->commitTransaction();
+        $this->queue_factory->publishBatch();
 
         return $jobs_queued;
     }

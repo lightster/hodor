@@ -142,19 +142,19 @@ class QueueFactory
         return $this->job_options_validator;
     }
 
-    public function beginTransaction()
+    public function beginBatch()
     {
-        $this->getMessageQueueFactory()->beginTransaction();
+        $this->getMessageQueueFactory()->beginBatch();
     }
 
-    public function commitTransaction()
+    public function publishBatch()
     {
-        $this->getMessageQueueFactory()->commitTransaction();
+        $this->getMessageQueueFactory()->publishBatch();
     }
 
-    public function rollbackTransaction()
+    public function discardBatch()
     {
-        $this->getMessageQueueFactory()->rollbackTransaction();
+        $this->getMessageQueueFactory()->discardBatch();
     }
 
     /**
