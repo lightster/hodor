@@ -21,7 +21,7 @@ class Queue
     /**
      * @var bool
      */
-    private $is_in_transaction = false;
+    private $is_in_batch = false;
 
     /**
      * @var array
@@ -44,7 +44,7 @@ class Queue
      */
     public function push($message)
     {
-        if ($this->is_in_transaction) {
+        if ($this->is_in_batch) {
             $this->messages[] = $this->generateAmqpMessage($message);
             return;
         }
@@ -79,41 +79,41 @@ class Queue
         }
     }
 
-    public function beginTransaction()
+    public function beginBatch()
     {
-        if ($this->is_in_transaction) {
+        if ($this->is_in_batch) {
             throw new Exception("The queue is already in transaction.");
         }
 
-        $this->is_in_transaction = true;
+        $this->is_in_batch = true;
     }
 
-    public function commitTransaction()
+    public function publishBatch()
     {
-        if (!$this->is_in_transaction) {
+        if (!$this->is_in_batch) {
             throw new Exception("The queue is not in transaction.");
         }
 
-        $this->publishBatch($this->messages);
+        $this->publishBatchedMessages($this->messages);
 
-        $this->is_in_transaction = false;
+        $this->is_in_batch = false;
         $this->messages = [];
     }
 
-    public function rollbackTransaction()
+    public function discardBatch()
     {
-        if (!$this->is_in_transaction) {
+        if (!$this->is_in_batch) {
             throw new Exception("The queue is not in transaction.");
         }
 
-        $this->is_in_transaction = false;
+        $this->is_in_batch = false;
         $this->messages = [];
     }
 
     /**
      * @param array $messages
      */
-    private function publishBatch(array $messages)
+    private function publishBatchedMessages(array $messages)
     {
         if (count($this->messages) == 0) {
             return;
