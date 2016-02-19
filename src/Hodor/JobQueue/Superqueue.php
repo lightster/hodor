@@ -25,6 +25,11 @@ class Superqueue
     private $database;
 
     /**
+     * @var int
+     */
+    private $jobs_queued = 0;
+
+    /**
      * @param array $config
      * @param QueueFactory $queue_factory
      */
@@ -74,29 +79,14 @@ class Superqueue
      */
     public function queueJobsFromDatabaseToWorkerQueue()
     {
-        $db = $this->getDatabase();
-
-        $this->queue_factory->beginBatch();
-        $db->beginTransaction();
-
-        $job_generator = $db->getJobsToRunGenerator();
-        $jobs_queued = 0;
+        $job_generator = $this->getDatabase()->getJobsToRunGenerator();
         foreach ($job_generator as $job) {
-            $meta = $db->markJobAsQueued($job);
-
-            $queue = $this->queue_factory->getWorkerQueue($job['queue_name']);
-            $queue->push($job['job_name'], $job['job_params'], $meta);
-
-            ++$jobs_queued;
+            $this->batchJob($job);
         }
 
-        // the database transaction needs to be committed before the
-        // message is pushed to Rabbit MQ to prevent jobs from being
-        // processed by workers before they have been moved to buffered_jobs
-        $db->commitTransaction();
-        $this->queue_factory->publishBatch();
+        $this->publishBatch();
 
-        return $jobs_queued;
+        return $this->jobs_queued;
     }
 
     /**
@@ -119,6 +109,54 @@ class Superqueue
         $this->markJobAsFinished($message, $started_running_at, function ($meta) {
             $this->getDatabase()->markJobAsFailed($meta);
         });
+    }
+
+    /**
+     * @param array $job
+     */
+    private function batchJob(array $job)
+    {
+        $db = $this->getDatabase();
+
+        if (0 === $this->jobs_queued) {
+            $this->queue_factory->beginBatch();
+            $db->beginTransaction();
+        }
+
+        $meta = $db->markJobAsQueued($job);
+
+        $queue = $this->queue_factory->getWorkerQueue($job['queue_name']);
+        $queue->push($job['job_name'], $job['job_params'], $meta);
+
+        ++$this->jobs_queued;
+
+        $this->publishBatchIfNecessary();
+    }
+
+    private function publishBatchIfNecessary()
+    {
+        if ($this->jobs_queued >= $this->getBatchSize()) {
+            $this->publishBatch();
+        }
+    }
+
+    private function publishBatch()
+    {
+        // the database transaction needs to be committed before the
+        // message is pushed to Rabbit MQ to prevent jobs from being
+        // processed by workers before they have been moved to buffered_jobs
+        $this->getDatabase()->commitTransaction();
+        $this->queue_factory->publishBatch();
+
+        $this->jobs_queued = 0;
+    }
+
+    /**
+     * @return int
+     */
+    private function getBatchSize()
+    {
+        return 250;
     }
 
     /**
