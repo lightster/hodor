@@ -80,13 +80,15 @@ class Superqueue
     public function queueJobsFromDatabaseToWorkerQueue()
     {
         $job_generator = $this->getDatabase()->getJobsToRunGenerator();
+        $total_jobs_queued = 0;
         foreach ($job_generator as $job) {
             $this->batchJob($job);
+            ++$total_jobs_queued;
         }
 
         $this->publishBatch();
 
-        return $this->jobs_queued;
+        return $total_jobs_queued;
     }
 
     /**
