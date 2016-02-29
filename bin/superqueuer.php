@@ -5,14 +5,14 @@ require_once __DIR__ . '/../bootstrap.php';
 
 use Hodor\Command\Arguments as Arguments;
 use Hodor\Config\LoaderFacade as Config;
-use Hodor\JobQueue\QueueFactory as QueueFactory;
+use Hodor\JobQueue\QueueManager;
 
 $args = new Arguments();
 $config_file = $args->getConfigFile();
 
 $config = Config::loadFromFile($config_file);
-$queue_factory = new QueueFactory($config);
-$superqueue = $queue_factory->getSuperqueue();
+$queue_manager = new QueueManager($config);
+$superqueue = $queue_manager->getSuperqueue();
 
 if (!$superqueue->requestProcessLock()) {
     sleep(5);

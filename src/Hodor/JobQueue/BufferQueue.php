@@ -12,18 +12,18 @@ class BufferQueue
     private $message_queue;
 
     /**
-     * @var QueueFactory
+     * @var QueueManager
      */
-    private $queue_factory;
+    private $queue_manager;
 
     /**
      * @param Queue $message_queue
-     * @param QueueFactory $queue_factory
+     * @param QueueManager $queue_manager
      */
-    public function __construct(Queue $message_queue, QueueFactory $queue_factory)
+    public function __construct(Queue $message_queue, QueueManager $queue_manager)
     {
         $this->message_queue = $message_queue;
-        $this->queue_factory = $queue_factory;
+        $this->queue_manager = $queue_manager;
     }
 
     /**
@@ -33,7 +33,7 @@ class BufferQueue
      */
     public function push($name, array $params = [], array $options = [])
     {
-        $this->queue_factory->getJobOptionsValidator()->validateJobOptions($options);
+        $this->queue_manager->getJobOptionsValidator()->validateJobOptions($options);
 
         if (!empty($options['run_after'])) {
             $options['run_after'] = $options['run_after']->format('c');
@@ -53,7 +53,7 @@ class BufferQueue
     public function processBuffer()
     {
         $this->message_queue->consume(function ($message) {
-            $superqueue = $this->queue_factory->getSuperqueue();
+            $superqueue = $this->queue_manager->getSuperqueue();
             $superqueue->bufferJobFromBufferQueueToDatabase($message);
 
             exit(0);

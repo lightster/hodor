@@ -18,9 +18,9 @@ class JobQueue
     private $config;
 
     /**
-     * @var QueueFactory
+     * @var QueueManager
      */
-    private $queue_factory;
+    private $queue_manager;
 
     /**
      * @param string $job_name the name of the job to run
@@ -29,7 +29,7 @@ class JobQueue
      */
     public function push($job_name, array $params = [], array $options = [])
     {
-        $buffer_queue = $this->getQueueFactory()->getBufferQueueForJob(
+        $buffer_queue = $this->getQueueManager()->getBufferQueueForJob(
             $job_name,
             $params,
             $options
@@ -44,17 +44,17 @@ class JobQueue
 
     public function beginBatch()
     {
-        $this->getQueueFactory()->beginBatch();
+        $this->getQueueManager()->beginBatch();
     }
 
     public function publishBatch()
     {
-        $this->getQueueFactory()->publishBatch();
+        $this->getQueueManager()->publishBatch();
     }
 
     public function discardBatch()
     {
-        $this->getQueueFactory()->discardBatch();
+        $this->getQueueManager()->discardBatch();
     }
 
     /**
@@ -88,24 +88,24 @@ class JobQueue
     }
 
     /**
-     * @param QueueFactory $queue_factory
+     * @param QueueManager $queue_manager
      */
-    public function setQueueFactory(QueueFactory $queue_factory)
+    public function setQueueManager(QueueManager $queue_manager)
     {
-        $this->queue_factory = $queue_factory;
+        $this->queue_manager = $queue_manager;
     }
 
     /**
-     * @return QueueFactory
+     * @return QueueManager
      */
-    private function getQueueFactory()
+    private function getQueueManager()
     {
-        if ($this->queue_factory) {
-            return $this->queue_factory;
+        if ($this->queue_manager) {
+            return $this->queue_manager;
         }
 
-        $this->queue_factory = new QueueFactory($this->getConfig());
+        $this->queue_manager = new QueueManager($this->getConfig());
 
-        return $this->queue_factory;
+        return $this->queue_manager;
     }
 }

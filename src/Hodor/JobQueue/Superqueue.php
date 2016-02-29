@@ -15,9 +15,9 @@ class Superqueue
     private $config;
 
     /**
-     * @var QueueFactory
+     * @var QueueManager
      */
-    private $queue_factory;
+    private $queue_manager;
 
     /**
      * @var DbAdapterInterface
@@ -26,12 +26,12 @@ class Superqueue
 
     /**
      * @param array $config
-     * @param QueueFactory $queue_factory
+     * @param QueueManager $queue_manager
      */
-    public function __construct(array $config, QueueFactory $queue_factory)
+    public function __construct(array $config, QueueManager $queue_manager)
     {
         $this->config = $config;
-        $this->queue_factory = $queue_factory;
+        $this->queue_manager = $queue_manager;
     }
 
     /**
@@ -44,7 +44,7 @@ class Superqueue
         $db->beginTransaction();
 
         $content = $message->getContent();
-        $queue_name = $this->queue_factory->getWorkerQueueNameForJob(
+        $queue_name = $this->queue_manager->getWorkerQueueNameForJob(
             $content['name'],
             $content['params'],
             $content['options']
@@ -76,7 +76,7 @@ class Superqueue
     {
         $db = $this->getDatabase();
 
-        $this->queue_factory->beginBatch();
+        $this->queue_manager->beginBatch();
         $db->beginTransaction();
 
         $job_generator = $db->getJobsToRunGenerator();
@@ -84,7 +84,7 @@ class Superqueue
         foreach ($job_generator as $job) {
             $meta = $db->markJobAsQueued($job);
 
-            $queue = $this->queue_factory->getWorkerQueue($job['queue_name']);
+            $queue = $this->queue_manager->getWorkerQueue($job['queue_name']);
             $queue->push($job['job_name'], $job['job_params'], $meta);
 
             ++$jobs_queued;
@@ -94,7 +94,7 @@ class Superqueue
         // message is pushed to Rabbit MQ to prevent jobs from being
         // processed by workers before they have been moved to buffered_jobs
         $db->commitTransaction();
-        $this->queue_factory->publishBatch();
+        $this->queue_manager->publishBatch();
 
         return $jobs_queued;
     }
