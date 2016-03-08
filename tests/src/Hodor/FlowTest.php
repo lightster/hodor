@@ -2,6 +2,7 @@
 
 namespace Hodor;
 
+use Hodor\Database\PgsqlAdapter;
 use Exception;
 use PHPUnit_Framework_TestCase;
 
@@ -11,6 +12,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
     private $e_config_file;
     private $db_name;
     private $e_db_host;
+    private $db_adapter;
 
     public function setUp()
     {
@@ -27,6 +29,8 @@ class FlowTest extends PHPUnit_Framework_TestCase
 
         $this->runCommand("psql -c 'create database {$this->db_name};' -h {$this->e_db_host} -U postgres");
         $this->runCommand("HODOR_CONFIG={$this->e_config_file} {$phpmig_bin} migrate");
+
+        $this->db_adapter = new PgsqlAdapter($config['superqueue']['database']);
     }
 
     public function tearDown()
@@ -36,6 +40,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
         if (file_exists($this->config_file)) {
             unlink($this->config_file);
         }
+        unset($this->db_adapter);
         $this->runCommand("psql -c 'drop database if exists {$this->db_name};' -h {$this->e_db_host} -U postgres");
     }
 
@@ -96,6 +101,29 @@ class FlowTest extends PHPUnit_Framework_TestCase
         } catch (Exception $exception) {
             $this->assertJobRan($job_name, $job_params);
         }
+    }
+
+    public function testOnlyOneSuperqueuerCanRunAtOnce()
+    {
+        $this->db_adapter->requestAdvisoryLock('superqueuer', 'default');
+
+        $job_name = 'job-name-' . uniqid();
+        $job_params = [
+            'the_time'    => date('c'),
+            'known_value' => 'donuts',
+            'job_options' => [
+                'run_after' => date('c'),
+                'job_rank' => 5,
+            ],
+        ];
+        $this->queueJobs($job_name, [$job_params]);
+
+        $count = 0;
+        foreach ($this->db_adapter->getJobsToRunGenerator() as $job) {
+            ++$count;
+        }
+
+        $this->assertEquals(1, $count);
     }
 
     /**
