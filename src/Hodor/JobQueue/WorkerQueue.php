@@ -13,18 +13,18 @@ class WorkerQueue
     private $message_queue;
 
     /**
-     * @var QueueFactory
+     * @var QueueManager
      */
-    private $queue_factory;
+    private $queue_manager;
 
     /**
      * @param Queue $message_queue
-     * @param QueueFactory $queue_factory
+     * @param QueueManager $queue_manager
      */
-    public function __construct(Queue $message_queue, QueueFactory $queue_factory)
+    public function __construct(Queue $message_queue, QueueManager $queue_manager)
     {
         $this->message_queue = $message_queue;
-        $this->queue_factory = $queue_factory;
+        $this->queue_manager = $queue_manager;
     }
 
     /**
@@ -49,22 +49,22 @@ class WorkerQueue
         $this->message_queue->consume(function ($message) use ($job_runner) {
             $start_time = new DateTime;
 
-            register_shutdown_function(function ($message, $start_time, $queue_factory) {
+            register_shutdown_function(function ($message, $start_time, $queue_manager) {
                 if (error_get_last()) {
-                    $queue_factory->getSuperqueue()->markJobAsFailed(
+                    $queue_manager->getSuperqueue()->markJobAsFailed(
                         $message,
                         $start_time
                     );
                     exit(1);
                 }
-            }, $message, $start_time, $this->queue_factory);
+            }, $message, $start_time, $this->queue_manager);
 
             $content = $message->getContent();
             $name = $content['name'];
             $params = $content['params'];
             call_user_func($job_runner, $name, $params);
 
-            $superqueue = $this->queue_factory->getSuperqueue();
+            $superqueue = $this->queue_manager->getSuperqueue();
             $superqueue->markJobAsSuccessful($message, $start_time);
 
             exit(0);

@@ -6,7 +6,7 @@ use Hodor\JobQueue\JobOptions\Validator as JobOptionsValidator;
 use Hodor\MessageQueue\Queue as MessageQueue;
 use Hodor\MessageQueue\QueueFactory as MqFactory;
 
-class QueueFactory
+class QueueManager
 {
     /**
      * @param Config
@@ -24,7 +24,7 @@ class QueueFactory
     private $worker_queues = [];
 
     /**
-     * @var QueueFactory
+     * @var QueueManager
      */
     private $mq_factory;
 
@@ -167,7 +167,7 @@ class QueueFactory
     }
 
     /**
-     * @return QueueFactory
+     * @return QueueManager
      */
     private function getMessageQueueFactory()
     {

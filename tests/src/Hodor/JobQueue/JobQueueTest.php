@@ -57,11 +57,11 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
                 $job_options
             );
 
-        $queue_factory = $this->getMockBuilder('\Hodor\JobQueue\QueueFactory')
+        $queue_manager = $this->getMockBuilder('\Hodor\JobQueue\QueueManager')
             ->disableOriginalConstructor()
             ->setMethods(['getBufferQueueForJob'])
             ->getMock();
-        $queue_factory->expects($this->once())
+        $queue_manager->expects($this->once())
             ->method('getBufferQueueForJob')
             ->with(
                 $job_name,
@@ -70,7 +70,7 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
             )
             ->will($this->returnValue($buffer_queue));
 
-        $this->job_queue->setQueueFactory($queue_factory);
+        $this->job_queue->setQueueManager($queue_manager);
         $this->job_queue->push(
             $job_name,
             $job_params,
