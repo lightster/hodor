@@ -3,20 +3,22 @@
 namespace Hodor\MessageQueue;
 
 use Exception;
+use Hodor\MessageQueue\Adapter\ConsumerInterface;
+use Hodor\MessageQueue\Adapter\ProducerInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 
 class Queue
 {
     /**
-     * @var array
+     * @var ConsumerInterface
      */
-    private $queue_config;
+    private $consumer;
 
     /**
-     * @var AMQPChannel $channel
+     * @var ProducerInterface
      */
-    private $channel;
+    private $producer;
 
     /**
      * @var bool
@@ -29,13 +31,13 @@ class Queue
     private $messages = [];
 
     /**
-     * @param array $queue_config
-     * @param AMQPChannel $channel
+     * @param ConsumerInterface $consumer
+     * @param ProducerInterface $producer
      */
-    public function __construct(array $queue_config, AMQPChannel $channel)
+    public function __construct(ConsumerInterface $consumer, ProducerInterface $producer)
     {
-        $this->queue_config = $queue_config;
-        $this->channel = $channel;
+        $this->consumer = $consumer;
+        $this->producer = $producer;
     }
 
     /**
@@ -45,15 +47,11 @@ class Queue
     public function push($message)
     {
         if ($this->is_in_batch) {
-            $this->messages[] = $this->generateAmqpMessage($message);
+            $this->messages[] = $this->generateMessage($message);
             return;
         }
 
-        $this->channel->basic_publish(
-            $this->generateAmqpMessage($message),
-            '',
-            $this->queue_config['queue_name']
-        );
+        $this->producer->produceMessage($this->generateMessage($message));
     }
 
     /**
@@ -61,22 +59,7 @@ class Queue
      */
     public function consume(callable $callback)
     {
-        $this->channel->basic_consume(
-            $this->queue_config['queue_name'],
-            '',
-            false,
-            ($auto_ack = false),
-            false,
-            false,
-            function ($amqp_message) use ($callback) {
-                $message = new Message($amqp_message);
-                $callback($message);
-            }
-        );
-
-        while (count($this->channel->callbacks)) {
-            $this->channel->wait();
-        }
+        $this->consumer->consumeMessage($callback);
     }
 
     public function beginBatch()
@@ -115,18 +98,17 @@ class Queue
      */
     private function publishBatchedMessages(array $messages)
     {
-        if (count($this->messages) == 0) {
-            return;
-        }
+        $this->producer->produceMessageBatch($messages);
+    }
 
-        foreach ($this->messages as $message) {
-            $this->channel->batch_basic_publish(
-                $message,
-                '',
-                $this->queue_config['queue_name']
-            );
-        }
-        $this->channel->publish_batch();
+    /**
+     * @param $message
+     * @return Message
+     * @throws Exception
+     */
+    private function generateMessage($message)
+    {
+        return new Message($this->generateAmqpMessage($message));
     }
 
     /**
