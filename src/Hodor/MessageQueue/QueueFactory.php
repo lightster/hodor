@@ -2,19 +2,15 @@
 
 namespace Hodor\MessageQueue;
 
-use PhpAmqpLib\Channel\AMQPChannel;
+use Hodor\MessageQueue\Adapter\Amqp\Factory;
+use Hodor\MessageQueue\Adapter\FactoryInterface;
 
 class QueueFactory
 {
     /**
-     * @var array
+     * @var FactoryInterface
      */
-    private $connections = [];
-
-    /**
-     * @var array
-     */
-    private $channels = [];
+    private $adapter_factory;
 
     /**
      * @var Queue[]
@@ -39,8 +35,8 @@ class QueueFactory
         }
 
         $this->queues[$queue_name] = new Queue(
-            $queue_config,
-            $this->getAmqpChannel($queue_config)
+            $this->getAdapterFactory()->getConsumer($queue_config),
+            $this->getAdapterFactory()->getProducer($queue_config)
         );
         if ($this->is_in_batch) {
             $this->queues[$queue_name]->beginBatch();
@@ -74,82 +70,16 @@ class QueueFactory
     }
 
     /**
-     * @param  array  $queue_config
-     * @return AMQPChannel
+     * @return Factory
      */
-    private function getAmqpChannel(array $queue_config)
+    private function getAdapterFactory()
     {
-        $channel_key = $queue_config['queue_name'];
-
-        if (isset($this->channels[$channel_key])) {
-            return $this->channels[$channel_key];
+        if ($this->adapter_factory) {
+            return $this->adapter_factory;
         }
 
-        $connection = $this->getAmqpConnection($queue_config);
+        $this->adapter_factory = new Factory();
 
-        $channel = $connection->channel();
-
-        $channel->queue_declare(
-            $queue_config['queue_name'],
-            false,
-            ($is_durable = true),
-            false,
-            false
-        );
-        $channel->basic_qos(
-            null,
-            $queue_config['fetch_count'],
-            null
-        );
-
-        $this->channels[$channel_key] = $channel;
-
-        return $this->channels[$channel_key];
-    }
-
-    /**
-     * @param  array  $queue_config
-     * @return AMQPConnection
-     */
-    private function getAmqpConnection(array $queue_config)
-    {
-        $connection_key = $this->getConnectionKey($queue_config);
-
-        if (isset($this->connections[$connection_key])) {
-            return $this->connections[$connection_key];
-        }
-
-        $connection_class = '\PhpAmqpLib\Connection\AMQPConnection';
-        if (isset($queue_config['connection_type'])
-            && 'socket' === $queue_config['connection_type']
-        ) {
-            $connection_class = '\PhpAmqpLib\Connection\AMQPSocketConnection';
-        }
-
-        $this->connections[$connection_key] = new $connection_class(
-            $queue_config['host'],
-            $queue_config['port'],
-            $queue_config['username'],
-            $queue_config['password']
-        );
-
-        return $this->connections[$connection_key];
-    }
-
-    /**
-     * @param  array  $queue_config
-     * @return string
-     */
-    private function getConnectionKey(array $queue_config)
-    {
-        return implode(
-            '::',
-            [
-                $queue_config['host'],
-                $queue_config['port'],
-                $queue_config['username'],
-                $queue_config['queue_name'],
-            ]
-        );
+        return $this->adapter_factory;
     }
 }

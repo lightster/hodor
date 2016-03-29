@@ -67,4 +67,15 @@ class Message
 
         $this->was_acked = true;
     }
+
+    /**
+     * This method exists temporarily during gradual refactoring.
+     *
+     * @return AMQPMessage
+     * @deprecated
+     */
+    public function getAmqpMessage()
+    {
+        return $this->amqp_message;
+    }
 }
