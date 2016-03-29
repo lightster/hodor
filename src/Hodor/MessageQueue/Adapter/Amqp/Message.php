@@ -1,10 +1,11 @@
 <?php
 
-namespace Hodor\MessageQueue;
+namespace Hodor\MessageQueue\Adapter\Amqp;
 
+use Hodor\MessageQueue\Adapter\MessageInterface;
 use PhpAmqpLib\Message\AMQPMessage;
 
-class Message
+class Message implements MessageInterface
 {
     /**
      * @var AMQPMessage $amqp_message
@@ -69,10 +70,7 @@ class Message
     }
 
     /**
-     * This method exists temporarily during gradual refactoring.
-     *
      * @return AMQPMessage
-     * @deprecated
      */
     public function getAmqpMessage()
     {

@@ -5,7 +5,8 @@ namespace Hodor\JobQueue;
 use DateTime;
 use Hodor\Database\AdapterFactory as DbAdapterFactory;
 use Hodor\Database\Exception\BufferedJobNotFoundException;
-use Hodor\MessageQueue\Message;
+use Hodor\MessageQueue\Adapter\Amqp\Message;
+use Hodor\MessageQueue\Adapter\MessageInterface;
 
 class Superqueue
 {
@@ -40,9 +41,9 @@ class Superqueue
     }
 
     /**
-     * @param Message $message
+     * @param MessageInterface $message
      */
-    public function bufferJobFromBufferQueueToDatabase(Message $message)
+    public function bufferJobFromBufferQueueToDatabase(MessageInterface $message)
     {
         $db = $this->getDatabase();
 
@@ -92,10 +93,11 @@ class Superqueue
     }
 
     /**
-     * @param Message $message
+     * @param MessageInterface $message
      * @param DateTime $started_running_at
+     * @throws BufferedJobNotFoundException
      */
-    public function markJobAsSuccessful(Message $message, DateTime $started_running_at)
+    public function markJobAsSuccessful(MessageInterface $message, DateTime $started_running_at)
     {
         $this->markJobAsFinished($message, $started_running_at, function ($meta) {
             $this->getDatabase()->markJobAsSuccessful($meta);
@@ -103,10 +105,11 @@ class Superqueue
     }
 
     /**
-     * @param Message $message
+     * @param MessageInterface $message
      * @param DateTime $started_running_at
+     * @throws BufferedJobNotFoundException
      */
-    public function markJobAsFailed(Message $message, DateTime $started_running_at)
+    public function markJobAsFailed(MessageInterface $message, DateTime $started_running_at)
     {
         $this->markJobAsFinished($message, $started_running_at, function ($meta) {
             $this->getDatabase()->markJobAsFailed($meta);

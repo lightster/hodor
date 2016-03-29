@@ -1,6 +1,6 @@
 <?php
 
-namespace Hodor\MessageQueue;
+namespace Hodor\MessageQueue\Adapter\Amqp;
 
 use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit_Framework_TestCase;
@@ -10,7 +10,7 @@ class MessageTest extends PHPUnit_Framework_TestCase
     public function testMessageCanBeInstantiated()
     {
         $this->assertInstanceOf(
-            'Hodor\MessageQueue\Message',
+            'Hodor\MessageQueue\Adapter\Amqp\Message',
             new Message(new AMQPMessage())
         );
     }

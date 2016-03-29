@@ -3,7 +3,7 @@
 namespace Hodor\MessageQueue\Adapter\Amqp;
 
 use Hodor\MessageQueue\Adapter\ConsumerInterface;
-use Hodor\MessageQueue\Message;
+use Hodor\MessageQueue\Adapter\MessageInterface;
 use PhpAmqpLib\Channel\AMQPChannel;
 
 class Consumer implements ConsumerInterface
@@ -49,13 +49,5 @@ class Consumer implements ConsumerInterface
         while (count($this->channel->callbacks)) {
             $this->channel->wait();
         }
-    }
-
-    /**
-     * @param Message $message
-     */
-    public function acknowledgeMessage(Message $message)
-    {
-        $message->acknowledge();
     }
 }
