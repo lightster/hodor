@@ -3,7 +3,7 @@
 namespace Hodor\MessageQueue\Adapter\Amqp;
 
 use Hodor\MessageQueue\Adapter\ConsumerInterface;
-use Hodor\MessageQueue\Adapter\MessageInterface;
+use Hodor\MessageQueue\Message as MqMessage;
 use PhpAmqpLib\Channel\AMQPChannel;
 
 class Consumer implements ConsumerInterface
@@ -41,7 +41,7 @@ class Consumer implements ConsumerInterface
             false,
             false,
             function ($amqp_message) use ($callback) {
-                $message = new Message($amqp_message);
+                $message = new MqMessage(new Message($amqp_message));
                 $callback($message);
             }
         );

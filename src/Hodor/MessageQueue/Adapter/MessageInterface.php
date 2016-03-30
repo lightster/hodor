@@ -9,5 +9,10 @@ interface MessageInterface
      */
     public function getContent();
 
+    /**
+     * @return string
+     */
+    public function getContentType();
+
     public function acknowledge();
 }

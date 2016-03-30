@@ -13,21 +13,6 @@ class Message implements MessageInterface
     private $amqp_message;
 
     /**
-     * @var bool
-     */
-    private $is_loaded;
-
-    /**
-     * @var mixed
-     */
-    private $content;
-
-    /**
-     * @var bool
-     */
-    private $was_acked = false;
-
-    /**
      * @param AMQPMessage $amqp_message
      */
     public function __construct(AMQPMessage $amqp_message)
@@ -40,33 +25,25 @@ class Message implements MessageInterface
      */
     public function getContent()
     {
-        if ($this->is_loaded) {
-            return $this->content;
+        return $this->amqp_message->body;
+    }
+
+    /**
+     * @return string
+     */
+    public function getContentType()
+    {
+        if (!$this->amqp_message->has('content_type')) {
+            return null;
         }
 
-        $this->content = $this->amqp_message->body;
-
-        if ($this->amqp_message->has('content_type')
-            && 'application/json' === $this->amqp_message->get('content_type')
-        ) {
-            $this->content = json_decode($this->content, true);
-        }
-
-        $this->is_loaded = true;
-
-        return $this->content;
+        return $this->amqp_message->get('content_type');
     }
 
     public function acknowledge()
     {
-        if ($this->was_acked) {
-            return;
-        }
-
         $this->amqp_message->delivery_info['channel']
             ->basic_ack($this->amqp_message->delivery_info['delivery_tag']);
-
-        $this->was_acked = true;
     }
 
     /**

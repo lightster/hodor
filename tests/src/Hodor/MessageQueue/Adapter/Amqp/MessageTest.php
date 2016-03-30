@@ -30,30 +30,10 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($message->getContent(), $message->getContent());
     }
 
-    public function testJsonMessageContentIsDecodedIfContentTypeIsAppropriatelySet()
-    {
-        $expected_value = ['a' => 1, 'b' => ['c' => 2]];
-
-        $body = json_encode($expected_value);
-        $properties = ['content_type' => 'application/json'];
-        $amqp_message = new AMQPMessage($body, $properties);
-        $message = new Message($amqp_message);
-
-        $this->assertEquals($expected_value, $message->getContent());
-    }
-
     public function testAmqpMessageIsAcknowledgedWhenMessageIsAcknowledged()
     {
         $message = $this->getAcknowledgeableMessage();
 
-        $message->acknowledge();
-    }
-
-    public function testAmqpMessageIsOnlyAcknowledgedOnce()
-    {
-        $message = $this->getAcknowledgeableMessage();
-
-        $message->acknowledge();
         $message->acknowledge();
     }
 
