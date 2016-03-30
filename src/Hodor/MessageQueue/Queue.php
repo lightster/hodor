@@ -47,11 +47,11 @@ class Queue
     public function push($message)
     {
         if ($this->is_in_batch) {
-            $this->messages[] = $this->generateMessage($message);
+            $this->messages[] = $this->producer->generateMessage($message);
             return;
         }
 
-        $this->producer->produceMessage($this->generateMessage($message));
+        $this->producer->produceMessage($this->producer->generateMessage($message));
     }
 
     /**
@@ -77,7 +77,7 @@ class Queue
             throw new Exception("The queue is not in transaction.");
         }
 
-        $this->publishBatchedMessages($this->messages);
+        $this->producer->produceMessageBatch($this->messages);
 
         $this->is_in_batch = false;
         $this->messages = [];
@@ -91,44 +91,5 @@ class Queue
 
         $this->is_in_batch = false;
         $this->messages = [];
-    }
-
-    /**
-     * @param array $messages
-     */
-    private function publishBatchedMessages(array $messages)
-    {
-        $this->producer->produceMessageBatch($messages);
-    }
-
-    /**
-     * @param $message
-     * @return Message
-     * @throws Exception
-     */
-    private function generateMessage($message)
-    {
-        return new Message($this->generateAmqpMessage($message));
-    }
-
-    /**
-     * @param $message
-     * @return AMQPMessage
-     * @throws Exception
-     */
-    private function generateAmqpMessage($message)
-    {
-        $json_message = json_encode($message, JSON_FORCE_OBJECT, 100);
-        if (false === $json_message) {
-            throw new Exception("Failed to json_encode message with name '{$message['name']}'.");
-        }
-
-        return new AMQPMessage(
-            $json_message,
-            [
-                'content_type' => 'application/json',
-                'delivery_mode' => 2
-            ]
-        );
     }
 }

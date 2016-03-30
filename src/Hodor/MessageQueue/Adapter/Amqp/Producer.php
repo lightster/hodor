@@ -2,9 +2,11 @@
 
 namespace Hodor\MessageQueue\Adapter\Amqp;
 
+use Hodor\MessageQueue\Adapter\MessageInterface;
 use Hodor\MessageQueue\Adapter\ProducerInterface;
-use Hodor\MessageQueue\Message;
 use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Message\AMQPMessage;
+use RuntimeException;
 
 class Producer implements ProducerInterface
 {
@@ -29,9 +31,9 @@ class Producer implements ProducerInterface
     }
 
     /**
-     * @param Message $message
+     * @param MessageInterface $message
      */
-    public function produceMessage(Message $message)
+    public function produceMessage(MessageInterface $message)
     {
         $this->channel->basic_publish(
             $message->getAmqpMessage(),
@@ -41,7 +43,7 @@ class Producer implements ProducerInterface
     }
 
     /**
-     * @param Message[] $messages
+     * @param MessageInterface[] $messages
      */
     public function produceMessageBatch(array $messages)
     {
@@ -57,5 +59,28 @@ class Producer implements ProducerInterface
             );
         }
         $this->channel->publish_batch();
+    }
+
+    /**
+     * @param mixed $message
+     * @return MessageInterface
+     * @throws RuntimeException
+     */
+    public function generateMessage($message)
+    {
+        $json_message = json_encode($message, JSON_FORCE_OBJECT, 100);
+        if (false === $json_message) {
+            throw new RuntimeException("Failed to json_encode message with name '{$message['name']}'.");
+        }
+
+        $amqp_message = new AMQPMessage(
+            $json_message,
+            [
+                'content_type' => 'application/json',
+                'delivery_mode' => 2
+            ]
+        );
+
+        return new Message($amqp_message);
     }
 }

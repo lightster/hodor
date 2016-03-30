@@ -2,14 +2,14 @@
 
 namespace Hodor\MessageQueue;
 
-use PhpAmqpLib\Message\AMQPMessage;
+use Hodor\MessageQueue\Adapter\MessageInterface;
 
 class Message
 {
     /**
-     * @var AMQPMessage $amqp_message
+     * @var MessageInterface
      */
-    private $amqp_message;
+    private $message;
 
     /**
      * @var bool
@@ -27,11 +27,11 @@ class Message
     private $was_acked = false;
 
     /**
-     * @param AMQPMessage $amqp_message
+     * @param MessageInterface $message
      */
-    public function __construct(AMQPMessage $amqp_message)
+    public function __construct(MessageInterface $message)
     {
-        $this->amqp_message = $amqp_message;
+        $this->message = $message;
     }
 
     /**
@@ -43,11 +43,9 @@ class Message
             return $this->content;
         }
 
-        $this->content = $this->amqp_message->body;
+        $this->content = $this->message->getContent();
 
-        if ($this->amqp_message->has('content_type')
-            && 'application/json' === $this->amqp_message->get('content_type')
-        ) {
+        if ('application/json' === $this->message->getContentType()) {
             $this->content = json_decode($this->content, true);
         }
 
@@ -62,20 +60,8 @@ class Message
             return;
         }
 
-        $this->amqp_message->delivery_info['channel']
-            ->basic_ack($this->amqp_message->delivery_info['delivery_tag']);
+        $this->message->acknowledge();
 
         $this->was_acked = true;
-    }
-
-    /**
-     * This method exists temporarily during gradual refactoring.
-     *
-     * @return AMQPMessage
-     * @deprecated
-     */
-    public function getAmqpMessage()
-    {
-        return $this->amqp_message;
     }
 }
