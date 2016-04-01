@@ -31,29 +31,25 @@ class Producer implements ProducerInterface
     }
 
     /**
-     * @param MessageInterface $message
+     * @param string $message
      */
-    public function produceMessage(MessageInterface $message)
+    public function produceMessage($message)
     {
         $this->channel->basic_publish(
-            $message->getAmqpMessage(),
+            $this->generateAmqpMessage($message),
             '',
             $this->queue_name
         );
     }
 
     /**
-     * @param MessageInterface[] $messages
+     * @param string[] $messages
      */
     public function produceMessageBatch(array $messages)
     {
-        if (count($messages) == 0) {
-            return;
-        }
-
         foreach ($messages as $message) {
             $this->channel->batch_basic_publish(
-                $message->getAmqpMessage(),
+                $this->generateAmqpMessage($message),
                 '',
                 $this->queue_name
             );
@@ -62,25 +58,18 @@ class Producer implements ProducerInterface
     }
 
     /**
-     * @param mixed $message
-     * @return MessageInterface
+     * @param string $json_message
+     * @return AMQPMessage
      * @throws RuntimeException
      */
-    public function generateMessage($message)
+    private function generateAmqpMessage($json_message)
     {
-        $json_message = json_encode($message, JSON_FORCE_OBJECT, 100);
-        if (false === $json_message) {
-            throw new RuntimeException("Failed to json_encode message with name '{$message['name']}'.");
-        }
-
-        $amqp_message = new AMQPMessage(
+        return new AMQPMessage(
             $json_message,
             [
                 'content_type' => 'application/json',
                 'delivery_mode' => 2
             ]
         );
-
-        return new Message($amqp_message);
     }
 }

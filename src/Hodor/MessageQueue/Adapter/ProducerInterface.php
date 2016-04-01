@@ -5,18 +5,12 @@ namespace Hodor\MessageQueue\Adapter;
 interface ProducerInterface
 {
     /**
-     * @param MessageInterface $message
+     * @param string $message
      */
-    public function produceMessage(MessageInterface $message);
+    public function produceMessage($message);
 
     /**
-     * @param MessageInterface[] $messages
+     * @param string[] $messages
      */
     public function produceMessageBatch(array $messages);
-
-    /**
-     * @param mixed $message
-     * @return MessageInterface
-     */
-    public function generateMessage($message);
 }

@@ -28,29 +28,9 @@ class Message implements MessageInterface
         return $this->amqp_message->body;
     }
 
-    /**
-     * @return string
-     */
-    public function getContentType()
-    {
-        if (!$this->amqp_message->has('content_type')) {
-            return null;
-        }
-
-        return $this->amqp_message->get('content_type');
-    }
-
     public function acknowledge()
     {
         $this->amqp_message->delivery_info['channel']
             ->basic_ack($this->amqp_message->delivery_info['delivery_tag']);
-    }
-
-    /**
-     * @return AMQPMessage
-     */
-    public function getAmqpMessage()
-    {
-        return $this->amqp_message;
     }
 }

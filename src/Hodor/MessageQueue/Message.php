@@ -43,12 +43,7 @@ class Message
             return $this->content;
         }
 
-        $this->content = $this->message->getContent();
-
-        if ('application/json' === $this->message->getContentType()) {
-            $this->content = json_decode($this->content, true);
-        }
-
+        $this->content = json_decode($this->message->getContent(), true);
         $this->is_loaded = true;
 
         return $this->content;
