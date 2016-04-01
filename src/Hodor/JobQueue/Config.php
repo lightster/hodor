@@ -3,8 +3,9 @@
 namespace Hodor\JobQueue;
 
 use Exception;
+use Hodor\MessageQueue\Adapter\ConfigInterface;
 
-class Config
+class Config implements ConfigInterface
 {
     /**
      * @var string
@@ -80,7 +81,7 @@ class Config
      */
     public function getWorkerQueueConfig($queue_name)
     {
-        return $this->getQueueConfig($queue_name, 'worker');
+        return $this->getQueueConfig("worker-{$queue_name}");
     }
 
     /**
@@ -89,7 +90,7 @@ class Config
      */
     public function getBufferQueueConfig($queue_name)
     {
-        return $this->getQueueConfig($queue_name, 'bufferer');
+        return $this->getQueueConfig("bufferer-{$queue_name}");
     }
 
     /**
@@ -184,13 +185,13 @@ class Config
     }
 
     /**
-     * @param  string $queue_name
-     * @param  string $queue_type
+     * @param  string $fully_qualified_queue_name
      * @return array
      * @throws Exception
      */
-    private function getQueueConfig($queue_name, $queue_type)
+    public function getQueueConfig($fully_qualified_queue_name)
     {
+        list($queue_type, $queue_name) = explode('-', $fully_qualified_queue_name, 2);
         $queue_type_keys = $this->queue_types[$queue_type];
 
         $queues_option = $queue_type_keys['queue_key'];

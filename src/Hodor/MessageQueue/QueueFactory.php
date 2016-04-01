@@ -3,10 +3,16 @@
 namespace Hodor\MessageQueue;
 
 use Hodor\MessageQueue\Adapter\Amqp\Factory;
+use Hodor\MessageQueue\Adapter\ConfigInterface;
 use Hodor\MessageQueue\Adapter\FactoryInterface;
 
 class QueueFactory
 {
+    /**
+     * @var ConfigInterface
+     */
+    private $config;
+
     /**
      * @var FactoryInterface
      */
@@ -23,20 +29,26 @@ class QueueFactory
     private $is_in_batch = false;
 
     /**
-     * @param array $queue_config
+     * @param ConfigInterface $config
+     */
+    public function __construct(ConfigInterface $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * @param string $queue_name
      * @return Queue
      */
-    public function getQueue(array $queue_config)
+    public function getQueue($queue_name)
     {
-        $queue_name = $queue_config['queue_name'];
-
         if (isset($this->queues[$queue_name])) {
             return $this->queues[$queue_name];
         }
 
         $this->queues[$queue_name] = new Queue(
-            $this->getAdapterFactory()->getConsumer($queue_config),
-            $this->getAdapterFactory()->getProducer($queue_config)
+            $this->getAdapterFactory()->getConsumer($queue_name),
+            $this->getAdapterFactory()->getProducer($queue_name)
         );
         if ($this->is_in_batch) {
             $this->queues[$queue_name]->beginBatch();
@@ -78,7 +90,7 @@ class QueueFactory
             return $this->adapter_factory;
         }
 
-        $this->adapter_factory = new Factory();
+        $this->adapter_factory = new Factory($this->config);
 
         return $this->adapter_factory;
     }
