@@ -59,7 +59,7 @@ return [
 Run the database migrations after your database credentials
 are setup in your config:
 ```
-HODOR_CONFIG=config/hodor.php php vendor/bin/phpmig migrate
+bin/hodor.php database:migrate config/hodor.php
 ```
 
 Then setup supervisord to manage your job queue processes:

@@ -9,8 +9,14 @@ use Pimple;
 
 class Container extends Pimple
 {
-    public function addDefaultServices()
+    /**
+     * @param string $config_file
+     * @throws Exception
+     */
+    public function addDefaultServices($config_file = null)
     {
+        $this->addConfigFileService($config_file);
+
         $this['hodor.config.factory'] = $this->share(
             function () {
                 return new ConfigFactory();
@@ -19,14 +25,7 @@ class Container extends Pimple
 
         $this['hodor.config'] = $this->share(
             function (Pimple $container) {
-                $config_path = getenv('HODOR_CONFIG');
-                if (!$config_path) {
-                    throw new Exception(
-                        "Please provide a config file using a 'HODOR_CONFIG' environment variable."
-                    );
-                }
-
-                return $container['hodor.config.factory']->loadFromFile(getenv('HODOR_CONFIG'));
+                return $container['hodor.config.factory']->loadFromFile($this['hodor.config.file']);
             }
         );
 
@@ -70,5 +69,26 @@ class Container extends Pimple
                 return __DIR__ . '/MigrationTemplate.php';
             }
         );
+    }
+
+    /**
+     * @param $config_file
+     * @throws Exception
+     */
+    private function addConfigFileService($config_file)
+    {
+        if ($config_file) {
+            $this['hodor.config.file'] = $config_file;
+            return;
+        }
+
+        $config_path = getenv('HODOR_CONFIG');
+        if (!$config_path) {
+            throw new Exception(
+                "Please provide a config file using a 'HODOR_CONFIG' environment variable."
+            );
+        }
+
+        $this['hodor.config.file'] = $config_path;
     }
 }
