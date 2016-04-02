@@ -5,14 +5,14 @@ namespace Hodor\MessageQueue\Adapter;
 interface FactoryInterface
 {
     /**
-     * @param array $queue_config
+     * @param string $queue_name
      * @return ConsumerInterface
      */
-    public function getConsumer(array $queue_config);
+    public function getConsumer($queue_name);
 
     /**
-     * @param array $queue_config
+     * @param string $queue_name
      * @return ProducerInterface
      */
-    public function getProducer(array $queue_config);
+    public function getProducer($queue_name);
 }

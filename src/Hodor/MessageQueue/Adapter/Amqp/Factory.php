@@ -2,6 +2,7 @@
 
 namespace Hodor\MessageQueue\Adapter\Amqp;
 
+use Hodor\MessageQueue\Adapter\ConfigInterface;
 use Hodor\MessageQueue\Adapter\ConsumerInterface;
 use Hodor\MessageQueue\Adapter\FactoryInterface;
 use Hodor\MessageQueue\Adapter\ProducerInterface;
@@ -10,6 +11,11 @@ use PhpAmqpLib\Connection\AbstractConnection;
 
 class Factory implements FactoryInterface
 {
+    /**
+     * @var ConfigInterface
+     */
+    private $config;
+
     /**
      * @var AbstractConnection[]
      */
@@ -31,37 +37,43 @@ class Factory implements FactoryInterface
     private $producers = [];
 
     /**
-     * @param array $queue_config
+     * @param ConfigInterface $config
+     */
+    public function __construct(ConfigInterface $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * @param string $queue_name
      * @return ConsumerInterface
      */
-    public function getConsumer(array $queue_config)
+    public function getConsumer($queue_name)
     {
-        $queue_name = $queue_config['queue_name'];
-
         if (array_key_exists($queue_name, $this->consumers)) {
             return $this->consumers[$queue_name];
         }
 
+        $queue_config = $this->config->getQueueConfig($queue_name);
         $channel = $this->getAmqpChannel($queue_config);
-        $this->consumers[$queue_name] = new Consumer($queue_name, $channel);
+        $this->consumers[$queue_name] = new Consumer($queue_config['queue_name'], $channel);
 
         return $this->consumers[$queue_name];
     }
 
     /**
-     * @param array $queue_config
+     * @param string $queue_name
      * @return ProducerInterface
      */
-    public function getProducer(array $queue_config)
+    public function getProducer($queue_name)
     {
-        $queue_name = $queue_config['queue_name'];
-
         if (array_key_exists($queue_name, $this->producers)) {
             return $this->producers[$queue_name];
         }
 
+        $queue_config = $this->config->getQueueConfig($queue_name);
         $channel = $this->getAmqpChannel($queue_config);
-        $this->producers[$queue_name] = new Producer($queue_name, $channel);
+        $this->producers[$queue_name] = new Producer($queue_config['queue_name'], $channel);
 
         return $this->producers[$queue_name];
     }

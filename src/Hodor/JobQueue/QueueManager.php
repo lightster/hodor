@@ -66,9 +66,8 @@ class QueueManager
             return $this->buffer_queues[$queue_name];
         }
 
-        $queue_config = $this->config->getBufferQueueConfig($queue_name);
         $this->buffer_queues[$queue_name] = new BufferQueue(
-            $this->getMessageQueue($queue_config),
+            $this->getMessageQueue("bufferer-{$queue_name}"),
             $this
         );
 
@@ -103,9 +102,8 @@ class QueueManager
             return $this->worker_queues[$queue_name];
         }
 
-        $queue_config = $this->config->getWorkerQueueConfig($queue_name);
         $this->worker_queues[$queue_name] = new WorkerQueue(
-            $this->getMessageQueue($queue_config),
+            $this->getMessageQueue("worker-{$queue_name}"),
             $this
         );
 
@@ -158,12 +156,12 @@ class QueueManager
     }
 
     /**
-     * @param  array  $queue_config
+     * @param  string $queue_name
      * @return MessageQueue
      */
-    private function getMessageQueue(array $queue_config)
+    private function getMessageQueue($queue_name)
     {
-        return $this->getMessageQueueFactory()->getQueue($queue_config);
+        return $this->getMessageQueueFactory()->getQueue($queue_name);
     }
 
     /**

@@ -3,25 +3,22 @@
 namespace Hodor\MessageQueue;
 
 use Exception;
+use Hodor\MessageQueue\Adapter\Config;
 use PHPUnit_Framework_TestCase;
 
 class QueueFactoryTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var array
-     */
-    private $config;
-
-    /**
-     * @var QueueFactory
-     */
     private $queue_factory;
 
     public function setUp()
     {
         parent::setUp();
 
-        $this->queue_factory = new QueueFactory();
+        $config_adapter = $this->getMock('\Hodor\MessageQueue\Adapter\ConfigInterface');
+        $config_adapter->method('getQueueConfig')
+            ->willReturn($this->queueConfigProvider()[0][0]);
+
+        $this->queue_factory = new QueueFactory($config_adapter);
     }
 
     /**
@@ -32,7 +29,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
             '\Hodor\MessageQueue\Queue',
-            $this->queue_factory->getQueue($config)
+            $this->queue_factory->getQueue('worker-default')
         );
     }
 
@@ -43,8 +40,8 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     public function testQueueIsReusedIfReferredToMultipleTimes(array $config)
     {
         $this->assertSame(
-            $this->queue_factory->getQueue($config),
-            $this->queue_factory->getQueue($config)
+            $this->queue_factory->getQueue('worker-default'),
+            $this->queue_factory->getQueue('worker-default')
         );
     }
 
