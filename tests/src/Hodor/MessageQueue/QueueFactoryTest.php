@@ -16,16 +16,12 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
 
         $config_adapter = $this->getMock('\Hodor\MessageQueue\Adapter\ConfigInterface');
         $config_adapter->method('getQueueConfig')
-            ->willReturn($this->queueConfigProvider()[0][0]);
+            ->willReturn($this->queueConfigProvider());
 
         $this->queue_factory = new QueueFactory($config_adapter);
     }
 
-    /**
-     * @dataProvider queueConfigProvider
-     * @param array $config
-     */
-    public function testQueueCanBeGenerated(array $config)
+    public function testQueueCanBeGenerated()
     {
         $this->assertInstanceOf(
             '\Hodor\MessageQueue\Queue',
@@ -33,11 +29,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @dataProvider queueConfigProvider
-     * @param array $config
-     */
-    public function testQueueIsReusedIfReferredToMultipleTimes(array $config)
+    public function testQueueIsReusedIfReferredToMultipleTimes()
     {
         $this->assertSame(
             $this->queue_factory->getQueue('worker-default'),
@@ -56,14 +48,12 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         $config_template = $config['test']['rabbitmq'];
 
         return [
-            [[
-                'host'        => $config_template['host'],
-                'port'        => $config_template['port'],
-                'username'    => $config_template['username'],
-                'password'    => $config_template['password'],
-                'queue_name'  => $config_template['queue_prefix'] . uniqid(),
-                'fetch_count' => 1,
-            ]],
+            'host'        => $config_template['host'],
+            'port'        => $config_template['port'],
+            'username'    => $config_template['username'],
+            'password'    => $config_template['password'],
+            'queue_name'  => $config_template['queue_prefix'] . uniqid(),
+            'fetch_count' => 1,
         ];
     }
 }
