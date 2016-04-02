@@ -14,7 +14,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $config_adapter = $this->getMock('\Hodor\MessageQueue\Adapter\Config');
+        $config_adapter = $this->getMock('\Hodor\MessageQueue\Adapter\ConfigInterface');
         $config_adapter->method('getQueueConfig')
             ->willReturn($this->queueConfigProvider()[0][0]);
 
