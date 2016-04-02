@@ -13,7 +13,12 @@ class Producer implements ProducerInterface
     /**
      * @var string
      */
-    private $queue_name;
+    private $queue_key;
+
+    /**
+     * @var ChannelFactory
+     */
+    private $channel_factory;
 
     /**
      * @var AMQPChannel
@@ -21,13 +26,13 @@ class Producer implements ProducerInterface
     private $channel;
 
     /**
-     * @param string $queue_name
-     * @param AMQPChannel $channel
+     * @param string $queue_key
+     * @param ChannelFactory $channel_factory
      */
-    public function __construct($queue_name, AMQPChannel $channel)
+    public function __construct($queue_key, ChannelFactory $channel_factory)
     {
-        $this->queue_name = $queue_name;
-        $this->channel = $channel;
+        $this->queue_key = $queue_key;
+        $this->channel_factory = $channel_factory;
     }
 
     /**
@@ -35,10 +40,10 @@ class Producer implements ProducerInterface
      */
     public function produceMessage($message)
     {
-        $this->channel->basic_publish(
+        $this->getChannel()->getAmqpChannel()->basic_publish(
             $this->generateAmqpMessage($message),
             '',
-            $this->queue_name
+            $this->getChannel()->getQueueName()
         );
     }
 
@@ -47,14 +52,16 @@ class Producer implements ProducerInterface
      */
     public function produceMessageBatch(array $messages)
     {
+        $amqp_channel = $this->getChannel()->getAmqpChannel();
+
         foreach ($messages as $message) {
-            $this->channel->batch_basic_publish(
+            $amqp_channel->batch_basic_publish(
                 $this->generateAmqpMessage($message),
                 '',
-                $this->queue_name
+                $this->getChannel()->getQueueName()
             );
         }
-        $this->channel->publish_batch();
+        $amqp_channel->publish_batch();
     }
 
     /**
@@ -71,5 +78,19 @@ class Producer implements ProducerInterface
                 'delivery_mode' => 2
             ]
         );
+    }
+
+    /**
+     * @return Channel
+     */
+    private function getChannel()
+    {
+        if ($this->channel) {
+            return $this->channel;
+        }
+
+        $this->channel = $this->channel_factory->getChannel($this->queue_key);
+
+        return $this->channel;
     }
 }
