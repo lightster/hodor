@@ -11,7 +11,12 @@ class Consumer implements ConsumerInterface
     /**
      * @var string
      */
-    private $queue_name;
+    private $queue_key;
+
+    /**
+     * @var ChannelFactory
+     */
+    private $channel_factory;
 
     /**
      * @var AMQPChannel
@@ -19,13 +24,13 @@ class Consumer implements ConsumerInterface
     private $channel;
 
     /**
-     * @param string $queue_name
-     * @param AMQPChannel $channel
+     * @param string $queue_key
+     * @param ChannelFactory $channel_factory
      */
-    public function __construct($queue_name, AMQPChannel $channel)
+    public function __construct($queue_key, ChannelFactory $channel_factory)
     {
-        $this->queue_name = $queue_name;
-        $this->channel = $channel;
+        $this->queue_key = $queue_key;
+        $this->channel_factory = $channel_factory;
     }
 
     /**
@@ -33,8 +38,10 @@ class Consumer implements ConsumerInterface
      */
     public function consumeMessage(callable $callback)
     {
-        $this->channel->basic_consume(
-            $this->queue_name,
+        $amqp_channel = $this->getChannel()->getAmqpChannel();
+
+        $amqp_channel->basic_consume(
+            $this->getChannel()->getQueueName(),
             '',
             false,
             ($auto_ack = false),
@@ -46,8 +53,22 @@ class Consumer implements ConsumerInterface
             }
         );
 
-        while (count($this->channel->callbacks)) {
-            $this->channel->wait();
+        while (count($amqp_channel->callbacks)) {
+            $amqp_channel->wait();
         }
+    }
+
+    /**
+     * @return Channel
+     */
+    private function getChannel()
+    {
+        if ($this->channel) {
+            return $this->channel;
+        }
+
+        $this->channel = $this->channel_factory->getChannel($this->queue_key);
+
+        return $this->channel;
     }
 }
