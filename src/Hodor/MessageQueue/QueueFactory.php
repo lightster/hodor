@@ -2,7 +2,6 @@
 
 namespace Hodor\MessageQueue;
 
-use Hodor\MessageQueue\Adapter\Amqp\Factory;
 use Hodor\MessageQueue\Adapter\ConfigInterface;
 use Hodor\MessageQueue\Adapter\FactoryInterface;
 
@@ -82,7 +81,7 @@ class QueueFactory
     }
 
     /**
-     * @return Factory
+     * @return FactoryInterface
      */
     private function getAdapterFactory()
     {
@@ -90,7 +89,7 @@ class QueueFactory
             return $this->adapter_factory;
         }
 
-        $this->adapter_factory = new Factory($this->config);
+        $this->adapter_factory = $this->config->getAdapterFactory();
 
         return $this->adapter_factory;
     }

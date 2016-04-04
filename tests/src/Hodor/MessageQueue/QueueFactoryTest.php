@@ -3,6 +3,7 @@
 namespace Hodor\MessageQueue;
 
 use Exception;
+use Hodor\MessageQueue\Adapter\Amqp\Factory;
 use Hodor\MessageQueue\Adapter\Config;
 use PHPUnit_Framework_TestCase;
 
@@ -15,6 +16,8 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         parent::setUp();
 
         $config_adapter = $this->getMock('\Hodor\MessageQueue\Adapter\ConfigInterface');
+        $config_adapter->method('getAdapterFactory')
+            ->willReturn(new Factory($config_adapter));
         $config_adapter->method('getQueueConfig')
             ->willReturn($this->queueConfigProvider());
 

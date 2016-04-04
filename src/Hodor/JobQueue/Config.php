@@ -3,6 +3,7 @@
 namespace Hodor\JobQueue;
 
 use Exception;
+use Hodor\MessageQueue\Adapter\Amqp\Factory;
 use Hodor\MessageQueue\Adapter\ConfigInterface;
 
 class Config implements ConfigInterface
@@ -174,6 +175,14 @@ class Config implements ConfigInterface
     public function getWorkerQueueNames()
     {
         return array_keys($this->getOption('worker_queues'));
+    }
+
+    /**
+     * @return Factory
+     */
+    public function getAdapterFactory()
+    {
+        return new Factory($this);
     }
 
     /**
