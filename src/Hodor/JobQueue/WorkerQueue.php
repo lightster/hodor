@@ -62,6 +62,11 @@ class WorkerQueue
             $content = $message->getContent();
             $name = $content['name'];
             $params = $content['params'];
+            $meta = $content['meta'];
+
+            $title = implode(" ", $_SERVER['argv']) . " ({$meta['buffered_job_id']}:{$name})";
+            cli_set_process_title($title);
+
             call_user_func($job_runner, $name, $params);
 
             $superqueue = $this->queue_manager->getSuperqueue();
