@@ -6,6 +6,7 @@ use Hodor\MessageQueue\Adapter\ConfigInterface;
 use Hodor\MessageQueue\Adapter\ConsumerInterface;
 use Hodor\MessageQueue\Adapter\FactoryInterface;
 use Hodor\MessageQueue\Adapter\ProducerInterface;
+use LogicException;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AbstractConnection;
 
@@ -44,7 +45,7 @@ class ChannelFactory
             return $this->channels[$queue_key];
         }
 
-        $queue_config = $this->config->getQueueConfig($queue_key);
+        $queue_config = $this->getQueueConfig($queue_key);
         $connection = $this->getAmqpConnection($queue_config);
 
         $amqp_channel = $connection->channel();
@@ -68,6 +69,29 @@ class ChannelFactory
     }
 
     /**
+     * @param $queue_key
+     * @return array
+     */
+    private function getQueueConfig($queue_key)
+    {
+        $queue_config = array_merge(
+            [
+                'fetch_count'     => 1,
+                'connection_type' => 'stream',
+            ],
+            $this->config->getQueueConfig($queue_key)
+        );
+
+        foreach (['host', 'port', 'username', 'password', 'queue_name'] as $key) {
+            if (empty($queue_config[$key])) {
+                throw new LogicException("The queue config must contain a '{$key}' config.");
+            }
+        }
+
+        return $queue_config;
+    }
+
+    /**
      * @param  array  $queue_config
      * @return AbstractConnection
      */
@@ -80,9 +104,7 @@ class ChannelFactory
         }
 
         $connection_class = '\PhpAmqpLib\Connection\AMQPConnection';
-        if (isset($queue_config['connection_type'])
-            && 'socket' === $queue_config['connection_type']
-        ) {
+        if ('socket' === $queue_config['connection_type']) {
             $connection_class = '\PhpAmqpLib\Connection\AMQPSocketConnection';
         }
 
