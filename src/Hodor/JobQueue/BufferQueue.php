@@ -55,8 +55,6 @@ class BufferQueue
         $this->message_queue->consume(function ($message) {
             $superqueue = $this->queue_manager->getSuperqueue();
             $superqueue->bufferJobFromBufferQueueToDatabase($message);
-
-            exit(0);
         });
     }
 }

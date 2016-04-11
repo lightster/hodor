@@ -71,8 +71,6 @@ class WorkerQueue
 
             $superqueue = $this->queue_manager->getSuperqueue();
             $superqueue->markJobAsSuccessful($message, $start_time);
-
-            exit(0);
         });
     }
 }
