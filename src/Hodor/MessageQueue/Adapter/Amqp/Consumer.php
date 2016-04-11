@@ -53,9 +53,23 @@ class Consumer implements ConsumerInterface
             }
         );
 
-        while (count($amqp_channel->callbacks)) {
-            $amqp_channel->wait();
-        }
+        $amqp_channel->wait();
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxMessagesPerConsume()
+    {
+        return $this->getChannel()->getMaxMessagesPerConsume();
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxTimePerConsume()
+    {
+        return $this->getChannel()->getMaxTimePerConsume();
     }
 
     /**

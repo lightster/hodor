@@ -60,7 +60,16 @@ class Queue
      */
     public function consume(callable $callback)
     {
-        $this->consumer->consumeMessage($callback);
+        $start_time = time();
+        $message_count = 0;
+
+        $max_message_count = $this->consumer->getMaxMessagesPerConsume();
+        $max_time = $this->consumer->getMaxTimePerConsume();
+
+        do {
+            $this->consumer->consumeMessage($callback);
+            ++$message_count;
+        } while ($message_count < $max_message_count && time() - $start_time <= $max_time);
     }
 
     public function beginBatch()

@@ -41,4 +41,20 @@ class Channel
     {
         return $this->queue_config['queue_name'];
     }
+
+    /**
+     * @return int
+     */
+    public function getMaxMessagesPerConsume()
+    {
+        return $this->queue_config['max_messages_per_consume'];
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxTimePerConsume()
+    {
+        return $this->queue_config['max_time_per_consume'];
+    }
 }

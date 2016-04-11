@@ -17,15 +17,17 @@ return [
         'connection_type' => 'stream',
     ],
     'buffer_queue_defaults' => [
-        'queue_prefix'         => 'hodor-buffer-',
-        'bufferers_per_server' => 10,
-        'superqueuer'          => 'default',
+        'queue_prefix'             => 'hodor-buffer-',
+        'bufferers_per_server'     => 10,
+        'superqueuer'              => 'default',
+        'max_messages_per_consume' => 1,
     ],
     'buffer_queues' => [
         'default' => [],
     ],
     'worker_queue_defaults' => [
-        'queue_prefix' => 'hodor-worker-',
+        'queue_prefix'             => 'hodor-worker-',
+        'max_messages_per_consume' => 1,
     ],
     'worker_queues' => [
         'default' => [

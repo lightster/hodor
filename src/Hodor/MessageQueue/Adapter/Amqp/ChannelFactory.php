@@ -76,8 +76,10 @@ class ChannelFactory
     {
         $queue_config = array_merge(
             [
-                'fetch_count'     => 1,
-                'connection_type' => 'stream',
+                'fetch_count'              => 1,
+                'connection_type'          => 'stream',
+                'max_messages_per_consume' => 1,
+                'max_time_per_consume'     => 600,
             ],
             $this->config->getQueueConfig($queue_key)
         );
