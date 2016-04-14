@@ -33,6 +33,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers Hodor\MessageQueue\Adapter\Testing\Config::addQueueConfig
      * @covers Hodor\MessageQueue\Adapter\Testing\Config::getQueueConfig
      * @dataProvider queueConfigProvider
      * @param string $queue_key
