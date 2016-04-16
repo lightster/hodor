@@ -56,7 +56,7 @@ class ChannelTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * __construct
+     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::__construct
      * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::getMaxTimePerConsume
      */
     public function testMaxTimePerConsumePassedToConstructorIsTheSameRetrieved()
