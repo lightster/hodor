@@ -18,7 +18,7 @@ class ChannelFactory
     private $config;
 
     /**
-     * @var AbstractConnection[]
+     * @var Connection[]
      */
     private $connections = [];
 
@@ -102,22 +102,12 @@ class ChannelFactory
         $connection_key = $this->getConnectionKey($queue_config);
 
         if (isset($this->connections[$connection_key])) {
-            return $this->connections[$connection_key];
+            return $this->connections[$connection_key]->getAmqpConnection();
         }
 
-        $connection_class = '\PhpAmqpLib\Connection\AMQPConnection';
-        if ('socket' === $queue_config['connection_type']) {
-            $connection_class = '\PhpAmqpLib\Connection\AMQPSocketConnection';
-        }
+        $this->connections[$connection_key] = new Connection($queue_config);
 
-        $this->connections[$connection_key] = new $connection_class(
-            $queue_config['host'],
-            $queue_config['port'],
-            $queue_config['username'],
-            $queue_config['password']
-        );
-
-        return $this->connections[$connection_key];
+        return $this->connections[$connection_key]->getAmqpConnection();
     }
 
     /**
