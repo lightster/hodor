@@ -46,24 +46,9 @@ class ChannelFactory
         }
 
         $queue_config = $this->getQueueConfig($queue_key);
-        $connection = $this->getAmqpConnection($queue_config);
+        $connection = $this->getConnection($queue_config);
 
-        $amqp_channel = $connection->channel();
-
-        $amqp_channel->queue_declare(
-            $queue_config['queue_name'],
-            false,
-            ($is_durable = true),
-            false,
-            false
-        );
-        $amqp_channel->basic_qos(
-            null,
-            $queue_config['fetch_count'],
-            null
-        );
-
-        $this->channels[$queue_key] = new Channel($amqp_channel, $queue_config);
+        $this->channels[$queue_key] = new Channel($connection, $queue_config);
 
         return $this->channels[$queue_key];
     }
@@ -95,19 +80,19 @@ class ChannelFactory
 
     /**
      * @param  array  $queue_config
-     * @return AbstractConnection
+     * @return Connection
      */
-    private function getAmqpConnection(array $queue_config)
+    private function getConnection(array $queue_config)
     {
         $connection_key = $this->getConnectionKey($queue_config);
 
         if (isset($this->connections[$connection_key])) {
-            return $this->connections[$connection_key]->getAmqpConnection();
+            return $this->connections[$connection_key];
         }
 
         $this->connections[$connection_key] = new Connection($queue_config);
 
-        return $this->connections[$connection_key]->getAmqpConnection();
+        return $this->connections[$connection_key];
     }
 
     /**
