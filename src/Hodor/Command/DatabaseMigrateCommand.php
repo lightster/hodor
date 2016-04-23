@@ -3,6 +3,7 @@
 namespace Hodor\Command;
 
 use Hodor\Database\Phpmig\Container;
+use Hodor\Database\Phpmig\PgsqlPhpmigAdapter;
 use Phpmig\Api\PhpmigApplication;
 use Phpmig\Console\Command\StatusCommand;
 use Symfony\Component\Console\Command\Command;
@@ -47,6 +48,13 @@ class DatabaseMigrateCommand extends Command
             return;
         }
 
+        /**
+         * @var $phpmig_adapter PgsqlPhpmigAdapter
+         */
+        $phpmig_adapter = $phpmig_container['phpmig.adapter'];
+        if (!$phpmig_adapter->hasSchema()) {
+            $phpmig_adapter->createSchema();
+        }
         $phpmig->up();
     }
 }
