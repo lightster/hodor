@@ -7,6 +7,9 @@ use PHPUnit_Framework_TestCase;
 
 class MessageTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers Hodor\MessageQueue\Adapter\Amqp\Message::__construct
+     */
     public function testMessageCanBeInstantiated()
     {
         $this->assertInstanceOf(
@@ -15,6 +18,10 @@ class MessageTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @covers Hodor\MessageQueue\Adapter\Amqp\Message::__construct
+     * @covers Hodor\MessageQueue\Adapter\Amqp\Message::getContent
+     */
     public function testMessageContentCanBeRetrieved()
     {
         $expected_value = 'some_string';
@@ -23,6 +30,10 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($expected_value, $message->getContent());
     }
 
+    /**
+     * @covers Hodor\MessageQueue\Adapter\Amqp\Message::__construct
+     * @covers Hodor\MessageQueue\Adapter\Amqp\Message::getContent
+     */
     public function testMessageContentCanBeRetrievedMultipleTimes()
     {
         $message = $this->getBasicMessage('some_other_string');
@@ -30,6 +41,10 @@ class MessageTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($message->getContent(), $message->getContent());
     }
 
+    /**
+     * @covers Hodor\MessageQueue\Adapter\Amqp\Message::__construct
+     * @covers Hodor\MessageQueue\Adapter\Amqp\Message::acknowledge
+     */
     public function testAmqpMessageIsAcknowledgedWhenMessageIsAcknowledged()
     {
         $message = $this->getAcknowledgeableMessage();
