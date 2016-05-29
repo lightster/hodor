@@ -37,7 +37,7 @@ class ChannelFactory
 
     /**
      * @param  string $queue_key
-     * @return AMQPChannel
+     * @return Channel
      */
     public function getChannel($queue_key)
     {
