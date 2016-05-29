@@ -1,0 +1,18 @@
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:
+        - php
+    exclude_paths:
+      - "**.dataset.php"
+  fixme:
+    enabled: true
+  phpmd:
+    enabled: true
+    config:
+      file_extensions: "php"
+      rulesets: "cleancode,codesize,design,naming,unusedcode"
+ratings:
+  paths:
+    - "**.php"
