@@ -65,7 +65,7 @@ bin/hodor.php database:migrate config/hodor.php
 Then setup supervisord to manage your job queue processes:
 
 ```bash
-sudo php bin/supervisord-config-gen.php --config=config/hodor.php
+sudo php bin/hodor.php daemon:generate-config config/hodor.php
 sudo service supervisord reload
 ```
 
