@@ -38,7 +38,7 @@ class ChannelTest extends PHPUnit_Framework_TestCase
      */
     public function testAmqpChannelsCanBeRetrieved(array $queues)
     {
-        foreach ($queues as $queue_key => $queue_config) {
+        foreach ($queues as $queue_config) {
             $connection = new Connection($queue_config);
             $channel = new Channel($connection, $queue_config);
             $this->assertInstanceOf('PhpAmqpLib\Channel\AMQPChannel', $channel->getAmqpChannel());
@@ -53,7 +53,7 @@ class ChannelTest extends PHPUnit_Framework_TestCase
      */
     public function testAmqpChannelsCanBeReused(array $queues)
     {
-        foreach ($queues as $queue_key => $queue_config) {
+        foreach ($queues as $queue_config) {
             $connection = new Connection($queue_config);
             $channel = new Channel($connection, $queue_config);
             $this->assertSame($channel->getAmqpChannel(), $channel->getAmqpChannel());
@@ -113,14 +113,12 @@ class ChannelTest extends PHPUnit_Framework_TestCase
      */
     public function provideQueueConfigMissingARequiredField()
     {
-        $rabbit_credentials = $this->getRabbitCredentials();
-
         $required_fields = [
             'queue_name' => uniqid(),
         ];
 
         $queue_configs = [];
-        foreach ($required_fields as $field_to_remove => $value) {
+        foreach (array_keys($required_fields) as $field_to_remove) {
             $queue_config = $required_fields;
             unset($queue_config[$field_to_remove]);
 
