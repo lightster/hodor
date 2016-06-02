@@ -35,6 +35,13 @@ class ChannelFactory
         $this->config = $config;
     }
 
+    public function disconnectAll()
+    {
+        foreach ($this->connections as $connection) {
+            $connection->disconnect();
+        }
+    }
+
     /**
      * @param  string $queue_key
      * @return Channel

@@ -66,6 +66,30 @@ class ChannelFactoryTest extends PHPUnit_Framework_TestCase
     /**
      * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::__construct
      * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::getChannel
+     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::disconnectAll
+     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::<private>
+     */
+    public function testAllConnectionsAreClosedWhenDisconnectAllIsCalled()
+    {
+        $queues = $this->getTestQueues();
+        $config = $this->getTestConfig($queues);
+
+        $channel_factory = new ChannelFactory($config);
+        $fast_jobs = $channel_factory->getChannel('fast_jobs')->getAmqpChannel()->getConnection();
+        $slow_jobs = $channel_factory->getChannel('slow_jobs')->getAmqpChannel()->getConnection();
+
+        $this->assertTrue($fast_jobs->isConnected());
+        $this->assertTrue($slow_jobs->isConnected());
+
+        $channel_factory->disconnectAll();
+
+        $this->assertFalse($fast_jobs->isConnected());
+        $this->assertFalse($slow_jobs->isConnected());
+    }
+
+    /**
+     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::__construct
+     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::getChannel
      * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::<private>
      * @dataProvider provideRequiredQueueConfigOptions
      * @param string $config_key
