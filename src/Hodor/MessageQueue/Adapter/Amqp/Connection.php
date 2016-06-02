@@ -32,11 +32,20 @@ class Connection
 
     public function __destruct()
     {
-        if (!$this->amqp_connection || !$this->amqp_connection->isConnected()) {
+        $this->disconnect();
+    }
+
+    public function disconnect()
+    {
+        if (!$this->amqp_connection) {
             return;
         }
 
-        $this->amqp_connection->close();
+        if ($this->amqp_connection->isConnected()) {
+            $this->amqp_connection->close();
+        }
+
+        $this->amqp_connection = null;
     }
 
     /**
