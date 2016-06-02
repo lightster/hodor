@@ -105,6 +105,20 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers Hodor\MessageQueue\Adapter\Amqp\Connection::disconnect
+     */
+    public function testConnectionIsClosedAfterExplicitlyDisconnecting()
+    {
+        $connection = new Connection($this->getRabbitCredentials());
+
+        $amqp_connection = $connection->getAmqpConnection();
+
+        $this->assertTrue($amqp_connection->isConnected());
+        $connection->disconnect();
+        $this->assertFalse($amqp_connection->isConnected());
+    }
+
+    /**
      * @return array
      */
     public function provideConnectionConfigMissingARequiredField()
