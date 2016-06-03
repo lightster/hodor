@@ -23,7 +23,7 @@ class ChannelFactory
     private $connections = [];
 
     /**
-     * @var AMQPChannel[]
+     * @var Channel[]
      */
     private $channels = [];
 
