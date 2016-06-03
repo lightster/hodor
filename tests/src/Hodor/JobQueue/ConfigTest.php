@@ -49,7 +49,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     {
         $config = new Config(__FILE__, []);
 
-        $db_config = $config->getDatabaseConfig();
+        $config->getDatabaseConfig();
     }
 
     /**
@@ -59,7 +59,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     {
         $config = new Config(__FILE__, ['superqueuer' => []]);
 
-        $db_config = $config->getDatabaseConfig();
+        $config->getDatabaseConfig();
     }
 
     /**
@@ -70,7 +70,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     {
         $config = new Config(__FILE__, $options);
 
-        $queue_config = $config->getBufferQueueConfig('undeclared');
+        $config->getBufferQueueConfig('undeclared');
     }
 
     /**
@@ -149,7 +149,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     {
         $config = new Config(__FILE__, $options);
 
-        $queue_config = $config->getWorkerQueueConfig('undeclared');
+        $config->getWorkerQueueConfig('undeclared');
     }
 
     /**
@@ -267,7 +267,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
             'worker_queue_name_factory' => 'blah',
         ]);
 
-        $callback = $config->getWorkerQueueNameFactory();
+        $config->getWorkerQueueNameFactory();
     }
 
     /**
@@ -338,7 +338,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
             'buffer_queue_name_factory' => 'blah',
         ]);
 
-        $callback = $config->getBufferQueueNameFactory();
+        $config->getBufferQueueNameFactory();
     }
 
     /**
