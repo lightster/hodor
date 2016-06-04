@@ -128,35 +128,16 @@ class ChannelFactoryTest extends PHPUnit_Framework_TestCase
         return $config;
     }
 
-    private function getTestQueues()
-    {
-        $rabbit_credentials = $this->getRabbitCredentials();
-
-        return [
-            'fast_jobs' => [
-                'host'       => $rabbit_credentials['host'],
-                'port'       => $rabbit_credentials['port'],
-                'username'   => $rabbit_credentials['username'],
-                'password'   => $rabbit_credentials['password'],
-                'queue_name' => $rabbit_credentials['queue_prefix'] . uniqid(),
-            ],
-            'slow_jobs' => [
-                'host'       => $rabbit_credentials['host'],
-                'port'       => $rabbit_credentials['port'],
-                'username'   => $rabbit_credentials['username'],
-                'password'   => $rabbit_credentials['password'],
-                'queue_name' => $rabbit_credentials['queue_prefix'] . uniqid(),
-            ],
-        ];
-    }
-
     /**
      * @return array
      */
-    private function getRabbitCredentials()
+    private function getTestQueues()
     {
-        $config = require __DIR__ . '/../../../../../../config/config.test.php';
+        $config_provider = new ConfigProvider();
 
-        return $config['test']['rabbitmq'];
+        return [
+            'fast_jobs' => $config_provider->getQueueConfig(),
+            'slow_jobs' => $config_provider->getQueueConfig(),
+        ];
     }
 }

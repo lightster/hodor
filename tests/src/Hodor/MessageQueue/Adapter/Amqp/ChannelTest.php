@@ -128,27 +128,18 @@ class ChannelTest extends PHPUnit_Framework_TestCase
         return $queue_configs;
     }
 
+    /**
+     * @return array
+     */
     public function provideQueueList()
     {
-        $rabbit_credentials = $this->getRabbitCredentials();
+        $config_provider = new ConfigProvider();
 
         return [
             [
                 [
-                    'fast_jobs' => [
-                        'host'       => $rabbit_credentials['host'],
-                        'port'       => $rabbit_credentials['port'],
-                        'username'   => $rabbit_credentials['username'],
-                        'password'   => $rabbit_credentials['password'],
-                        'queue_name' => $rabbit_credentials['queue_prefix'] . uniqid(),
-                    ],
-                    'slow_jobs' => [
-                        'host'       => $rabbit_credentials['host'],
-                        'port'       => $rabbit_credentials['port'],
-                        'username'   => $rabbit_credentials['username'],
-                        'password'   => $rabbit_credentials['password'],
-                        'queue_name' => $rabbit_credentials['queue_prefix'] . uniqid(),
-                    ],
+                    'fast_jobs' => $config_provider->getQueueConfig(),
+                    'slow_jobs' => $config_provider->getQueueConfig(),
                 ]
             ]
         ];
@@ -166,12 +157,5 @@ class ChannelTest extends PHPUnit_Framework_TestCase
             ->getMockBuilder('Hodor\MessageQueue\Adapter\Amqp\Connection')
             ->disableOriginalConstructor()
             ->getMock();
-    }
-
-    private function getRabbitCredentials()
-    {
-        $config = require __DIR__ . '/../../../../../../config/config.test.php';
-
-        return  $config['test']['rabbitmq'];
     }
 }
