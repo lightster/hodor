@@ -6,12 +6,15 @@ use Hodor\MessageQueue\Adapter\Testing\Config;
 use LogicException;
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @coversDefaultClass Hodor\MessageQueue\Adapter\Amqp\ChannelFactory
+ */
 class ChannelFactoryTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::getChannel
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::<private>
+     * @covers ::__construct
+     * @covers ::getChannel
+     * @covers ::<private>
      */
     public function testChannelsCanBeRetrieved()
     {
@@ -27,9 +30,9 @@ class ChannelFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::getChannel
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::<private>
+     * @covers ::__construct
+     * @covers ::getChannel
+     * @covers ::<private>
      */
     public function testChannelsAreReusedIfSameQueueKeyIsRequested()
     {
@@ -43,9 +46,9 @@ class ChannelFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::getChannel
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::<private>
+     * @covers ::__construct
+     * @covers ::getChannel
+     * @covers ::<private>
      */
     public function testConnectionsAreReusedIfSameQueueConfigIsUsed()
     {
@@ -64,10 +67,10 @@ class ChannelFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::getChannel
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::disconnectAll
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::<private>
+     * @covers ::__construct
+     * @covers ::getChannel
+     * @covers ::disconnectAll
+     * @covers ::<private>
      */
     public function testAllConnectionsAreClosedWhenDisconnectAllIsCalled()
     {
@@ -88,9 +91,9 @@ class ChannelFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::getChannel
-     * @covers Hodor\MessageQueue\Adapter\Amqp\ChannelFactory::<private>
+     * @covers ::__construct
+     * @covers ::getChannel
+     * @covers ::<private>
      * @dataProvider provideRequiredQueueConfigOptions
      * @param string $config_key
      * @expectedException LogicException

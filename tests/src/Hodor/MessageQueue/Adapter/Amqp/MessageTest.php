@@ -5,10 +5,13 @@ namespace Hodor\MessageQueue\Adapter\Amqp;
 use PhpAmqpLib\Message\AMQPMessage;
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @coversDefaultClass Hodor\MessageQueue\Adapter\Amqp\Message
+ */
 class MessageTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Message::__construct
+     * @covers ::__construct
      */
     public function testMessageCanBeInstantiated()
     {
@@ -19,8 +22,8 @@ class MessageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Message::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Message::getContent
+     * @covers ::__construct
+     * @covers ::getContent
      */
     public function testMessageContentCanBeRetrieved()
     {
@@ -31,8 +34,8 @@ class MessageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Message::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Message::getContent
+     * @covers ::__construct
+     * @covers ::getContent
      */
     public function testMessageContentCanBeRetrievedMultipleTimes()
     {
@@ -42,8 +45,8 @@ class MessageTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Message::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Message::acknowledge
+     * @covers ::__construct
+     * @covers ::acknowledge
      */
     public function testAmqpMessageIsAcknowledgedWhenMessageIsAcknowledged()
     {

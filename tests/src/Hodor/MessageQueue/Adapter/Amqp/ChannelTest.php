@@ -4,11 +4,14 @@ namespace Hodor\MessageQueue\Adapter\Amqp;
 
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @coversDefaultClass Hodor\MessageQueue\Adapter\Amqp\Channel
+ */
 class ChannelTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::<private>
+     * @covers ::__construct
+     * @covers ::<private>
      * @dataProvider provideQueueConfigMissingARequiredField
      * @expectedException \LogicException
      * @param array $queue_config
@@ -19,8 +22,8 @@ class ChannelTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::<private>
+     * @covers ::__construct
+     * @covers ::<private>
      */
     public function testConnectionCanBeInstantiatedWithoutError()
     {
@@ -31,8 +34,8 @@ class ChannelTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::getAmqpChannel
+     * @covers ::__construct
+     * @covers ::getAmqpChannel
      * @dataProvider provideQueueList
      * @param array $queues
      */
@@ -46,8 +49,8 @@ class ChannelTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::getAmqpChannel
+     * @covers ::__construct
+     * @covers ::getAmqpChannel
      * @dataProvider provideQueueList
      * @param array $queues
      */
@@ -61,8 +64,8 @@ class ChannelTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::getQueueName
+     * @covers ::__construct
+     * @covers ::getQueueName
      */
     public function testQueueNamePassedToConstructorIsTheSameRetrieved()
     {
@@ -75,8 +78,8 @@ class ChannelTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::getMaxMessagesPerConsume
+     * @covers ::__construct
+     * @covers ::getMaxMessagesPerConsume
      */
     public function testMaxMessagesPerConsumePassedToConstructorIsTheSameRetrieved()
     {
@@ -92,8 +95,8 @@ class ChannelTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Channel::getMaxTimePerConsume
+     * @covers ::__construct
+     * @covers ::getMaxTimePerConsume
      */
     public function testMaxTimePerConsumePassedToConstructorIsTheSameRetrieved()
     {
