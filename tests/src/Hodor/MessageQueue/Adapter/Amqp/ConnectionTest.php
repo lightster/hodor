@@ -4,11 +4,14 @@ namespace Hodor\MessageQueue\Adapter\Amqp;
 
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @coversDefaultClass Hodor\MessageQueue\Adapter\Amqp\Connection
+ */
 class ConnectionTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Connection::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Connection::<private>
+     * @covers ::__construct
+     * @covers ::<private>
      * @dataProvider provideConnectionConfigMissingARequiredField
      * @expectedException \LogicException
      * @param array $connection_config
@@ -19,8 +22,8 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Connection::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Connection::<private>
+     * @covers ::__construct
+     * @covers ::<private>
      */
     public function testConnectionCanBeInstantiatedWithoutError()
     {
@@ -31,7 +34,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Connection::__destruct
+     * @covers ::__destruct
      * @dataProvider provideConnectionsOfDifferentTypes
      * @param Connection
      */
@@ -44,8 +47,8 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Connection::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Connection::getAmqpConnection
+     * @covers ::__construct
+     * @covers ::getAmqpConnection
      */
     public function testAmqpStreamConnectionIsUsedByDefault()
     {
@@ -58,8 +61,8 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Connection::__construct
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Connection::getAmqpConnection
+     * @covers ::__construct
+     * @covers ::getAmqpConnection
      */
     public function testAmqpSocketConnectionCanBeRequested()
     {
@@ -75,7 +78,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Connection::__destruct
+     * @covers ::__destruct
      */
     public function testStreamConnectionIsClosedAfterDestroyingConnection()
     {
@@ -89,7 +92,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Connection::__destruct
+     * @covers ::__destruct
      */
     public function testSocketConnectionIsClosedAfterDestroyingConnection()
     {
@@ -105,7 +108,7 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Amqp\Connection::disconnect
+     * @covers ::disconnect
      */
     public function testConnectionIsClosedAfterExplicitlyDisconnecting()
     {

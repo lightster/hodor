@@ -5,11 +5,14 @@ namespace Hodor\MessageQueue\Adapter\Testing;
 use Hodor\MessageQueue\Adapter\FactoryInterface;
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @coversDefaultClass Hodor\MessageQueue\Adapter\Testing\Config
+ */
 class ConfigTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @covers Hodor\MessageQueue\Adapter\Testing\Config::__construct
-     * @covers Hodor\MessageQueue\Adapter\Testing\Config::getAdapterFactory
+     * @covers ::__construct
+     * @covers ::getAdapterFactory
      */
     public function testAdapterFactoryReturnedIsSameProvidedToConstructor()
     {
@@ -20,7 +23,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Testing\Config::getQueueConfig
+     * @covers ::getQueueConfig
      * @expectedException \OutOfBoundsException
      * @dataProvider queueConfigProvider
      * @param string $queue_key
@@ -33,8 +36,8 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers Hodor\MessageQueue\Adapter\Testing\Config::addQueueConfig
-     * @covers Hodor\MessageQueue\Adapter\Testing\Config::getQueueConfig
+     * @covers ::addQueueConfig
+     * @covers ::getQueueConfig
      * @dataProvider queueConfigProvider
      * @param string $queue_key
      * @param array $queue_config
