@@ -4,8 +4,16 @@ namespace Hodor\Config;
 
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @coversDefaultClass Hodor\Config\LoaderFacade
+ */
 class LoaderFacadeTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers ::loadFromFile
+     * @covers ::setLoaderFactory
+     * @covers ::<private>
+     */
     public function testFacadeCallsLoaderFactoryLoadFromFile()
     {
         $file_path = __DIR__ . '/PhpConfig.php';
@@ -23,6 +31,11 @@ class LoaderFacadeTest extends PHPUnit_Framework_TestCase
         LoaderFacade::loadFromFile($file_path);
     }
 
+    /**
+     * @covers ::loadFromFile
+     * @covers ::setLoaderFactory
+     * @covers ::<private>
+     */
     public function testFacadeReturnsConfig()
     {
         $file_path = __DIR__ . '/../../../../config/config.test.php';

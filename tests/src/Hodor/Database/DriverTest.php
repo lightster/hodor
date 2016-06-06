@@ -6,9 +6,15 @@ use Exception;
 
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @coversDefaultClass Hodor\Database\Driver\YoPdoDriver
+ */
 class DriverTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @covers ::__construct
+     * @covers ::queryMultiple
+     * @covers ::<private>
      * @dataProvider adapterProvider
      */
     public function testQueryMultipleCanRunMultipleQueries($adapter)
@@ -23,6 +29,9 @@ SQL;
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::queryMultiple
+     * @covers ::<private>
      * @dataProvider adapterProvider
      * @expectedException Exception
      */
@@ -35,6 +44,9 @@ SQL;
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::selectRowGenerator
+     * @covers ::<private>
      * @dataProvider adapterProvider
      */
     public function testSelectRowGeneratorGeneratesResults($adapter)
@@ -54,6 +66,9 @@ SQL;
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::selectRowGenerator
+     * @covers ::<private>
      * @dataProvider adapterProvider
      * @expectedException Exception
      */
@@ -70,6 +85,9 @@ SQL;
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::selectOne
+     * @covers ::<private>
      * @dataProvider adapterProvider
      */
     public function testSelectOneReturnsResults($adapter)
@@ -81,6 +99,9 @@ SQL;
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::selectOne
+     * @covers ::<private>
      * @dataProvider adapterProvider
      * @expectedException Exception
      */
@@ -93,6 +114,9 @@ SQL;
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::insert
+     * @covers ::<private>
      * @dataProvider adapterProvider
      */
     public function testInsertedRowCanBeRetrieved($adapter)
@@ -122,6 +146,9 @@ SQL;
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::insert
+     * @covers ::<private>
      * @dataProvider adapterProvider
      * @expectedException Exception
      */
@@ -131,6 +158,9 @@ SQL;
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::delete
+     * @covers ::<private>
      * @dataProvider adapterProvider
      */
     public function testDeletedRowNoLongerExists($adapter)
@@ -171,6 +201,9 @@ SQL;
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::delete
+     * @covers ::<private>
      * @dataProvider adapterProvider
      * @expectedException Exception
      */

@@ -5,9 +5,15 @@ namespace Hodor\Command;
 use Exception;
 use PHPUnit_Framework_TestCase;
 
-class QueueFactoryTest extends PHPUnit_Framework_TestCase
+/**
+ * @coversDefaultClass Hodor\Command\Arguments
+ */
+class ArgumentsTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getConfigFile
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testRetrievingConfigWhenNotProvidedThrowsAnException()
@@ -18,6 +24,9 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getConfigFile
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testRetrievingConfigWhenBlankThrowsAnException()
@@ -29,6 +38,11 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         $arguments->getConfigFile();
     }
 
+    /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getConfigFile
+     * @covers ::<private>
+     */
     public function testRetrievingConfigWhenProvidedWithLongOpt()
     {
         $config_path = 'config.php';
@@ -42,6 +56,11 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getConfigFile
+     * @covers ::<private>
+     */
     public function testRetrievingConfigWhenProvidedWithShortOpt()
     {
         $config_path = 'config.php';
@@ -54,7 +73,11 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
             $arguments->getConfigFile()
         );
     }
+
     /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getQueueName
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testRetrievingQueueNameWhenNotProvidedThrowsAnException()
@@ -65,6 +88,9 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getQueueName
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testRetrievingQueueNameWhenBlankThrowsAnException()
@@ -76,6 +102,11 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         $arguments->getQueueName();
     }
 
+    /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getQueueName
+     * @covers ::<private>
+     */
     public function testRetrievingQueueNameWhenProvidedWithLongOpt()
     {
         $queue_name = uniqid();
@@ -89,6 +120,11 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getQueueName
+     * @covers ::<private>
+     */
     public function testRetrievingQueueNameWhenProvidedWithShortOpt()
     {
         $queue_name = uniqid();
@@ -102,6 +138,11 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @covers ::setCliOptsLoader
+     * @covers ::isJson
+     * @covers ::<private>
+     */
     public function testRetrievingIsJsonWhenProvided()
     {
         $arguments = $this->getArgumentsObject([
@@ -113,6 +154,11 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @covers ::setCliOptsLoader
+     * @covers ::isJson
+     * @covers ::<private>
+     */
     public function testRetrievingIsJsonWhenNotProvided()
     {
         $arguments = $this->getArgumentsObject([]);
@@ -123,6 +169,9 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getJobName
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testRetrievingJobNameWhenNotProvidedThrowsAnException()
@@ -133,6 +182,9 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getJobName
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testRetrievingJobNameWhenBlankThrowsAnException()
@@ -144,6 +196,11 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         $arguments->getJobName();
     }
 
+    /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getJobName
+     * @covers ::<private>
+     */
     public function testRetrievingJobNameWhenProvidedWithLongOpt()
     {
         $job_name = uniqid();
@@ -158,6 +215,9 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getJobParams
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testRetrievingJobParamsWhenNotProvidedThrowsAnException()
@@ -168,6 +228,9 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getJobParams
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testRetrievingJobParamsWhenBlankThrowsAnException()
@@ -179,6 +242,11 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         $arguments->getJobParams();
     }
 
+    /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getJobParams
+     * @covers ::<private>
+     */
     public function testRetrievingJobParamsWhenStringIsProvided()
     {
         $job_params = uniqid();
@@ -192,6 +260,11 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getJobParams
+     * @covers ::<private>
+     */
     public function testRetrievingJobParamsWhenNullIsProvided()
     {
         $job_params = null;
@@ -205,6 +278,9 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getJobParams
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testRetrievingJobParamsWhenInvalidJsonIsProvided()
@@ -216,6 +292,13 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         $arguments->getJobParams();
     }
 
+    /**
+     * @covers ::setCliOptsLoader
+     * @covers ::getConfigFile
+     * @covers ::getQueueName
+     * @covers ::isJson
+     * @covers ::<private>
+     */
     public function testMultipleArgumentsCanBeRetrieved()
     {
         $config_path = 'config2.php';
