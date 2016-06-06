@@ -7,6 +7,9 @@ use Exception;
 use Hodor\JobQueue\Config;
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @coversDefaultClass Hodor\JobQueue\JobOptions\Validator
+ */
 class ValidatorTest extends PHPUnit_Framework_TestCase
 {
     /**

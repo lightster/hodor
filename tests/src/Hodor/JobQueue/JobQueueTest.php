@@ -4,6 +4,9 @@ namespace Hodor\JobQueue;
 
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @coversDefaultClass Hodor\JobQueue\JobQueue
+ */
 class JobQueueTest extends PHPUnit_Framework_TestCase
 {
     private $job_queue;
@@ -13,6 +16,10 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
         $this->job_queue = new JobQueue();
     }
 
+    /**
+     * @covers ::setConfigFile
+     * @covers ::getConfig
+     */
     public function testConfigCanBeLoadedFromFile()
     {
         $this->job_queue->setConfigFile(__DIR__ . '/../../../../config/config.test.php');
@@ -21,6 +28,10 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @covers ::setConfigFile
+     * @covers ::getConfig
+     */
     public function testConfigCanBeRetrievedMultipleTimes()
     {
         $this->job_queue->setConfigFile(__DIR__ . '/../../../../config/config.test.php');
@@ -31,6 +42,7 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::getConfig
      * @expectedException Exception
      */
     public function testExceptionIsThrownIfConfigFileIsNotSet()
@@ -38,6 +50,11 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
         $this->job_queue->getConfig();
     }
 
+    /**
+     * @covers ::setQueueManager
+     * @covers ::push
+     * @covers ::getQueueManager
+     */
     public function testJobQueuePushCallsBufferPush()
     {
         $queue_name = 'some_queue_name';
@@ -78,6 +95,10 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @covers ::setConfigFile
+     * @covers ::getConfig
+     */
     public function testJobQueueUsesADefaultBufferWorker()
     {
         $this->job_queue->setConfigFile(__DIR__ . '/../../../../config/config.test.php');

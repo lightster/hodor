@@ -4,9 +4,14 @@ namespace Hodor\Daemon;
 
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @coversDefaultClass Hodor\Daemon\ManagerFactory
+ */
 class ManagerFactoryTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @covers ::__construct
+     * @covers ::getManager
      * @expectedException \Exception
      */
     public function testUnknownDaemonTypeThrowsAnException()
@@ -14,6 +19,10 @@ class ManagerFactoryTest extends PHPUnit_Framework_TestCase
         $this->getManagerFactory('unk')->getManager();
     }
 
+    /**
+     * @covers ::__construct
+     * @covers ::getManager
+     */
     public function testSupervisordDaemonTypeReturnsSupervisordManager()
     {
         $this->assertInstanceOf(
@@ -23,6 +32,8 @@ class ManagerFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::getManager
      * @param string $daemon_type
      * @return ManagerFactory
      */

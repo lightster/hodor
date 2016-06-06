@@ -4,6 +4,9 @@ namespace Hodor\Config;
 
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @coversDefaultClass Hodor\Config\LoaderFactory
+ */
 class LoaderFactoryTest extends PHPUnit_Framework_TestCase
 {
     private $loader_factory;
@@ -16,6 +19,7 @@ class LoaderFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::getLoaderFromExtension
      * @expectedException \Exception
      */
     public function testRequestingLoaderForUnknownExtensionThrowsAnException()
@@ -23,6 +27,9 @@ class LoaderFactoryTest extends PHPUnit_Framework_TestCase
         $this->loader_factory->getLoaderFromExtension('unk');
     }
 
+    /**
+     * @covers ::getLoaderFromExtension
+     */
     public function testLoaderForPhpExtensionIsAPhpConfigLoader()
     {
         $this->assertInstanceOf(
@@ -32,6 +39,7 @@ class LoaderFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::loadFromFile
      * @expectedException \Exception
      */
     public function testLoadingWithUnknownExtensionThrowsAnException()
@@ -39,6 +47,9 @@ class LoaderFactoryTest extends PHPUnit_Framework_TestCase
         $this->loader_factory->loadFromFile(__DIR__ . '/Config.unk');
     }
 
+    /**
+     * @covers ::loadFromFile
+     */
     public function testItIsPossibleToLoadFromAPhpConfigFile()
     {
         $this->assertInstanceOf(

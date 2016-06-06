@@ -7,6 +7,9 @@ use Hodor\MessageQueue\Adapter\Amqp\Factory;
 use Hodor\MessageQueue\Adapter\Config;
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @coversDefaultClass Hodor\MessageQueue\QueueFactory
+ */
 class QueueFactoryTest extends PHPUnit_Framework_TestCase
 {
     private $queue_factory;
@@ -24,6 +27,11 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         $this->queue_factory = new QueueFactory($config_adapter);
     }
 
+    /**
+     * @covers ::__construct
+     * @covers ::getQueue
+     * @covers ::getAdapterFactory
+     */
     public function testQueueCanBeGenerated()
     {
         $this->assertInstanceOf(
@@ -32,6 +40,11 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @covers ::__construct
+     * @covers ::getQueue
+     * @covers ::getAdapterFactory
+     */
     public function testQueueIsReusedIfReferredToMultipleTimes()
     {
         $this->assertSame(

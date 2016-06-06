@@ -5,8 +5,17 @@ namespace Hodor\Daemon;
 use PHPUnit_Framework_TestCase;
 use Hodor\JobQueue\Config;
 
+/**
+ * @coversDefaultClass Hodor\Daemon\SupervisordManager
+ */
 class SupervisordManagerTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @covers ::__construct
+     * @covers ::getDaemonConfig
+     * @covers ::generateQueuePrograms
+     * @covers ::evaluateProgramName
+     */
     public function testDaemonConfigContainsExpectedProcesses()
     {
         $expected = [
@@ -24,6 +33,10 @@ class SupervisordManagerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::getDaemonConfig
+     * @covers ::generateQueuePrograms
+     * @covers ::getProgram
      * @dataProvider provideDaemonProcesses
      */
     public function testProcessesContainExpectedKeys()
@@ -53,6 +66,15 @@ class SupervisordManagerTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     * @covers ::__construct
+     * @covers ::getDaemonConfig
+     * @covers ::generateQueuePrograms
+     * @covers ::getBinFilePath
+     * @covers ::evaluateProgramName
+     * @covers ::generateCommandString
+     * @covers ::getProgram
+     */
     public function testDaemonConfigIsGeneratedAsExpected()
     {
         $this->assertEquals(
@@ -75,6 +97,10 @@ class SupervisordManagerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::setupDaemon
+     * @covers ::getRawDaemonConfig
+     * @covers ::generateProgramText
      * @expectedException \Exception
      */
     public function testSetupDaemonThrowsAnExceptionIfConfigFileIsNotWritable()
@@ -85,6 +111,12 @@ class SupervisordManagerTest extends PHPUnit_Framework_TestCase
         $manager->setupDaemon();
     }
 
+    /**
+     * @covers ::__construct
+     * @covers ::setupDaemon
+     * @covers ::getRawDaemonConfig
+     * @covers ::generateProgramText
+     */
     public function testSetupDaemonGeneratesSupervisordConfig()
     {
         $hodor_base_path = dirname(dirname(dirname(dirname(__DIR__))));

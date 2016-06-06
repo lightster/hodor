@@ -4,6 +4,9 @@ namespace Hodor\Config;
 
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @coversDefaultClass Hodor\Config\PhpConfigLoader
+ */
 class PhpConfigLoaderTest extends PHPUnit_Framework_TestCase
 {
     private $loader;
@@ -16,6 +19,7 @@ class PhpConfigLoaderTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::loadFromFile
      * @expectedException \Exception
      */
     public function testLoadFromNonExistentFile()
@@ -24,6 +28,7 @@ class PhpConfigLoaderTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::loadFromFile
      * @expectedException \Exception
      */
     public function testLoadFromInvalidFile()
@@ -31,6 +36,9 @@ class PhpConfigLoaderTest extends PHPUnit_Framework_TestCase
         $this->loader->loadFromFile(__DIR__ . '/PhpConfigIsInvalid.php');
     }
 
+    /**
+     * @covers ::loadFromFile
+     */
     public function testLoadFromFile()
     {
         $this->assertInstanceOf(

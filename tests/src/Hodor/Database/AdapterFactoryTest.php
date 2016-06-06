@@ -4,6 +4,9 @@ namespace Hodor\Database;
 
 use PHPUnit_Framework_TestCase;
 
+/**
+ * @coversDefaultClass Hodor\Database\AdapterFactory
+ */
 class AdapterFactoryTest extends PHPUnit_Framework_TestCase
 {
     private $adapter_factory;
@@ -16,6 +19,8 @@ class AdapterFactoryTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::getAdapter
      * @expectedException \Exception
      */
     public function testRequestingAnAdapterForUnknownNameThrowsAnException()
@@ -23,6 +28,10 @@ class AdapterFactoryTest extends PHPUnit_Framework_TestCase
         $this->adapter_factory->getAdapter('unk');
     }
 
+    /**
+     * @covers ::__construct
+     * @covers ::getAdapter
+     */
     public function testAdapterForPgsqlNameIsAPgsqlAdapter()
     {
         $this->assertInstanceOf(
