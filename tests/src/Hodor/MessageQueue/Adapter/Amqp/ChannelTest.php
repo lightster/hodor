@@ -136,7 +136,7 @@ class ChannelTest extends PHPUnit_Framework_TestCase
      */
     public function provideQueueList()
     {
-        $config_provider = new ConfigProvider();
+        $config_provider = new ConfigProvider($this);
 
         return [
             [

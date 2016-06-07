@@ -78,38 +78,21 @@ class ConsumerTest extends BaseConsumerTest
             return $this->config;
         }
 
-        $config = new Config($this->getMock('Hodor\MessageQueue\Adapter\FactoryInterface'));
-        foreach ($this->getTestQueues() as $queue_key => $queue_config) {
-            $config->addQueueConfig($queue_key, array_merge($queue_config, $config_overrides));
-        }
-
-        $this->config = $config;
+        $config_provider = new ConfigProvider($this);
+        $test_queues = $this->getTestQueues($config_provider);
+        $this->config = $config_provider->getConfigAdapter($test_queues, $config_overrides);
 
         return $this->config;
     }
 
-    private function getTestQueues()
-    {
-        $rabbit_credentials = $this->getRabbitCredentials();
-
-        return [
-            'fast_jobs' => [
-                'host'       => $rabbit_credentials['host'],
-                'port'       => $rabbit_credentials['port'],
-                'username'   => $rabbit_credentials['username'],
-                'password'   => $rabbit_credentials['password'],
-                'queue_name' => $rabbit_credentials['queue_prefix'] . uniqid(),
-            ],
-        ];
-    }
-
     /**
+     * @param ConfigProvider $config_provider
      * @return array
      */
-    private function getRabbitCredentials()
+    private function getTestQueues(ConfigProvider $config_provider)
     {
-        $config = require __DIR__ . '/../../../../../../config/config.test.php';
-
-        return $config['test']['rabbitmq'];
+        return [
+            'fast_jobs' => $config_provider->getQueueConfig(),
+        ];
     }
 }
