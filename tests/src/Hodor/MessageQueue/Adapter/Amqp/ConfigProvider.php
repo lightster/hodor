@@ -2,8 +2,39 @@
 
 namespace Hodor\MessageQueue\Adapter\Amqp;
 
+use Hodor\MessageQueue\Adapter\Testing\Config;
+use PHPUnit_Framework_TestCase;
+
 class ConfigProvider
 {
+    /**
+     * @var PHPUnit_Framework_TestCase
+     */
+    private $test_case;
+
+    /**
+     * @param PHPUnit_Framework_TestCase $test_case
+     */
+    public function __construct(PHPUnit_Framework_TestCase $test_case)
+    {
+        $this->test_case = $test_case;
+    }
+
+    /**
+     * @param array $queues
+     * @param array $config_overrides
+     * @return Config
+     */
+    public function getConfigAdapter(array $queues, array $config_overrides = [])
+    {
+        $config = new Config($this->test_case->getMock('Hodor\MessageQueue\Adapter\FactoryInterface'));
+        foreach ($queues as $queue_key => $queue_config) {
+            $config->addQueueConfig($queue_key, array_merge($queue_config, $config_overrides));
+        }
+
+        return $config;
+    }
+
     /**
      * @return array
      */

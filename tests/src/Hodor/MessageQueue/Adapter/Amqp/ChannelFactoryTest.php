@@ -123,12 +123,9 @@ class ChannelFactoryTest extends PHPUnit_Framework_TestCase
      */
     private function getTestConfig(array $queues)
     {
-        $config = new Config($this->getMock('Hodor\MessageQueue\Adapter\FactoryInterface'));
-        foreach ($queues as $queue_key => $queue_config) {
-            $config->addQueueConfig($queue_key, $queue_config);
-        }
+        $config_provider = new ConfigProvider($this);
 
-        return $config;
+        return $config_provider->getConfigAdapter($queues);
     }
 
     /**
@@ -136,7 +133,7 @@ class ChannelFactoryTest extends PHPUnit_Framework_TestCase
      */
     private function getTestQueues()
     {
-        $config_provider = new ConfigProvider();
+        $config_provider = new ConfigProvider($this);
 
         return [
             'fast_jobs' => $config_provider->getQueueConfig(),
