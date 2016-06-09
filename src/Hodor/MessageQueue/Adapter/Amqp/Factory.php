@@ -69,6 +69,15 @@ class Factory implements FactoryInterface
         return $this->producers[$queue_key];
     }
 
+    public function disconnectAll()
+    {
+        if (!$this->channel_manager) {
+            return;
+        }
+
+        $this->channel_manager->disconnectAll();
+    }
+
     /**
      * @return ChannelFactory
      */
