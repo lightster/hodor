@@ -48,11 +48,11 @@ class Queue
     public function push($message)
     {
         if ($this->is_in_batch) {
-            $this->messages[] = $this->generateMessage($message);
+            $this->messages[] = new OutgoingMessage($message);
             return;
         }
 
-        $this->producer->produceMessage($this->generateMessage($message));
+        $this->producer->produceMessage(new OutgoingMessage($message));
     }
 
     /**
@@ -101,20 +101,5 @@ class Queue
 
         $this->is_in_batch = false;
         $this->messages = [];
-    }
-
-    /**
-     * @param mixed $message
-     * @return string
-     * @throws RuntimeException
-     */
-    private function generateMessage($message)
-    {
-        $json_message = json_encode($message, JSON_FORCE_OBJECT, 100);
-        if (false === $json_message) {
-            throw new RuntimeException("Failed to json_encode message with name '{$message['name']}'.");
-        }
-
-        return $json_message;
     }
 }

@@ -2,8 +2,8 @@
 
 namespace Hodor\MessageQueue\Adapter\Amqp;
 
-use Hodor\MessageQueue\Adapter\MessageInterface;
 use Hodor\MessageQueue\Adapter\ProducerInterface;
+use Hodor\MessageQueue\OutgoingMessage;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use RuntimeException;
@@ -36,9 +36,9 @@ class Producer implements ProducerInterface
     }
 
     /**
-     * @param string $message
+     * @param OutgoingMessage $message
      */
-    public function produceMessage($message)
+    public function produceMessage(OutgoingMessage $message)
     {
         $this->getChannel()->getAmqpChannel()->basic_publish(
             $this->generateAmqpMessage($message),
@@ -65,14 +65,14 @@ class Producer implements ProducerInterface
     }
 
     /**
-     * @param string $json_message
+     * @param OutgoingMessage $message
      * @return AMQPMessage
      * @throws RuntimeException
      */
-    private function generateAmqpMessage($json_message)
+    private function generateAmqpMessage(OutgoingMessage $message)
     {
         return new AMQPMessage(
-            $json_message,
+            $message->getEncodedContent(),
             [
                 'content_type' => 'application/json',
                 'delivery_mode' => 2
