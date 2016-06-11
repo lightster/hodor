@@ -3,6 +3,7 @@
 namespace Hodor\MessageQueue\Adapter;
 
 use Hodor\MessageQueue\IncomingMessage;
+use Hodor\MessageQueue\OutgoingMessage;
 use PHPUnit_Framework_TestCase;
 
 abstract class ProducerTest extends PHPUnit_Framework_TestCase
@@ -16,7 +17,7 @@ abstract class ProducerTest extends PHPUnit_Framework_TestCase
     {
         $unique_message = 'hello ' . uniqid();
 
-        $this->getTestProducer()->produceMessage(json_encode($unique_message));
+        $this->getTestProducer()->produceMessage(new OutgoingMessage($unique_message));
 
         $this->assertSame($unique_message, $this->consumeMessage());
     }
@@ -34,7 +35,7 @@ abstract class ProducerTest extends PHPUnit_Framework_TestCase
         ];
 
         $this->getTestProducer()->produceMessageBatch(array_map(function ($value) {
-            return json_encode($value);
+            return new OutgoingMessage($value);
         }, $unique_messages));
 
         foreach ($unique_messages as $unique_message) {
