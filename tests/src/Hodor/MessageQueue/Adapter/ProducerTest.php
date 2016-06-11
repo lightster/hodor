@@ -2,7 +2,7 @@
 
 namespace Hodor\MessageQueue\Adapter;
 
-use Hodor\MessageQueue\Message;
+use Hodor\MessageQueue\IncomingMessage;
 use PHPUnit_Framework_TestCase;
 
 abstract class ProducerTest extends PHPUnit_Framework_TestCase

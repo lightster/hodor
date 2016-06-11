@@ -2,7 +2,7 @@
 
 namespace Hodor\MessageQueue\Adapter;
 
-use Hodor\MessageQueue\Message;
+use Hodor\MessageQueue\IncomingMessage;
 use PHPUnit_Framework_TestCase;
 
 abstract class FactoryTest extends PHPUnit_Framework_TestCase
@@ -21,7 +21,7 @@ abstract class FactoryTest extends PHPUnit_Framework_TestCase
 
         $factory->getProducer('fast_jobs')->produceMessage(json_encode($unique_message));
 
-        $factory->getConsumer('fast_jobs')->consumeMessage(function (Message $message) use ($unique_message) {
+        $factory->getConsumer('fast_jobs')->consumeMessage(function (IncomingMessage $message) use ($unique_message) {
             $this->assertEquals($unique_message, $message->getContent());
         });
     }

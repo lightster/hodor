@@ -5,9 +5,9 @@ namespace Hodor\MessageQueue;
 use PHPUnit_Framework_TestCase;
 
 /**
- * @coversDefaultClass Hodor\MessageQueue\Message
+ * @coversDefaultClass Hodor\MessageQueue\IncomingMessage
  */
-class MessageTest extends PHPUnit_Framework_TestCase
+class IncomingMessageTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @covers ::__construct
@@ -23,7 +23,7 @@ class MessageTest extends PHPUnit_Framework_TestCase
             ->method('getContent')
             ->willReturn(json_encode($uniq_id));
 
-        $message = new Message($message_interface);
+        $message = new IncomingMessage($message_interface);
         $this->assertSame($uniq_id, $message->getContent());
     }
 
@@ -41,7 +41,7 @@ class MessageTest extends PHPUnit_Framework_TestCase
             ->method('getContent')
             ->willReturn(json_encode($uniq_id));
 
-        $message = new Message($message_interface);
+        $message = new IncomingMessage($message_interface);
         $this->assertSame($uniq_id, $message->getContent());
         $this->assertSame($uniq_id, $message->getContent());
     }
@@ -57,7 +57,7 @@ class MessageTest extends PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('acknowledge');
 
-        $message = new Message($message_interface);
+        $message = new IncomingMessage($message_interface);
         $message->acknowledge();
     }
 
@@ -72,7 +72,7 @@ class MessageTest extends PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('acknowledge');
 
-        $message = new Message($message_interface);
+        $message = new IncomingMessage($message_interface);
         $message->acknowledge();
         $message->acknowledge();
     }
