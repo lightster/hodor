@@ -5,7 +5,7 @@ namespace Hodor\MessageQueue\Adapter\Amqp;
 use Hodor\MessageQueue\Adapter\ConsumerInterface;
 use Hodor\MessageQueue\Adapter\ProducerTest as BaseProducerTest;
 use Hodor\MessageQueue\Adapter\Testing\Config;
-use Hodor\MessageQueue\Message;
+use Hodor\MessageQueue\IncomingMessage;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -52,7 +52,7 @@ class ProducerTest extends BaseProducerTest
         $channel_factory = $this->generateChannelFactory($this->getTestConfig());
         $consumer = new Consumer('fast_jobs', $channel_factory);
 
-        $consumer->consumeMessage(function (Message $message) use (&$return) {
+        $consumer->consumeMessage(function (IncomingMessage $message) use (&$return) {
             $return = $message->getContent();
         });
 

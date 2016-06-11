@@ -2,7 +2,7 @@
 
 namespace Hodor\MessageQueue\Adapter;
 
-use Hodor\MessageQueue\Message;
+use Hodor\MessageQueue\IncomingMessage;
 use PHPUnit_Framework_TestCase;
 
 abstract class ConsumerTest extends PHPUnit_Framework_TestCase
@@ -18,7 +18,7 @@ abstract class ConsumerTest extends PHPUnit_Framework_TestCase
 
         $this->produceMessage(json_encode($unique_message));
 
-        $this->getTestConsumer()->consumeMessage(function (Message $message) use ($unique_message) {
+        $this->getTestConsumer()->consumeMessage(function (IncomingMessage $message) use ($unique_message) {
             $this->assertEquals($unique_message, $message->getContent());
         });
     }

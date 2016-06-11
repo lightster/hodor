@@ -5,7 +5,7 @@ namespace Hodor\MessageQueue\Adapter\Amqp;
 use Hodor\MessageQueue\Adapter\ConsumerInterface;
 use Hodor\MessageQueue\Adapter\ConsumerTest as BaseConsumerTest;
 use Hodor\MessageQueue\Adapter\Testing\Config;
-use Hodor\MessageQueue\Message;
+use Hodor\MessageQueue\IncomingMessage;
 use PHPUnit_Framework_TestCase;
 
 /**

@@ -4,7 +4,7 @@ namespace Hodor\MessageQueue;
 
 use Hodor\MessageQueue\Adapter\MessageInterface;
 
-class Message
+class IncomingMessage
 {
     /**
      * @var MessageInterface
