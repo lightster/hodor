@@ -28,6 +28,21 @@ class OutgoingMessageTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getEncodedContent
+     */
+    public function testEncodedContentCanBeRetrievedMultipleTimes()
+    {
+        $content = ['name' => 'Hey', 'id' => 123, 'active' => true];
+
+        $message = new OutgoingMessage($content);
+        $this->assertSame(
+            $message->getEncodedContent(),
+            $message->getEncodedContent()
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getEncodedContent
      * @expectedException RuntimeException
      */
     public function testOver100LevelsOfNestingThrowsAnException()
