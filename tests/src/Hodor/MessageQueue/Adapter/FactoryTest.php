@@ -24,6 +24,7 @@ abstract class FactoryTest extends PHPUnit_Framework_TestCase
 
         $factory->getConsumer('fast_jobs')->consumeMessage(function (IncomingMessage $message) use ($unique_message) {
             $this->assertEquals($unique_message, $message->getContent());
+            $message->acknowledge();
         });
     }
 

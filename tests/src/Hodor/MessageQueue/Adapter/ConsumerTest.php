@@ -21,6 +21,7 @@ abstract class ConsumerTest extends PHPUnit_Framework_TestCase
 
         $this->getTestConsumer()->consumeMessage(function (IncomingMessage $message) use ($unique_message) {
             $this->assertEquals($unique_message, $message->getContent());
+            $message->acknowledge();
         });
     }
 
