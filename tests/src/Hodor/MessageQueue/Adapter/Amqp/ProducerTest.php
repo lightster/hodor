@@ -54,7 +54,12 @@ class ProducerTest extends BaseProducerTest
 
         $consumer->consumeMessage(function (IncomingMessage $message) use (&$return) {
             $return = $message->getContent();
+            $message->acknowledge();
         });
+
+        // disconnect after consuming so the unused channel does not prefetch
+        // and hold a message unack'd while another channel is looking for it
+        $channel_factory->disconnectAll();
 
         return $return;
     }
