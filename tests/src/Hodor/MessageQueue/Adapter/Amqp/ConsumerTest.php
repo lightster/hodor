@@ -6,6 +6,7 @@ use Hodor\MessageQueue\Adapter\ConsumerInterface;
 use Hodor\MessageQueue\Adapter\ConsumerTest as BaseConsumerTest;
 use Hodor\MessageQueue\Adapter\Testing\Config;
 use Hodor\MessageQueue\IncomingMessage;
+use Hodor\MessageQueue\OutgoingMessage;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -45,9 +46,9 @@ class ConsumerTest extends BaseConsumerTest
     }
 
     /**
-     * @param string $message
+     * @param OutgoingMessage $message
      */
-    protected function produceMessage($message)
+    protected function produceMessage(OutgoingMessage $message)
     {
         $channel_factory = $this->generateChannelFactory($this->getTestConfig());
         $producer = new Producer('fast_jobs', $channel_factory);
