@@ -12,21 +12,6 @@ use PHPUnit_Framework_TestCase;
  */
 class QueueFactoryTest extends PHPUnit_Framework_TestCase
 {
-    private $queue_factory;
-
-    public function setUp()
-    {
-        parent::setUp();
-
-        $config_adapter = $this->getMock('\Hodor\MessageQueue\Adapter\ConfigInterface');
-        $config_adapter->method('getAdapterFactory')
-            ->willReturn(new Factory($config_adapter));
-        $config_adapter->method('getQueueConfig')
-            ->willReturn($this->queueConfigProvider());
-
-        $this->queue_factory = new QueueFactory($config_adapter);
-    }
-
     /**
      * @covers ::__construct
      * @covers ::getQueue
@@ -36,7 +21,7 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
             '\Hodor\MessageQueue\Queue',
-            $this->queue_factory->getQueue('worker-default')
+            $this->generateQueueFactory()->getQueue('worker-default')
         );
     }
 
@@ -47,9 +32,11 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
      */
     public function testQueueIsReusedIfReferredToMultipleTimes()
     {
+        $queue_factory = $this->generateQueueFactory();
+
         $this->assertSame(
-            $this->queue_factory->getQueue('worker-default'),
-            $this->queue_factory->getQueue('worker-default')
+            $queue_factory->getQueue('worker-default'),
+            $queue_factory->getQueue('worker-default')
         );
     }
 
@@ -71,5 +58,16 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
             'queue_name'  => $config_template['queue_prefix'] . uniqid(),
             'fetch_count' => 1,
         ];
+    }
+
+    private function generateQueueFactory()
+    {
+        $config_adapter = $this->getMock('\Hodor\MessageQueue\Adapter\ConfigInterface');
+        $config_adapter->method('getAdapterFactory')
+            ->willReturn(new Factory($config_adapter));
+        $config_adapter->method('getQueueConfig')
+            ->willReturn($this->queueConfigProvider());
+
+        return new QueueFactory($config_adapter);
     }
 }
