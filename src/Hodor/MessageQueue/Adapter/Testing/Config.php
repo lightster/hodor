@@ -19,11 +19,16 @@ class Config implements ConfigInterface
     private $queues = [];
 
     /**
-     * @param FactoryInterface $adapter_factory
+     * @var callable
      */
-    public function __construct(FactoryInterface $adapter_factory)
+    private $adapter_factory_generator;
+
+    /**
+     * @param callable $adapter_factory_generator
+     */
+    public function __construct(callable $adapter_factory_generator)
     {
-        $this->adapter_factory = $adapter_factory;
+        $this->adapter_factory_generator = $adapter_factory_generator;
     }
 
     /**
@@ -31,6 +36,13 @@ class Config implements ConfigInterface
      */
     public function getAdapterFactory()
     {
+        if ($this->adapter_factory) {
+            return $this->adapter_factory;
+        }
+
+        $adapter_factory_generator = $this->adapter_factory_generator;
+        $this->adapter_factory = $adapter_factory_generator($this);
+
         return $this->adapter_factory;
     }
 

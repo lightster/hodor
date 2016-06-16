@@ -14,10 +14,39 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::getAdapterFactory
      */
+    public function testAdapterFactoryReturnedIsSameReturnedByFactoryGenerator()
+    {
+        $adapter_factory = $this->getAdapterFactoryMock();
+        $config = new Config(function () use ($adapter_factory) {
+            return $adapter_factory;
+        });
+
+        $this->assertSame($adapter_factory, $config->getAdapterFactory());
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getAdapterFactory
+     */
+    public function testAdapterFactoryIsLazyLoaded()
+    {
+        $config = new Config(function () {
+            return $this->getAdapterFactoryMock();
+        });
+
+        $this->assertSame($config->getAdapterFactory(), $config->getAdapterFactory());
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getAdapterFactory
+     */
     public function testAdapterFactoryReturnedIsSameProvidedToConstructor()
     {
         $adapter_factory = $this->getAdapterFactoryMock();
-        $config = new Config($adapter_factory);
+        $config = new Config(function () use ($adapter_factory) {
+            return $adapter_factory;
+        });
 
         $this->assertSame($adapter_factory, $config->getAdapterFactory());
     }
@@ -30,7 +59,9 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testRetrievingUndefinedQueueThrowsAnException($queue_key)
     {
-        $config = new Config($this->getAdapterFactoryMock());
+        $config = new Config(function () {
+            return $this->getAdapterFactoryMock();
+        });
 
         $config->getQueueConfig($queue_key);
     }
@@ -44,7 +75,9 @@ class ConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testAddedQueueConfigCanBeRetrieved($queue_key, array $queue_config)
     {
-        $config = new Config($this->getAdapterFactoryMock());
+        $config = new Config(function () {
+            return $this->getAdapterFactoryMock();
+        });
 
         $config->addQueueConfig($queue_key, $queue_config);
         $this->assertEquals($queue_config, $config->getQueueConfig($queue_key));
