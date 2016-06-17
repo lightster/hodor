@@ -43,6 +43,6 @@ class Message implements MessageInterface
 
     public function acknowledge()
     {
-        return $this->message_bank->acknowledgeMessage($this->message_id);
+        $this->message_bank->acknowledgeMessage($this->message_id);
     }
 }

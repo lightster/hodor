@@ -3,12 +3,7 @@
 namespace Hodor\MessageQueue\Adapter\Amqp;
 
 use Hodor\MessageQueue\Adapter\ConfigInterface;
-use Hodor\MessageQueue\Adapter\ConsumerInterface;
-use Hodor\MessageQueue\Adapter\FactoryInterface;
-use Hodor\MessageQueue\Adapter\ProducerInterface;
 use LogicException;
-use PhpAmqpLib\Channel\AMQPChannel;
-use PhpAmqpLib\Connection\AbstractConnection;
 
 class ChannelFactory
 {
