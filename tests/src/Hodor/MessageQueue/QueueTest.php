@@ -108,7 +108,6 @@ class QueueTest extends PHPUnit_Framework_TestCase
     {
         $message_bank = new MessageBank();
         $queue = $this->getQueue($message_bank);
-        $queue->beginBatch();
 
         $queue->beginBatch();
         for ($i = 1; $i <= 2; $i++) {
@@ -118,6 +117,21 @@ class QueueTest extends PHPUnit_Framework_TestCase
         $queue->consume(function () {
             $this->fail('A message should not be consumed');
         });
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::push
+     * @covers ::beginBatch
+     * @depends testMessageCanBeConsumed
+     * @expectedException Exception
+     */
+    public function testStartingABatchWhileABatchIsAlreadyStartedThrowsAnException()
+    {
+        $message_bank = new MessageBank();
+        $queue = $this->getQueue($message_bank);
+        $queue->beginBatch();
+        $queue->beginBatch();
     }
 
     /**
@@ -170,7 +184,7 @@ class QueueTest extends PHPUnit_Framework_TestCase
             $message->acknowledge();
         });
 
-        $queue->consume(function (IncomingMessage $message) {
+        $queue->consume(function () {
         });
     }
 
@@ -189,6 +203,27 @@ class QueueTest extends PHPUnit_Framework_TestCase
         $queue->beginBatch();
         $queue->publishBatch();
         $queue->publishBatch();
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::beginBatch
+     * @covers ::publishBatch
+     * @depends testMessageCanBeConsumed
+     * @expectedException Exception
+     */
+    public function testANewBatchCanBeStartedAfterABatchHasAlreadyBeenPublished()
+    {
+        $message_bank = new MessageBank();
+        $queue = $this->getQueue($message_bank);
+
+        $queue->beginBatch();
+        $queue->publishBatch();
+        $queue->beginBatch();
+
+        $queue->push(1);
+        $queue->consume(function () {
+        });
     }
 
     /**
@@ -276,6 +311,27 @@ class QueueTest extends PHPUnit_Framework_TestCase
         $queue->beginBatch();
         $queue->publishBatch();
         $queue->discardBatch();
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::beginBatch
+     * @covers ::discardBatch
+     * @depends testMessageCanBeConsumed
+     * @expectedException Exception
+     */
+    public function testANewBatchCanBeStartedAfterABatchHasAlreadyBeenDiscarded()
+    {
+        $message_bank = new MessageBank();
+        $queue = $this->getQueue($message_bank);
+
+        $queue->beginBatch();
+        $queue->discardBatch();
+        $queue->beginBatch();
+
+        $queue->push(1);
+        $queue->consume(function () {
+        });
     }
 
     /**
