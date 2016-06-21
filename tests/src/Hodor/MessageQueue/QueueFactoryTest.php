@@ -14,11 +14,6 @@ use PHPUnit_Framework_TestCase;
 class QueueFactoryTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Config
-     */
-    private $config;
-
-    /**
      * @covers ::__construct
      * @covers ::getQueue
      * @covers ::<private>
