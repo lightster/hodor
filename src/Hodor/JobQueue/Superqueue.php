@@ -4,6 +4,7 @@ namespace Hodor\JobQueue;
 
 use DateTime;
 use Hodor\Database\AdapterFactory as DbAdapterFactory;
+use Hodor\Database\AdapterInterface as DbAdapterInterface;
 use Hodor\Database\Exception\BufferedJobNotFoundException;
 use Hodor\MessageQueue\IncomingMessage;
 
@@ -165,6 +166,7 @@ class Superqueue
      * @param IncomingMessage $message
      * @param DateTime $started_running_at
      * @param callable $mark_finished
+     * @throws BufferedJobNotFoundException
      */
     private function markJobAsFinished(
         IncomingMessage $message,

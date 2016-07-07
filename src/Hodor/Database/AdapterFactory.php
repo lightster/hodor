@@ -28,7 +28,8 @@ class AdapterFactory
 
     /**
      * @param  string $name
-     * @return \Hodor\Config\LoaderInterface
+     * @return AdapterInterface
+     * @throws Exception
      */
     public function getAdapter($name)
     {
