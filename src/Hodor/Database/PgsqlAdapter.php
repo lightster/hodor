@@ -2,6 +2,7 @@
 
 namespace Hodor\Database;
 
+use Generator;
 use Hodor\Database\Driver\YoPdoDriver;
 use Hodor\Database\Exception\BufferedJobNotFoundException;
 use Hodor\Database\Phpmig\PgsqlPhpmigAdapter;
@@ -55,7 +56,7 @@ class PgsqlAdapter implements AdapterInterface
     }
 
     /**
-     * @return generator
+     * @return Generator
      */
     public function getJobsToRunGenerator()
     {
@@ -143,6 +144,9 @@ SQL;
         return $this->markJobAsFinished('failed', $meta);
     }
 
+    /**
+     * @return PgsqlPhpmigAdapter
+     */
     public function getPhpmigAdapter()
     {
         return new PgsqlPhpmigAdapter($this->getDriver());
