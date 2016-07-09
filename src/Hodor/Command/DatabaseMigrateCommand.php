@@ -48,10 +48,7 @@ class DatabaseMigrateCommand extends Command
             return;
         }
 
-        /**
-         * @var $phpmig_adapter PgsqlPhpmigAdapter
-         */
-        $phpmig_adapter = $phpmig_container['phpmig.adapter'];
+        $phpmig_adapter = $phpmig_container->getPhpmigAdapter();
         if (!$phpmig_adapter->hasSchema()) {
             $phpmig_adapter->createSchema();
         }
