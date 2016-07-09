@@ -72,6 +72,14 @@ class Container extends Pimple
     }
 
     /**
+     * @return PgsqlPhpmigAdapter
+     */
+    public function getPhpmigAdapter()
+    {
+        return $this['phpmig.adapter'];
+    }
+
+    /**
      * @param $config_file
      * @throws Exception
      */
