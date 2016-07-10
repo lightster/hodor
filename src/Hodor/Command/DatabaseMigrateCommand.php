@@ -2,12 +2,8 @@
 
 namespace Hodor\Command;
 
-use Hodor\Database\Phpmig\Container;
-use Hodor\Database\Phpmig\PgsqlPhpmigAdapter;
-use Phpmig\Api\PhpmigApplication;
-use Phpmig\Console\Command\StatusCommand;
+use Hodor\Database\Phpmig\CommandWrapper;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -36,22 +32,13 @@ class DatabaseMigrateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $phpmig_container = new Container();
-        $phpmig_container->addDefaultServices($input->getArgument('hodor-config'));
+        $command_wrapper = new CommandWrapper($input->getArgument('hodor-config'), $output);
 
-        $phpmig = new PhpmigApplication($phpmig_container, $output);
         if ($input->getOption('status')) {
-            putenv('HODOR_CONFIG=' . $input->getArgument('hodor-config'));
-            $status_command = new StatusCommand();
-            $status_command->setApplication($this->getApplication());
-            $status_command->run(new ArrayInput([]), $output);
+            $command_wrapper->showStatus($this->getApplication());
             return;
         }
 
-        $phpmig_adapter = $phpmig_container->getPhpmigAdapter();
-        if (!$phpmig_adapter->hasSchema()) {
-            $phpmig_adapter->createSchema();
-        }
-        $phpmig->up();
+        $command_wrapper->up();
     }
 }
