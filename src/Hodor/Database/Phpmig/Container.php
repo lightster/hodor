@@ -80,6 +80,14 @@ class Container extends Pimple
     }
 
     /**
+     * @return string
+     */
+    public function getConfigPath()
+    {
+        return $this['hodor.config.file'];
+    }
+
+    /**
      * @param $config_file
      * @throws Exception
      */
