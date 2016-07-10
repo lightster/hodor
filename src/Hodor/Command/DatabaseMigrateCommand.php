@@ -43,6 +43,6 @@ class DatabaseMigrateCommand extends Command
             return;
         }
 
-        $command_wrapper->up();
+        $command_wrapper->runMigrations();
     }
 }

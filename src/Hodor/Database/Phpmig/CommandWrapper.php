@@ -39,7 +39,7 @@ class CommandWrapper
         $status_command->run(new ArrayInput([]), $this->output);
     }
 
-    public function up()
+    public function runMigrations()
     {
         $phpmig = new PhpmigApplication($this->container, $this->output);
         $phpmig_adapter = $this->container->getPhpmigAdapter();
