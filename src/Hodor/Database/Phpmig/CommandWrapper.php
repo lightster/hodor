@@ -12,18 +12,18 @@ use Symfony\Component\Console\Output\OutputInterface;
 class CommandWrapper
 {
     /**
-     * @var string
+     * @var Container
      */
-    private $config_path;
+    private $container;
 
     /**
      * @var OutputInterface
      */
     private $output;
 
-    public function __construct($config_path, OutputInterface $output)
+    public function __construct(Container $container, OutputInterface $output)
     {
-        $this->config_path = $config_path;
+        $this->container = $container;
         $this->output = $output;
     }
 
@@ -33,7 +33,7 @@ class CommandWrapper
      */
     public function showStatus(Application $app)
     {
-        putenv('HODOR_CONFIG=' . $this->config_path);
+        putenv('HODOR_CONFIG=' . $this->container->getConfigPath());
         $status_command = new StatusCommand();
         $status_command->setApplication($app);
         $status_command->run(new ArrayInput([]), $this->output);
@@ -41,11 +41,8 @@ class CommandWrapper
 
     public function up()
     {
-        $container = new Container();
-        $container->addDefaultServices($this->config_path);
-
-        $phpmig = new PhpmigApplication($container, $this->output);
-        $phpmig_adapter = $container->getPhpmigAdapter();
+        $phpmig = new PhpmigApplication($this->container, $this->output);
+        $phpmig_adapter = $this->container->getPhpmigAdapter();
         if (!$phpmig_adapter->hasSchema()) {
             $phpmig_adapter->createSchema();
         }

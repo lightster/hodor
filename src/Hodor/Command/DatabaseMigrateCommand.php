@@ -3,6 +3,7 @@
 namespace Hodor\Command;
 
 use Hodor\Database\Phpmig\CommandWrapper;
+use Hodor\Database\Phpmig\Container;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -32,7 +33,10 @@ class DatabaseMigrateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $command_wrapper = new CommandWrapper($input->getArgument('hodor-config'), $output);
+        $container = new Container();
+        $container->addDefaultServices($input->getArgument('hodor-config'));
+
+        $command_wrapper = new CommandWrapper($container, $output);
 
         if ($input->getOption('status')) {
             $command_wrapper->showStatus($this->getApplication());
