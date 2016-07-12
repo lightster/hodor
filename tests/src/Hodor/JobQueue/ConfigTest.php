@@ -29,6 +29,17 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
+     * @covers ::getSuperqueueConfig
+     */
+    public function testSuperqueueConfigCanBeRetrieved()
+    {
+        $config = new Config(__FILE__, ['superqueue' => 'heya']);
+
+        $this->assertEquals('heya', $config->getSuperqueueConfig());
+    }
+
+    /**
+     * @covers ::__construct
      * @covers ::getDatabaseConfig
      * @dataProvider configProvider
      */
@@ -72,6 +83,17 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $config = new Config(__FILE__, ['superqueuer' => []]);
 
         $config->getDatabaseConfig();
+    }
+
+    /**
+     * @covers ::getAdapterFactory
+     */
+    public function testAdapterFactoryCanBeRetrieved()
+    {
+        $this->assertInstanceOf(
+            'Hodor\MessageQueue\Adapter\Amqp\Factory',
+            (new Config(__FILE__, []))->getAdapterFactory()
+        );
     }
 
     /**
@@ -436,7 +458,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::getBufferQueueNameFactory
+     * @covers ::getDaemonConfig
      * @covers ::getOption
      * @dataProvider configProvider
      */
