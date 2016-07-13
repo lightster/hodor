@@ -213,21 +213,20 @@ class Config implements ConfigInterface
         }
 
         $config = array_merge(
-            $this->getOption('queue_defaults', [
+            [
                 'host'         => null,
                 'port'         => 5672,
                 'username'     => null,
                 'password'     => null,
-                'queue_prefix' => 'hodor-'
-            ]),
-            $this->getOption($queue_type_keys['defaults_key'], [])
+                'queue_prefix' => 'hodor-',
+            ],
+            $this->getOption('queue_defaults', []),
+            $this->getOption($queue_type_keys['defaults_key'], []),
+            $queues[$queue_name]
         );
         $config = array_merge(
             $config,
-            [
-                'queue_name' => "{$config['queue_prefix']}{$queue_name}",
-            ],
-            $queues[$queue_name]
+            ['queue_name' => "{$config['queue_prefix']}{$queue_name}"]
         );
         $config['key_name'] = $queue_name;
         $config['fetch_count'] = 1;
