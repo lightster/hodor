@@ -29,6 +29,17 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
+     * @covers ::getSuperqueueConfig
+     */
+    public function testSuperqueueConfigCanBeRetrieved()
+    {
+        $config = new Config(__FILE__, ['superqueue' => 'heya']);
+
+        $this->assertEquals('heya', $config->getSuperqueueConfig());
+    }
+
+    /**
+     * @covers ::__construct
      * @covers ::getDatabaseConfig
      * @dataProvider configProvider
      */
@@ -72,6 +83,17 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $config = new Config(__FILE__, ['superqueuer' => []]);
 
         $config->getDatabaseConfig();
+    }
+
+    /**
+     * @covers ::getAdapterFactory
+     */
+    public function testAdapterFactoryCanBeRetrieved()
+    {
+        $this->assertInstanceOf(
+            'Hodor\MessageQueue\Adapter\Amqp\Factory',
+            (new Config(__FILE__, []))->getAdapterFactory()
+        );
     }
 
     /**
@@ -436,7 +458,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::getBufferQueueNameFactory
+     * @covers ::getDaemonConfig
      * @covers ::getOption
      * @dataProvider configProvider
      */
@@ -488,6 +510,42 @@ class ConfigTest extends PHPUnit_Framework_TestCase
             ['xyz', '456'],
             $config->getBufferQueueNames()
         );
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getQueueConfig
+     * @covers ::getOption
+     * @dataProvider provideQueueConfigs
+     * @param array $expected_config
+     * @param $queue_name
+     * @param array $hodor_config
+     * @throws Exception
+     */
+    public function testQueueConfigCanBeGenerated(array $expected_config, $queue_name, array $hodor_config)
+    {
+        $config = new Config(__FILE__, $hodor_config);
+
+        $this->assertEquals($expected_config, $config->getQueueConfig($queue_name));
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getQueueConfig
+     * @expectedException Exception
+     */
+    public function testQueueConfigForUnknownConfigThrowsAnException()
+    {
+        $config = new Config(__FILE__, ['worker_queues' => []]);
+        $config->getQueueConfig('worker-missing');
+    }
+
+    /**
+     * @return array
+     */
+    public function provideQueueConfigs()
+    {
+        return require __DIR__ . '/ConfigTest.queue-config.dataset.php';
     }
 
     public function configProvider()
