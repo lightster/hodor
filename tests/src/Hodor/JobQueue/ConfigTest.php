@@ -512,6 +512,42 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @covers ::__construct
+     * @covers ::getQueueConfig
+     * @covers ::getOption
+     * @dataProvider provideQueueConfigs
+     * @param array $expected_config
+     * @param $queue_name
+     * @param array $hodor_config
+     * @throws Exception
+     */
+    public function testQueueConfigCanBeGenerated(array $expected_config, $queue_name, array $hodor_config)
+    {
+        $config = new Config(__FILE__, $hodor_config);
+
+        $this->assertEquals($expected_config, $config->getQueueConfig($queue_name));
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getQueueConfig
+     * @expectedException Exception
+     */
+    public function testQueueConfigForUnknownConfigThrowsAnException()
+    {
+        $config = new Config(__FILE__, ['worker_queues' => []]);
+        $config->getQueueConfig('worker-missing');
+    }
+
+    /**
+     * @return array
+     */
+    public function provideQueueConfigs()
+    {
+        return require __DIR__ . '/ConfigTest.queue-config.dataset.php';
+    }
+
     public function configProvider()
     {
         return [
