@@ -86,6 +86,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::generateAdapterFactory
      * @covers ::getAdapterFactory
      */
     public function testAdapterFactoryCanBeRetrieved()
@@ -93,6 +94,32 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(
             'Hodor\MessageQueue\Adapter\Amqp\Factory',
             (new Config(__FILE__, []))->getAdapterFactory()
+        );
+    }
+
+    /**
+     * @covers ::generateAdapterFactory
+     * @covers ::getAdapterFactory
+     */
+    public function testAdapterFactoryIsReused()
+    {
+        $config = new Config(__FILE__, []);
+
+        $this->assertSame(
+            $config->getAdapterFactory(),
+            $config->getAdapterFactory()
+        );
+    }
+
+    /**
+     * @covers ::generateAdapterFactory
+     * @covers ::getAdapterFactory
+     */
+    public function testTestingAdapterFactoryCanBeRetrieved()
+    {
+        $this->assertInstanceOf(
+            'Hodor\MessageQueue\Adapter\Testing\Factory',
+            (new Config(__FILE__, ['adapter_factory' => 'testing']))->getAdapterFactory()
         );
     }
 
