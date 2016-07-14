@@ -3,11 +3,18 @@
 namespace Hodor\JobQueue;
 
 use Exception;
-use Hodor\MessageQueue\Adapter\Amqp\Factory;
+use Hodor\MessageQueue\Adapter\Amqp\Factory as AmqpFactory;
 use Hodor\MessageQueue\Adapter\ConfigInterface;
+use Hodor\MessageQueue\Adapter\FactoryInterface;
+use Hodor\MessageQueue\Adapter\Testing\Factory as TestingFactory;
 
 class Config implements ConfigInterface
 {
+    /**
+     * @var FactoryInterface
+     */
+    private $adapter_factory;
+
     /**
      * @var string
      */
@@ -178,11 +185,17 @@ class Config implements ConfigInterface
     }
 
     /**
-     * @return Factory
+     * @return FactoryInterface
      */
     public function getAdapterFactory()
     {
-        return new Factory($this);
+        if ($this->adapter_factory) {
+            return $this->adapter_factory;
+        }
+
+        $this->adapter_factory = $this->generateAdapterFactory();
+
+        return $this->adapter_factory;
     }
 
     /**
@@ -234,6 +247,18 @@ class Config implements ConfigInterface
         $config['process_count'] = $config[$queue_type_keys['process_count_key']];
 
         return $config;
+    }
+
+    /**
+     * @return FactoryInterface
+     */
+    private function generateAdapterFactory()
+    {
+        if ('testing' === $this->getOption('adapter_factory')) {
+            return new TestingFactory($this);
+        }
+
+        return new AmqpFactory($this);
     }
 
     /**
