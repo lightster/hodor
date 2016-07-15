@@ -66,6 +66,14 @@ class JobQueue
     }
 
     /**
+     * @param Config $config
+     */
+    public function setConfig(Config $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
      * @return Config
      * @throws Exception
      */
@@ -85,14 +93,6 @@ class JobQueue
         }
 
         return $this->config;
-    }
-
-    /**
-     * @param QueueManager $queue_manager
-     */
-    public function setQueueManager(QueueManager $queue_manager)
-    {
-        $this->queue_manager = $queue_manager;
     }
 
     /**
