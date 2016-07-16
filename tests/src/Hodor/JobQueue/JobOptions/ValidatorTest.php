@@ -13,6 +13,9 @@ use PHPUnit_Framework_TestCase;
 class ValidatorTest extends PHPUnit_Framework_TestCase
 {
     /**
+     * @covers ::__construct
+     * @covers ::validateJobOptions
+     * @covers ::validateOptionsAreKnown
      * @expectedException \Exception
      */
     public function testUnknownOptionThrowsAnException()
@@ -21,6 +24,10 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::validateJobOptions
+     * @covers ::validateOptionsAreKnown
+     * @covers ::validateQueueName
      * @expectedException \Exception
      */
     public function testUnknownQueueNameThrowsAnException()
@@ -28,12 +35,20 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->generateValidator()->validateJobOptions(['queue_name' => 'made_up_queue']);
     }
 
+    /**
+     * @covers ::__construct
+     * @covers ::validateJobOptions
+     * @covers ::validateQueueName
+     */
     public function testKnownQueueNameCanValidateWithoutAnException()
     {
         $this->generateValidator()->validateJobOptions(['queue_name' => 'queue_a']);
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::validateJobOptions
+     * @covers ::validateRunAfter
      * @expectedException \Exception
      */
     public function testRunAfterThrowsAnExceptionIfItIsNotADateTimeObject()
@@ -41,12 +56,20 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->generateValidator()->validateJobOptions(['run_after' => '2015-12-12']);
     }
 
+    /**
+     * @covers ::__construct
+     * @covers ::validateJobOptions
+     * @covers ::validateRunAfter
+     */
     public function testRunAfterCanValidateWithoutAnException()
     {
         $this->generateValidator()->validateJobOptions(['run_after' => new DateTime()]);
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::validateJobOptions
+     * @covers ::validateJobRank
      * @expectedException \Exception
      */
     public function testJobRankThrowsAnExceptionIfANonIntegerIsPassedIn()
@@ -55,6 +78,9 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::validateJobOptions
+     * @covers ::validateJobRank
      * @expectedException \Exception
      */
     public function testJobRankThrowsAnExceptionIfAnOutOfRangeRankIsUsed()
@@ -62,12 +88,20 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->generateValidator()->validateJobOptions(['job_rank' => 25]);
     }
 
+    /**
+     * @covers ::__construct
+     * @covers ::validateJobOptions
+     * @covers ::validateJobRank
+     */
     public function testJobRankCanValidateWithoutAnException()
     {
         $this->generateValidator()->validateJobOptions(['job_rank' => 5]);
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::validateJobOptions
+     * @covers ::validateMutexId
      * @expectedException \Exception
      */
     public function testMutexIdThrowsAnExceptionIfMutexIsNotAScalar()
@@ -76,6 +110,9 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::validateJobOptions
+     * @covers ::validateMutexId
      * @expectedException \Exception
      */
     public function testMutexIdThrowsAnExceptionIfMutexIsEmpty()
@@ -83,6 +120,11 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
         $this->generateValidator()->validateJobOptions(['mutex_id' => '']);
     }
 
+    /**
+     * @covers ::__construct
+     * @covers ::validateJobOptions
+     * @covers ::validateMutexId
+     */
     public function testMutexIdCanValidateWithoutAnException()
     {
         $this->generateValidator()->validateJobOptions(['mutex_id' => 'yay']);
