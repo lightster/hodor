@@ -3,18 +3,12 @@
 namespace Hodor\JobQueue;
 
 use DateTime;
-use Hodor\Database\AdapterFactory as DbAdapterFactory;
 use Hodor\Database\AdapterInterface as DbAdapterInterface;
 use Hodor\Database\Exception\BufferedJobNotFoundException;
 use Hodor\MessageQueue\IncomingMessage;
 
 class Superqueue
 {
-    /**
-     * @var array
-     */
-    private $config;
-
     /**
      * @var QueueManager
      */
@@ -31,12 +25,10 @@ class Superqueue
     private $jobs_queued = 0;
 
     /**
-     * @param array $config
      * @param QueueManager $queue_manager
      */
-    public function __construct(array $config, QueueManager $queue_manager)
+    public function __construct(QueueManager $queue_manager)
     {
-        $this->config = $config;
         $this->queue_manager = $queue_manager;
     }
 
@@ -200,9 +192,7 @@ class Superqueue
             return $this->database;
         }
 
-        $db_adapter_factory = new DbAdapterFactory($this->config['database']);
-
-        $this->database = $db_adapter_factory->getAdapter($this->config['database']['type']);
+        $this->database = $this->queue_manager->getDatabase();
 
         return $this->database;
     }
