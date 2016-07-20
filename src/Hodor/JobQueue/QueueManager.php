@@ -2,6 +2,8 @@
 
 namespace Hodor\JobQueue;
 
+use Hodor\Database\AdapterFactory as DbAdapterFactory;
+use Hodor\Database\AdapterInterface as DbAdapterInterface;
 use Hodor\JobQueue\JobOptions\Validator as JobOptionsValidator;
 use Hodor\MessageQueue\Queue as MessageQueue;
 use Hodor\MessageQueue\QueueFactory as MqFactory;
@@ -34,6 +36,11 @@ class QueueManager
     private $job_options_validator;
 
     /**
+     * @var DbAdapterInterface
+     */
+    private $database;
+
+    /**
      * @param Config $config
      */
     public function __construct(Config $config)
@@ -50,8 +57,7 @@ class QueueManager
             return $this->superqueue;
         }
 
-        $queue_config = $this->config->getSuperqueueConfig();
-        $this->superqueue = new Superqueue($queue_config, $this);
+        $this->superqueue = new Superqueue($this);
 
         return $this->superqueue;
     }
@@ -153,6 +159,23 @@ class QueueManager
     public function discardBatch()
     {
         $this->getMessageQueueFactory()->discardBatch();
+    }
+
+    /**
+     * @return DbAdapterInterface
+     */
+    public function getDatabase()
+    {
+        if ($this->database) {
+            return $this->database;
+        }
+
+        $config = $this->config->getSuperqueueConfig();
+        $db_adapter_factory = new DbAdapterFactory($config['database']);
+
+        $this->database = $db_adapter_factory->getAdapter($config['database']['type']);
+
+        return $this->database;
     }
 
     /**
