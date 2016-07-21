@@ -29,6 +29,7 @@ class PgsqlAdapterTest extends PHPUnit_Framework_TestCase
         $phpmig_container['hodor.database'] = $this->pgsql_adapter;
 
         $command_wrapper = new CommandWrapper($phpmig_container, new NullOutput());
+        $command_wrapper->rollbackMigrations();
         $command_wrapper->runMigrations();
 
         while (iterator_to_array($this->pgsql_adapter->getJobsToRunGenerator())) {
