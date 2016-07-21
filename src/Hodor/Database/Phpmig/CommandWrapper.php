@@ -48,4 +48,14 @@ class CommandWrapper
         }
         $phpmig->up();
     }
+
+    public function rollbackMigrations()
+    {
+        $phpmig = new PhpmigApplication($this->container, $this->output);
+        $phpmig_adapter = $this->container->getPhpmigAdapter();
+        if (!$phpmig_adapter->hasSchema()) {
+            $phpmig_adapter->createSchema();
+        }
+        $phpmig->down(0);
+    }
 }
