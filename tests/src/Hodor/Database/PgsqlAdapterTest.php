@@ -40,15 +40,31 @@ class PgsqlAdapterTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::bufferJob
+     * @covers ::getJobsToRunGenerator
+     * @covers ::<private>
+     * @param array $buffered_jobs
+     * @param array $expected_jobs
+     * @dataProvider provideBufferJobsScenarios
+     */
+    public function testJobsCanBeBuffered(array $buffered_jobs, array $expected_jobs)
+    {
+        $uniqid = uniqid();
+        $this->bufferJobs($uniqid, $buffered_jobs);
+
+        $this->assertJobsToRun($uniqid, $expected_jobs);
+    }
+
+    /**
+     * @covers ::__construct
      * @covers ::markJobAsQueued
      * @covers ::getJobsToRunGenerator
      * @covers ::<private>
      * @param array $buffered_jobs
      * @param array $queued_jobs
      * @param array $expected_jobs
-     * @dataProvider provideSuperqueueScenarios
+     * @dataProvider provideQueueJobsScenarios
      */
-    public function testJobsCanBeQueuedAndBuffered(array $buffered_jobs, array $queued_jobs, array $expected_jobs)
+    public function testJobsCanBeQueued(array $buffered_jobs, array $queued_jobs, array $expected_jobs)
     {
         $uniqid = uniqid();
         $this->queueJobs($uniqid, $queued_jobs);
@@ -175,9 +191,17 @@ class PgsqlAdapterTest extends PHPUnit_Framework_TestCase
     /**
      * @return array
      */
-    public function provideSuperqueueScenarios()
+    public function provideBufferJobsScenarios()
     {
-        return require __DIR__ . '/PgsqlAdapter.superqueue-query.dataset.php';
+        return require __DIR__ . '/PgsqlAdapter.buffer-jobs.dataset.php';
+    }
+
+    /**
+     * @return array
+     */
+    public function provideQueueJobsScenarios()
+    {
+        return require __DIR__ . '/PgsqlAdapter.queue-jobs.dataset.php';
     }
 
     /**
