@@ -2,6 +2,7 @@
 
 namespace Hodor\JobQueue;
 
+use Hodor\MessageQueue\IncomingMessage;
 use Hodor\MessageQueue\Queue;
 
 class BufferQueue
@@ -52,7 +53,7 @@ class BufferQueue
 
     public function processBuffer()
     {
-        $this->message_queue->consume(function ($message) {
+        $this->message_queue->consume(function (IncomingMessage $message) {
             $superqueue = $this->queue_manager->getSuperqueue();
             $superqueue->bufferJobFromBufferQueueToDatabase($message);
         });
