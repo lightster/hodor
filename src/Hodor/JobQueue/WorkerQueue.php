@@ -3,6 +3,7 @@
 namespace Hodor\JobQueue;
 
 use DateTime;
+use Hodor\MessageQueue\IncomingMessage;
 use Hodor\MessageQueue\Queue;
 
 class WorkerQueue
@@ -46,18 +47,23 @@ class WorkerQueue
      */
     public function runNext(callable $job_runner)
     {
-        $this->message_queue->consume(function ($message) use ($job_runner) {
+        $this->message_queue->consume(function (IncomingMessage $message) use ($job_runner) {
             $start_time = new DateTime;
 
-            register_shutdown_function(function ($message, $start_time, $queue_manager) {
-                if (error_get_last()) {
-                    $queue_manager->getSuperqueue()->markJobAsFailed(
-                        $message,
-                        $start_time
-                    );
-                    exit(1);
-                }
-            }, $message, $start_time, $this->queue_manager);
+            register_shutdown_function(
+                function (IncomingMessage $message, DateTime $start_time, QueueManager $queue_manager) {
+                    if (error_get_last()) {
+                        $queue_manager->getSuperqueue()->markJobAsFailed(
+                            $message,
+                            $start_time
+                        );
+                        exit(1);
+                    }
+                },
+                $message,
+                $start_time,
+                $this->queue_manager
+            );
 
             $content = $message->getContent();
             $name = $content['name'];
