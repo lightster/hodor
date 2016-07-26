@@ -37,6 +37,14 @@ class PgsqlAdapterTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    public function tearDown()
+    {
+        $this->pgsql_adapter = null;
+        // without forcing garbage collection, the DB connections
+        // are not guaranteed to be disconnected; force GC
+        gc_collect_cycles();
+    }
+
     /**
      * @covers ::__construct
      * @covers ::bufferJob
