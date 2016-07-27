@@ -100,6 +100,7 @@ SQL;
      */
     public function markJobAsQueued(array $job)
     {
+        $this->beginTransaction();
         $this->getDriver()->delete(
             'buffered_jobs',
             'buffered_job_id = :buffered_job_id',
@@ -124,6 +125,7 @@ SQL;
                 'mutex_id'         => $job['mutex_id'],
             ]
         );
+        $this->commitTransaction();
 
         return ['buffered_job_id' => $job['buffered_job_id']];
     }
@@ -209,10 +211,13 @@ FROM queued_jobs
 WHERE buffered_job_id = :buffered_job_id
 SQL;
 
+        $this->beginTransaction();
+
         $job = $this->getDriver()->selectOne(
             $sql,
             ['buffered_job_id' => $meta['buffered_job_id']]
         );
+
         if (!$job) {
             throw new BufferedJobNotFoundException(
                 "Could not mark buffered_job_id={$meta['buffered_job_id']} as finished. Job not found.",
@@ -232,6 +237,8 @@ SQL;
             ['buffered_job_id' => $job['buffered_job_id']]
         );
         $this->getDriver()->insert("{$status}_jobs", $job);
+
+        $this->commitTransaction();
     }
 
     /**

@@ -37,10 +37,6 @@ class Superqueue
      */
     public function bufferJobFromBufferQueueToDatabase(IncomingMessage $message)
     {
-        $db = $this->getDatabase();
-
-        $db->beginTransaction();
-
         $content = $message->getContent();
         $queue_name = $this->queue_manager->getWorkerQueueNameForJob(
             $content['name'],
@@ -48,14 +44,13 @@ class Superqueue
             $content['options']
         );
 
-        $db->bufferJob($queue_name, [
+        $this->getDatabase()->bufferJob($queue_name, [
             'name'    => $content['name'],
             'params'  => $content['params'],
             'options' => $content['options'],
             'meta'    => $content['meta'],
         ]);
 
-        $db->commitTransaction();
         $message->acknowledge();
     }
 
@@ -170,12 +165,7 @@ class Superqueue
         $meta['started_running_at'] = $started_running_at->format('c');
 
         try {
-            $db = $this->getDatabase();
-            $db->beginTransaction();
-
             $mark_finished($meta);
-
-            $db->commitTransaction();
             $message->acknowledge();
         } catch (BufferedJobNotFoundException $exception) {
             $message->acknowledge();
