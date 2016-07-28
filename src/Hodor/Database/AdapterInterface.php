@@ -33,11 +33,6 @@ interface AdapterInterface
      */
     public function markJobAsFailed(array $meta);
 
-    /**
-     * @return PgsqlPhpmigAdapter
-     */
-    public function getPhpmigAdapter();
-
     public function beginTransaction();
     public function commitTransaction();
 
