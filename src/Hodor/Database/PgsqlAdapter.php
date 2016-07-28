@@ -164,11 +164,6 @@ SQL;
         $this->queryMultiple('COMMIT');
     }
 
-    public function rollbackTransaction()
-    {
-        $this->queryMultiple('ROLLBACK');
-    }
-
     /**
      * @param $category
      * @param $name

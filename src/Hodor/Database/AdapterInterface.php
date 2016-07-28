@@ -40,7 +40,6 @@ interface AdapterInterface
 
     public function beginTransaction();
     public function commitTransaction();
-    public function rollbackTransaction();
 
     /**
      * @param $category
