@@ -128,19 +128,19 @@ class Superqueuer implements SuperqueuerInterface
      */
     private function sortBufferedJobs(array $buffered_jobs)
     {
-        $compare_jobs = function ($field, array $a, array $b) {
-            if ($a[$field] == $b[$field]) {
+        $compare_jobs = function ($field, array $job_a, array $job_b) {
+            if ($job_a[$field] == $job_b[$field]) {
                 return 0;
             }
 
-            return ($a[$field] < $b[$field] ? -1 : 1);
+            return ($job_a[$field] < $job_b[$field] ? -1 : 1);
         };
-        uasort($buffered_jobs, function ($a, $b) use ($compare_jobs) {
-            if ($comparison = $compare_jobs('job_rank', $a, $b)) {
+        uasort($buffered_jobs, function ($job_a, $job_b) use ($compare_jobs) {
+            if ($comparison = $compare_jobs('job_rank', $job_a, $job_b)) {
                 return $comparison;
             }
 
-            return $compare_jobs('buffered_job_id', $a, $b);
+            return $compare_jobs('buffered_job_id', $job_a, $job_b);
         });
 
         return $buffered_jobs;

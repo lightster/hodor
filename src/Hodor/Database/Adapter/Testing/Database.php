@@ -31,41 +31,41 @@ class Database
 
     /**
      * @param string $table_name
-     * @param string $id
+     * @param string $row_id
      * @param array $row
      * @throws Exception
      */
-    public function insert($table_name, $id, $row)
+    public function insert($table_name, $row_id, $row)
     {
-        if (isset($this->tables[$table_name][$id])) {
-            throw new Exception("Row with id '{$id}' already exists in '{$table_name}'.");
+        if (isset($this->tables[$table_name][$row_id])) {
+            throw new Exception("Row with id '{$row_id}' already exists in '{$table_name}'.");
         }
 
-        $this->tables[$table_name][$id] = $row;
+        $this->tables[$table_name][$row_id] = $row;
     }
 
     /**
      * @param string $table_name
-     * @param string $id
+     * @param string $row_id
      * @throws Exception
      */
-    public function delete($table_name, $id)
+    public function delete($table_name, $row_id)
     {
-        if (!isset($this->tables[$table_name][$id])) {
-            throw new Exception("Row with id '{$id}' does not exist in '{$table_name}'.");
+        if (!isset($this->tables[$table_name][$row_id])) {
+            throw new Exception("Row with id '{$row_id}' does not exist in '{$table_name}'.");
         }
 
-        unset($this->tables[$table_name][$id]);
+        unset($this->tables[$table_name][$row_id]);
     }
 
     /**
      * @param string $table_name
-     * @param string $id
+     * @param string $row_id
      * @return bool
      */
-    public function has($table_name, $id)
+    public function has($table_name, $row_id)
     {
-        return isset($this->tables[$table_name][$id]);
+        return isset($this->tables[$table_name][$row_id]);
     }
 
     /**
