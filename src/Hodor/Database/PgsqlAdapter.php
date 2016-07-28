@@ -52,7 +52,9 @@ class PgsqlAdapter implements AdapterInterface
             $row['mutex_id'] = $job['options']['mutex_id'];
         }
 
+        $this->beginTransaction();
         $this->getDriver()->insert('buffered_jobs', $row);
+        $this->commitTransaction();
     }
 
     /**
@@ -100,7 +102,6 @@ SQL;
      */
     public function markJobAsQueued(array $job)
     {
-        $this->beginTransaction();
         $this->getDriver()->delete(
             'buffered_jobs',
             'buffered_job_id = :buffered_job_id',
@@ -125,7 +126,6 @@ SQL;
                 'mutex_id'         => $job['mutex_id'],
             ]
         );
-        $this->commitTransaction();
 
         return ['buffered_job_id' => $job['buffered_job_id']];
     }
