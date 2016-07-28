@@ -132,28 +132,6 @@ class PgsqlAdapterTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::beginTransaction
-     * @covers ::rollbackTransaction
-     * @covers ::queryMultiple
-     */
-    public function testTransactionCanBeRolledback()
-    {
-        $this->pgsql_adapter->beginTransaction();
-
-        $uniqid = uniqid();
-        $this->bufferJobs($uniqid, [
-            ['name' => 1, 'mutex_id' => 'a'],
-            ['name' => 2, 'mutex_id' => 'a'],
-        ]);
-
-        $this->assertJobsToRun($uniqid, ['1']);
-
-        $this->pgsql_adapter->rollbackTransaction();
-
-        $this->assertJobsToRun($uniqid, []);
-    }
-
-    /**
-     * @covers ::beginTransaction
      * @covers ::commitTransaction
      * @covers ::queryMultiple
      */
