@@ -99,21 +99,31 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
      * @covers ::beginTransaction
      * @covers ::commitTransaction
      */
-    public function testTransactionCanBeCommitted()
+    public function testQueueingJobsCanBeBatched()
     {
-        $this->getAdapter()->beginTransaction();
-
         $uniqid = uniqid();
         $this->bufferJobs($uniqid, [
             ['name' => 1, 'mutex_id' => 'a'],
             ['name' => 2, 'mutex_id' => 'a'],
         ]);
 
-        $this->assertJobsToRun($uniqid, ['1']);
+        $current_connection = $this->getAdapter();
+        $other_connection = $this->generateAdapter();
 
-        $this->getAdapter()->commitTransaction();
+        $current_connection->beginTransaction();
 
-        $this->assertJobsToRun($uniqid, ['1']);
+        $jobs_to_run = $this->assertJobsToRun($uniqid, ['1'], $current_connection);
+        $this->assertJobsToRun($uniqid, ['1'], $other_connection);
+
+        $this->markJobsAsQueued($jobs_to_run);
+
+        $this->assertJobsToRun($uniqid, [], $current_connection);
+        $this->assertJobsToRun($uniqid, ['1'], $other_connection);
+
+        $current_connection->commitTransaction();
+
+        $this->assertJobsToRun($uniqid, [], $current_connection);
+        $this->assertJobsToRun($uniqid, [], $other_connection);
     }
 
     /**
@@ -264,17 +274,23 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
     /**
      * @param string $uniqid
      * @param array $expected_jobs
+     * @param AdapterInterface $db_adapter
+     * @return array
      */
-    private function assertJobsToRun($uniqid, array $expected_jobs)
+    private function assertJobsToRun($uniqid, array $expected_jobs, AdapterInterface $db_adapter = null)
     {
+        if (!$db_adapter) {
+            $db_adapter = $this->getAdapter();
+        }
+
         $actual_jobs = [];
-        foreach ($this->getAdapter()->getJobsToRunGenerator() as $actual_job) {
+        foreach ($db_adapter->getJobsToRunGenerator() as $actual_job) {
             $actual_jobs[] = $actual_job;
         }
 
         if (empty($expected_jobs)) {
-            $this->assertEmpty($actual_jobs);
-            return;
+            $this->assertSame($expected_jobs, $actual_jobs);
+            return [];
         }
 
         foreach ($actual_jobs as $actual_job) {
@@ -283,5 +299,7 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
             $this->assertSame("job-{$uniqid}-{$expected_job}", $actual_job['job_name']);
         }
         $this->assertEmpty($expected_jobs);
+
+        return $actual_jobs;
     }
 }

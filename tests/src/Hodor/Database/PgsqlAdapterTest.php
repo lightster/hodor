@@ -38,9 +38,9 @@ class PgsqlAdapterTest extends AbstractAdapterTest
      * @covers ::commitTransaction
      * @covers ::queryMultiple
      */
-    public function testTransactionCanBeCommitted()
+    public function testQueueingJobsCanBeBatched()
     {
-        parent::testTransactionCanBeCommitted();
+        parent::testQueueingJobsCanBeBatched();
     }
 
     /**
