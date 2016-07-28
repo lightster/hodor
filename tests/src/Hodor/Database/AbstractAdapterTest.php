@@ -22,6 +22,9 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
      * @covers ::bufferJob
      * @covers ::getJobsToRunGenerator
      * @covers ::<private>
+     * @covers Hodor\Database\Adapter\Testing\BufferWorker::__construct
+     * @covers Hodor\Database\Adapter\Testing\BufferWorker::bufferJob
+     * @covers Hodor\Database\Adapter\Testing\BufferWorker::<private>
      * @param array $buffered_jobs
      * @param array $expected_jobs
      * @dataProvider provideBufferJobsScenarios
@@ -39,6 +42,10 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
      * @covers ::markJobAsQueued
      * @covers ::getJobsToRunGenerator
      * @covers ::<private>
+     * @covers Hodor\Database\Adapter\Testing\Superqueuer::__construct
+     * @covers Hodor\Database\Adapter\Testing\Superqueuer::getJobsToRunGenerator
+     * @covers Hodor\Database\Adapter\Testing\Superqueuer::markJobAsQueued
+     * @covers Hodor\Database\Adapter\Testing\Superqueuer::<private>
      * @param array $buffered_jobs
      * @param array $queued_jobs
      * @param array $expected_jobs
@@ -56,6 +63,9 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::markJobAsSuccessful
      * @covers ::<private>
+     * @covers Hodor\Database\Adapter\Testing\Dequeuer::__construct
+     * @covers Hodor\Database\Adapter\Testing\Dequeuer::markJobAsSuccessful
+     * @covers Hodor\Database\Adapter\Testing\Dequeuer::<private>
      */
     public function testJobCanBeMarkedAsSuccessful()
     {
@@ -67,6 +77,9 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::markJobAsFailed
      * @covers ::<private>
+     * @covers Hodor\Database\Adapter\Testing\Dequeuer::__construct
+     * @covers Hodor\Database\Adapter\Testing\Dequeuer::markJobAsFailed
+     * @covers Hodor\Database\Adapter\Testing\Dequeuer::<private>
      */
     public function testJobCanBeMarkedAsFailed()
     {
@@ -78,6 +91,9 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::markJobAsSuccessful
      * @covers ::<private>
+     * @covers Hodor\Database\Adapter\Testing\Dequeuer::__construct
+     * @covers Hodor\Database\Adapter\Testing\Dequeuer::markJobAsSuccessful
+     * @covers Hodor\Database\Adapter\Testing\Dequeuer::<private>
      * @expectedException Hodor\Database\Exception\BufferedJobNotFoundException
      */
     public function testMarkingUnrecognizedJobAsSuccessfulTriggersAnException()
@@ -88,6 +104,9 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::markJobAsFailed
      * @covers ::<private>
+     * @covers Hodor\Database\Adapter\Testing\Dequeuer::__construct
+     * @covers Hodor\Database\Adapter\Testing\Dequeuer::markJobAsFailed
+     * @covers Hodor\Database\Adapter\Testing\Dequeuer::<private>
      * @expectedException Hodor\Database\Exception\BufferedJobNotFoundException
      */
     public function testMarkingUnrecognizedJobAsFailedTriggersAnException()
@@ -98,6 +117,12 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::beginTransaction
      * @covers ::commitTransaction
+     * @covers Hodor\Database\Adapter\Testing\Superqueuer::__construct
+     * @covers Hodor\Database\Adapter\Testing\Superqueuer::getJobsToRunGenerator
+     * @covers Hodor\Database\Adapter\Testing\Superqueuer::beginBatch
+     * @covers Hodor\Database\Adapter\Testing\Superqueuer::markJobAsQueued
+     * @covers Hodor\Database\Adapter\Testing\Superqueuer::publishBatch
+     * @covers Hodor\Database\Adapter\Testing\Superqueuer::<private>
      */
     public function testQueueingJobsCanBeBatched()
     {
@@ -128,6 +153,10 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::requestAdvisoryLock
+     * @covers Hodor\Database\Adapter\Testing\Superqueuer::__construct
+     * @covers Hodor\Database\Adapter\Testing\Superqueuer::__destruct
+     * @covers Hodor\Database\Adapter\Testing\Superqueuer::requestAdvisoryLock
+     * @covers Hodor\Database\Adapter\Testing\Superqueuer::<private>
      */
     public function testAdvisoryLockCanBeAcquired()
     {
@@ -264,8 +293,8 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
         $jobs_queued = [];
 
         foreach ($jobs as $job) {
-            $this->getAdapter()->markJobAsQueued($job);
-            $jobs_queued[] = $job;
+            $meta = $this->getAdapter()->markJobAsQueued($job);
+            $jobs_queued[] = $meta;
         }
 
         return $jobs_queued;
