@@ -2,6 +2,8 @@
 
 namespace Hodor\Daemon;
 
+use org\bovigo\vfs\vfsStreamDirectory;
+use org\bovigo\vfs\vfsStreamWrapper;
 use PHPUnit_Framework_TestCase;
 use Hodor\JobQueue\Config;
 
@@ -121,7 +123,10 @@ class SupervisordManagerTest extends PHPUnit_Framework_TestCase
     {
         $hodor_base_path = dirname(dirname(dirname(dirname(__DIR__))));
 
-        $supervisord_conf = __DIR__ . '/../../../../tests/tmp/supervisord.' . uniqid() . '.conf';
+        vfsStreamWrapper::register();
+        $file_system = new vfsStreamDirectory('supervisor-configs');
+
+        $supervisord_conf = $file_system->url() . '/supervisord.' . uniqid() . '.conf';
         $manager = $this->getSupervisordManager($supervisord_conf);
 
         $config_dir = dirname($supervisord_conf);
@@ -141,6 +146,8 @@ class SupervisordManagerTest extends PHPUnit_Framework_TestCase
             $expected_supervisord_config,
             file_get_contents($supervisord_conf)
         );
+
+        unlink($supervisord_conf);
     }
 
     /**
