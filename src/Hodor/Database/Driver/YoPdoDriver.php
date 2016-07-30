@@ -84,7 +84,7 @@ class YoPdoDriver
     /**
      * @return YoPdo
      */
-    private function getYoPdo()
+    public function getYoPdo()
     {
         if ($this->yo_pdo) {
             return $this->yo_pdo;

@@ -220,6 +220,34 @@ SQL;
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::getYoPdo
+     */
+    public function testYoPdoCanBeUsed()
+    {
+        $adapter = $this->getYoPdoDriver();
+
+        $this->assertSame(
+            ['col' => 1],
+            $adapter->getYoPdo()->query('SELECT 1 AS col')->fetch()
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getYoPdo
+     */
+    public function testYoPdoIsReused()
+    {
+        $adapter = $this->getYoPdoDriver();
+
+        $this->assertSame(
+            $adapter->getYoPdo(),
+            $adapter->getYoPdo()
+        );
+    }
+
+    /**
      * @return YoPdoDriver
      * @throws Exception
      */
