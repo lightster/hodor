@@ -40,7 +40,12 @@ class FlowTest extends PHPUnit_Framework_TestCase
         if (file_exists($this->config_file)) {
             unlink($this->config_file);
         }
+
         unset($this->db_adapter);
+        // without forcing garbage collection, the DB connections
+        // are not guaranteed to be disconnected; force GC
+        gc_collect_cycles();
+
         $this->runCommand("psql -c 'drop database if exists {$this->db_name};' -h {$this->e_db_host} -U postgres");
     }
 

@@ -171,6 +171,10 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
 
         unset($connections[0]);
 
+        // without forcing garbage collection, the DB connections
+        // are not guaranteed to be disconnected; force GC
+        gc_collect_cycles();
+
         $this->assertTrue($connections[2]->requestAdvisoryLock('test', 'lock'));
     }
 
