@@ -29,11 +29,6 @@ class BufferWorker implements BufferWorkerInterface
 
         $job = array_replace_recursive([
             'name' => "job-name-{$job_id}",
-            'params' => [],
-            'meta' => [
-                'buffered_at'   => date('c'),
-                'buffered_from' => gethostname(),
-            ],
             'options' => [
                 'run_after' => date('c'),
                 'job_rank'  => 5,

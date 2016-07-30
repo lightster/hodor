@@ -23,14 +23,14 @@ abstract class FactoryTest extends PHPUnit_Framework_TestCase
 
         $uniqid = uniqid();
 
-        $buffer_worker->bufferJob('fast_jobs', [
+        $buffer_worker->bufferJob('fast_jobs', $this->getJob([
             'name'    => "job-{$uniqid}-1",
             'options' => ['mutex_id' => "mutex-{$uniqid}"],
-        ]);
-        $buffer_worker->bufferJob('fast_jobs', [
+        ]));
+        $buffer_worker->bufferJob('fast_jobs', $this->getJob([
             'name'    => "job-{$uniqid}-2",
             'options' => ['mutex_id' => "mutex-{$uniqid}"],
-        ]);
+        ]));
 
         $job_to_finish = null;
         foreach ($superqueuer->getJobsToRunGenerator() as $job) {
@@ -90,4 +90,19 @@ abstract class FactoryTest extends PHPUnit_Framework_TestCase
      * @return FactoryInterface
      */
     abstract protected function getTestFactory();
+
+    /**
+     * @param array $job
+     * @return array
+     */
+    private function getJob(array $job)
+    {
+        return array_replace_recursive([
+            'params' => [],
+            'meta' => [
+                'buffered_at'   => date('c'),
+                'buffered_from' => gethostname(),
+            ],
+        ], $job);
+    }
 }
