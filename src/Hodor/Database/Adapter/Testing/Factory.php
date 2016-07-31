@@ -2,10 +2,7 @@
 
 namespace Hodor\Database\Adapter\Testing;
 
-use Hodor\Database\Adapter\BufferWorkerInterface;
-use Hodor\Database\Adapter\DequeuerInterface;
 use Hodor\Database\Adapter\FactoryInterface;
-use Hodor\Database\Adapter\SuperqueuerInterface;
 
 class Factory implements FactoryInterface
 {
@@ -45,7 +42,7 @@ class Factory implements FactoryInterface
     }
 
     /**
-     * @return BufferWorkerInterface
+     * @return BufferWorker
      */
     public function getBufferWorker()
     {
@@ -59,7 +56,7 @@ class Factory implements FactoryInterface
     }
 
     /**
-     * @return SuperqueuerInterface
+     * @return Superqueuer
      */
     public function getSuperqueuer()
     {
@@ -73,7 +70,7 @@ class Factory implements FactoryInterface
     }
 
     /**
-     * @return DequeuerInterface
+     * @return Dequeuer
      */
     public function getDequeuer()
     {
