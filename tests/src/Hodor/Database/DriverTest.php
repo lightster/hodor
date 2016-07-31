@@ -82,10 +82,7 @@ SQL;
 SELECT 1 FROM not_here;
 SQL;
 
-        foreach ($adapter->selectRowGenerator($sql) as $row) {
-            // an exception will be thrown as soon as
-            // we try to retrieve the results
-        }
+        iterator_to_array($adapter->selectRowGenerator($sql));
     }
 
     /**
