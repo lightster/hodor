@@ -37,6 +37,7 @@ abstract class FactoryTest extends PHPUnit_Framework_TestCase
             $this->assertSame("job-{$uniqid}-1", $job['job_name']);
             $superqueuer->markJobAsQueued($job);
             $job_to_finish = $job;
+            $job_to_finish['started_running_at'] = date('c');
         }
 
         foreach ($superqueuer->getJobsToRunGenerator() as $job) {

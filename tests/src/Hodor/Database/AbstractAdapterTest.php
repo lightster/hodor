@@ -23,8 +23,11 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
      * @covers ::getJobsToRunGenerator
      * @covers ::<private>
      * @covers Hodor\Database\Adapter\Testing\BufferWorker::__construct
+     * @covers Hodor\Database\Adapter\Postgres\BufferWorker::__construct
      * @covers Hodor\Database\Adapter\Testing\BufferWorker::bufferJob
+     * @covers Hodor\Database\Adapter\Postgres\BufferWorker::bufferJob
      * @covers Hodor\Database\Adapter\Testing\BufferWorker::<private>
+     * @covers Hodor\Database\Adapter\Postgres\BufferWorker::<private>
      * @param array $buffered_jobs
      * @param array $expected_jobs
      * @dataProvider provideBufferJobsScenarios
@@ -43,9 +46,13 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
      * @covers ::getJobsToRunGenerator
      * @covers ::<private>
      * @covers Hodor\Database\Adapter\Testing\Superqueuer::__construct
+     * @covers Hodor\Database\Adapter\Postgres\Superqueuer::__construct
      * @covers Hodor\Database\Adapter\Testing\Superqueuer::getJobsToRunGenerator
+     * @covers Hodor\Database\Adapter\Postgres\Superqueuer::getJobsToRunGenerator
      * @covers Hodor\Database\Adapter\Testing\Superqueuer::markJobAsQueued
+     * @covers Hodor\Database\Adapter\Postgres\Superqueuer::markJobAsQueued
      * @covers Hodor\Database\Adapter\Testing\Superqueuer::<private>
+     * @covers Hodor\Database\Adapter\Postgres\Superqueuer::<private>
      * @param array $buffered_jobs
      * @param array $queued_jobs
      * @param array $expected_jobs
@@ -64,8 +71,11 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
      * @covers ::markJobAsSuccessful
      * @covers ::<private>
      * @covers Hodor\Database\Adapter\Testing\Dequeuer::__construct
+     * @covers Hodor\Database\Adapter\Postgres\Dequeuer::__construct
      * @covers Hodor\Database\Adapter\Testing\Dequeuer::markJobAsSuccessful
+     * @covers Hodor\Database\Adapter\Postgres\Dequeuer::markJobAsSuccessful
      * @covers Hodor\Database\Adapter\Testing\Dequeuer::<private>
+     * @covers Hodor\Database\Adapter\Postgres\Dequeuer::<private>
      */
     public function testJobCanBeMarkedAsSuccessful()
     {
@@ -78,8 +88,11 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
      * @covers ::markJobAsFailed
      * @covers ::<private>
      * @covers Hodor\Database\Adapter\Testing\Dequeuer::__construct
+     * @covers Hodor\Database\Adapter\Postgres\Dequeuer::__construct
      * @covers Hodor\Database\Adapter\Testing\Dequeuer::markJobAsFailed
+     * @covers Hodor\Database\Adapter\Postgres\Dequeuer::markJobAsFailed
      * @covers Hodor\Database\Adapter\Testing\Dequeuer::<private>
+     * @covers Hodor\Database\Adapter\Postgres\Dequeuer::<private>
      */
     public function testJobCanBeMarkedAsFailed()
     {
@@ -92,8 +105,11 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
      * @covers ::markJobAsSuccessful
      * @covers ::<private>
      * @covers Hodor\Database\Adapter\Testing\Dequeuer::__construct
+     * @covers Hodor\Database\Adapter\Postgres\Dequeuer::__construct
      * @covers Hodor\Database\Adapter\Testing\Dequeuer::markJobAsSuccessful
+     * @covers Hodor\Database\Adapter\Postgres\Dequeuer::markJobAsSuccessful
      * @covers Hodor\Database\Adapter\Testing\Dequeuer::<private>
+     * @covers Hodor\Database\Adapter\Postgres\Dequeuer::<private>
      * @expectedException Hodor\Database\Exception\BufferedJobNotFoundException
      */
     public function testMarkingUnrecognizedJobAsSuccessfulTriggersAnException()
@@ -105,8 +121,11 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
      * @covers ::markJobAsFailed
      * @covers ::<private>
      * @covers Hodor\Database\Adapter\Testing\Dequeuer::__construct
+     * @covers Hodor\Database\Adapter\Postgres\Dequeuer::__construct
      * @covers Hodor\Database\Adapter\Testing\Dequeuer::markJobAsFailed
+     * @covers Hodor\Database\Adapter\Postgres\Dequeuer::markJobAsFailed
      * @covers Hodor\Database\Adapter\Testing\Dequeuer::<private>
+     * @covers Hodor\Database\Adapter\Postgres\Dequeuer::<private>
      * @expectedException Hodor\Database\Exception\BufferedJobNotFoundException
      */
     public function testMarkingUnrecognizedJobAsFailedTriggersAnException()
@@ -118,11 +137,20 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
      * @covers ::beginTransaction
      * @covers ::commitTransaction
      * @covers Hodor\Database\Adapter\Testing\Superqueuer::__construct
+     * @covers Hodor\Database\Adapter\Postgres\Superqueuer::__construct
      * @covers Hodor\Database\Adapter\Testing\Superqueuer::getJobsToRunGenerator
+     * @covers Hodor\Database\Adapter\Postgres\Superqueuer::getJobsToRunGenerator
      * @covers Hodor\Database\Adapter\Testing\Superqueuer::beginBatch
+     * @covers Hodor\Database\Adapter\Postgres\Superqueuer::beginBatch
      * @covers Hodor\Database\Adapter\Testing\Superqueuer::markJobAsQueued
+     * @covers Hodor\Database\Adapter\Postgres\Superqueuer::markJobAsQueued
      * @covers Hodor\Database\Adapter\Testing\Superqueuer::publishBatch
+     * @covers Hodor\Database\Adapter\Postgres\Superqueuer::publishBatch
      * @covers Hodor\Database\Adapter\Testing\Superqueuer::<private>
+     * @covers Hodor\Database\Adapter\Postgres\Superqueuer::<private>
+     * @covers Hodor\Database\PgsqlAdapter::queryMultiple
+     * @covers Hodor\Database\PgsqlAdapter::beginTransaction
+     * @covers Hodor\Database\PgsqlAdapter::commitTransaction
      */
     public function testQueueingJobsCanBeBatched()
     {
@@ -154,9 +182,12 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::requestAdvisoryLock
      * @covers Hodor\Database\Adapter\Testing\Superqueuer::__construct
+     * @covers Hodor\Database\Adapter\Postgres\Superqueuer::__construct
      * @covers Hodor\Database\Adapter\Testing\Superqueuer::__destruct
      * @covers Hodor\Database\Adapter\Testing\Superqueuer::requestAdvisoryLock
+     * @covers Hodor\Database\Adapter\Postgres\Superqueuer::requestAdvisoryLock
      * @covers Hodor\Database\Adapter\Testing\Superqueuer::<private>
+     * @covers Hodor\Database\Adapter\Postgres\Superqueuer::<private>
      */
     public function testAdvisoryLockCanBeAcquired()
     {

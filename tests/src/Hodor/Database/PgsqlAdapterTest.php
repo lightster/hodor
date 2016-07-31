@@ -34,16 +34,6 @@ class PgsqlAdapterTest extends AbstractAdapterTest
     }
 
     /**
-     * @covers ::beginTransaction
-     * @covers ::commitTransaction
-     * @covers ::queryMultiple
-     */
-    public function testQueueingJobsCanBeBatched()
-    {
-        parent::testQueueingJobsCanBeBatched();
-    }
-
-    /**
      * @covers ::getPhpmigAdapter
      */
     public function testPhpmigAdapterCanBeRetrieved()
