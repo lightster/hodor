@@ -2,10 +2,7 @@
 
 namespace Hodor\Database\Adapter\Postgres;
 
-use Hodor\Database\Adapter\BufferWorkerInterface;
-use Hodor\Database\Adapter\DequeuerInterface;
 use Hodor\Database\Adapter\FactoryInterface;
-use Hodor\Database\Adapter\SuperqueuerInterface;
 use Hodor\Database\Driver\YoPdoDriver;
 use Hodor\Database\PgsqlAdapter;
 use Lstr\YoPdo\YoPdo;
@@ -53,7 +50,7 @@ class Factory implements FactoryInterface
     }
 
     /**
-     * @return BufferWorkerInterface
+     * @return BufferWorker
      */
     public function getBufferWorker()
     {
@@ -67,7 +64,7 @@ class Factory implements FactoryInterface
     }
 
     /**
-     * @return SuperqueuerInterface
+     * @return Superqueuer
      */
     public function getSuperqueuer()
     {
@@ -81,7 +78,7 @@ class Factory implements FactoryInterface
     }
 
     /**
-     * @return DequeuerInterface
+     * @return Dequeuer
      */
     public function getDequeuer()
     {
