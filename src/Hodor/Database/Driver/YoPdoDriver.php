@@ -2,6 +2,7 @@
 
 namespace Hodor\Database\Driver;
 
+use Generator;
 use Lstr\YoPdo\Factory as YoPdoFactory;
 use Lstr\YoPdo\YoPdo;
 
@@ -36,7 +37,7 @@ class YoPdoDriver
 
     /**
      * @param  string $sql
-     * @return generator
+     * @return Generator
      */
     public function selectRowGenerator($sql)
     {
