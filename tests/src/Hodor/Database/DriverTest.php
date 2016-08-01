@@ -23,7 +23,7 @@ class DriverTest extends PHPUnit_Framework_TestCase
         $tablename = 'test_multiple_queries_' . uniqid();
 
         $sql = <<<SQL
-CREATE TABLE {$tablename} AS SELECT 1;
+CREATE TEMPORARY TABLE {$tablename} AS SELECT 1;
 DROP TABLE {$tablename};
 SQL;
         $adapter->queryMultiple($sql);
@@ -128,7 +128,7 @@ SQL;
         $tablename = 'test_insert_' . uniqid();
 
         $sql = <<<SQL
-CREATE TABLE {$tablename}
+CREATE TEMPORARY TABLE {$tablename}
 (
     some_id INT NOT NULL,
     some_string VARCHAR NOT NULL
@@ -174,7 +174,7 @@ SQL;
         $tablename = 'test_insert_' . uniqid();
 
         $sql = <<<SQL
-CREATE TABLE {$tablename}
+CREATE TEMPORARY TABLE {$tablename}
 (
     some_id INT NOT NULL,
     some_string VARCHAR NOT NULL
