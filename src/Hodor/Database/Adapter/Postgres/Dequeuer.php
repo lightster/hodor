@@ -9,16 +9,16 @@ use Lstr\YoPdo\YoPdo;
 class Dequeuer implements DequeuerInterface
 {
     /**
-     * @var YoPdo
+     * @var Connection
      */
-    private $yo_pdo;
+    private $connection;
 
     /**
-     * @param YoPdo $yo_pdo
+     * @param Connection $connection
      */
-    public function __construct(YoPdo $yo_pdo)
+    public function __construct(Connection $connection)
     {
-        $this->yo_pdo = $yo_pdo;
+        $this->connection = $connection;
     }
 
     /**
@@ -50,9 +50,9 @@ FROM queued_jobs
 WHERE buffered_job_id = :buffered_job_id
 SQL;
 
-        $this->yo_pdo->transaction()->begin('dequeue-job');
+        $this->getYoPdo()->transaction()->begin('dequeue-job');
 
-        $job = $this->yo_pdo->query(
+        $job = $this->getYoPdo()->query(
             $sql,
             ['buffered_job_id' => $meta['buffered_job_id']]
         )->fetch();
@@ -70,13 +70,21 @@ SQL;
         $job['dequeued_from'] = gethostname();
         unset($job['queued_job_id']);
 
-        $this->yo_pdo->delete(
+        $this->getYoPdo()->delete(
             'queued_jobs',
             'buffered_job_id = :buffered_job_id',
             ['buffered_job_id' => $job['buffered_job_id']]
         );
-        $this->yo_pdo->insert("{$status}_jobs", $job);
+        $this->getYoPdo()->insert("{$status}_jobs", $job);
 
-        $this->yo_pdo->transaction()->accept('dequeue-job');
+        $this->getYoPdo()->transaction()->accept('dequeue-job');
+    }
+
+    /**
+     * @return YoPdo
+     */
+    private function getYoPdo()
+    {
+        return $this->connection->getYoPdo();
     }
 }

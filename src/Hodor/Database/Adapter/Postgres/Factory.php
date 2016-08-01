@@ -35,9 +35,9 @@ class Factory implements FactoryInterface
     private $pgsql_adapter;
 
     /**
-     * @var YoPdoDriver
+     * @var Connection
      */
-    private $yo_pdo_driver;
+    private $connection;
 
     /**
      * @param PgsqlAdapter $pgsql_adapter
@@ -58,7 +58,7 @@ class Factory implements FactoryInterface
             return $this->buffer_worker;
         }
 
-        $this->buffer_worker = new BufferWorker($this->getYoPdo());
+        $this->buffer_worker = new BufferWorker($this->getConnection());
 
         return $this->buffer_worker;
     }
@@ -72,7 +72,7 @@ class Factory implements FactoryInterface
             return $this->superqueuer;
         }
 
-        $this->superqueuer = new Superqueuer($this->getYoPdo());
+        $this->superqueuer = new Superqueuer($this->getConnection());
 
         return $this->superqueuer;
     }
@@ -86,24 +86,17 @@ class Factory implements FactoryInterface
             return $this->dequeuer;
         }
 
-        $this->dequeuer = new Dequeuer($this->getYoPdo());
+        $this->dequeuer = new Dequeuer($this->getConnection());
 
         return $this->dequeuer;
     }
 
     /**
      * @return YoPdoDriver
-     * @deprecated
      */
     public function getYoPdoDriver()
     {
-        if ($this->yo_pdo_driver) {
-            return $this->yo_pdo_driver;
-        }
-
-        $this->yo_pdo_driver = new YoPdoDriver($this->config);
-
-        return $this->yo_pdo_driver;
+        return $this->getConnection()->getYoPdoDriver();
     }
 
     /**
@@ -115,10 +108,16 @@ class Factory implements FactoryInterface
     }
 
     /**
-     * @return YoPdo
+     * @return Connection
      */
-    private function getYoPdo()
+    private function getConnection()
     {
-        return $this->getYoPdoDriver()->getYoPdo();
+        if ($this->connection) {
+            return $this->connection;
+        }
+
+        $this->connection = new Connection($this->config);
+
+        return $this->connection;
     }
 }

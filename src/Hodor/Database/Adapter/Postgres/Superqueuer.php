@@ -9,16 +9,16 @@ use Lstr\YoPdo\YoPdo;
 class Superqueuer implements SuperqueuerInterface
 {
     /**
-     * @var YoPdo
+     * @var Connection
      */
-    private $yo_pdo;
+    private $connection;
 
     /**
-     * @param YoPdo $yo_pdo
+     * @param Connection $connection
      */
-    public function __construct(YoPdo $yo_pdo)
+    public function __construct(Connection $connection)
     {
-        $this->yo_pdo = $yo_pdo;
+        $this->connection = $connection;
     }
 
     /**
@@ -31,7 +31,7 @@ class Superqueuer implements SuperqueuerInterface
         $category_crc = crc32($category) - 0x80000000;
         $name_crc = crc32($name) - 0x80000000;
 
-        $row = $this->yo_pdo->query(
+        $row = $this->getYoPdo()->query(
             'SELECT pg_try_advisory_lock(:category_crc, :name_crc) AS is_granted',
             [
                 'category_crc' => $category_crc,
@@ -74,7 +74,7 @@ ORDER BY
     buffered_at
 SQL;
 
-        $row_generator = $this->yo_pdo->getSelectRowGenerator($sql);
+        $row_generator = $this->getYoPdo()->getSelectRowGenerator($sql);
         foreach ($row_generator as $job) {
             $job['job_params'] = json_decode($job['job_params'], true);
             yield $job;
@@ -83,7 +83,7 @@ SQL;
 
     public function beginBatch()
     {
-        $this->yo_pdo->transaction()->begin('superqueue-jobs');
+        $this->getYoPdo()->transaction()->begin('superqueue-jobs');
     }
 
     /**
@@ -92,14 +92,14 @@ SQL;
      */
     public function markJobAsQueued(array $job)
     {
-        $this->yo_pdo->delete(
+        $this->getYoPdo()->delete(
             'buffered_jobs',
             'buffered_job_id = :buffered_job_id',
             ['buffered_job_id' => $job['buffered_job_id']]
         );
         $job['job_params'] = json_encode($job['job_params'], JSON_FORCE_OBJECT);
         $job['superqueued_from'] = gethostname();
-        $this->yo_pdo->insert(
+        $this->getYoPdo()->insert(
             'queued_jobs',
             [
                 'buffered_job_id'  => $job['buffered_job_id'],
@@ -122,6 +122,14 @@ SQL;
 
     public function publishBatch()
     {
-        $this->yo_pdo->transaction()->accept('superqueue-jobs');
+        $this->getYoPdo()->transaction()->accept('superqueue-jobs');
+    }
+
+    /**
+     * @return YoPdo
+     */
+    private function getYoPdo()
+    {
+        return $this->connection->getYoPdo();
     }
 }

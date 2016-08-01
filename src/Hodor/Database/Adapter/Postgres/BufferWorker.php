@@ -10,14 +10,14 @@ class BufferWorker implements BufferWorkerInterface
     /**
      * @var YoPdo
      */
-    private $yo_pdo;
+    private $connection;
 
     /**
-     * @param YoPdo $yo_pdo
+     * @param Connection $connection
      */
-    public function __construct(YoPdo $yo_pdo)
+    public function __construct(Connection $connection)
     {
-        $this->yo_pdo = $yo_pdo;
+        $this->connection = $connection;
     }
 
     /**
@@ -45,8 +45,16 @@ class BufferWorker implements BufferWorkerInterface
             $row['mutex_id'] = $job['options']['mutex_id'];
         }
 
-        $this->yo_pdo->transaction()->begin('buffer-job');
-        $this->yo_pdo->insert('buffered_jobs', $row);
-        $this->yo_pdo->transaction()->accept('buffer-job');
+        $this->getYoPdo()->transaction()->begin('buffer-job');
+        $this->getYoPdo()->insert('buffered_jobs', $row);
+        $this->getYoPdo()->transaction()->accept('buffer-job');
+    }
+
+    /**
+     * @return YoPdo
+     */
+    private function getYoPdo()
+    {
+        return $this->connection->getYoPdo();
     }
 }

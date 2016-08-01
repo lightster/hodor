@@ -3,7 +3,6 @@
 namespace Hodor\Database\Adapter\Postgres;
 
 use Exception;
-use Hodor\Database\Adapter\FactoryInterface;
 use Hodor\Database\Adapter\FactoryTest as FactoryBaseTest;
 use Hodor\Database\PgsqlAdapter;
 use Hodor\Database\Phpmig\CommandWrapper;
@@ -40,6 +39,36 @@ class FactoryTest extends FactoryBaseTest
         // without forcing garbage collection, the DB connections
         // are not guaranteed to be disconnected; force GC
         gc_collect_cycles();
+    }
+
+    /**
+     * @covers ::getPgsqlAdapter
+     */
+    public function testPassedInPgsqlAdapterCanBeRetrieved()
+    {
+        $config = [];
+        $pgsql_adapter = new PgsqlAdapter($config);
+        $factory = new Factory($pgsql_adapter, $config);
+
+        $this->assertSame($pgsql_adapter, $factory->getPgsqlAdapter());
+    }
+
+    /**
+     * @covers ::getYoPdoDriver
+     */
+    public function testYoPdoDriverIsUseable()
+    {
+        $factory = $this->getTestFactory();
+        $yo_pdo_driver = $factory->getYoPdoDriver();
+
+        $yo_pdo_driver->queryMultiple('BEGIN');
+
+        $this->assertSame(
+            $yo_pdo_driver->selectOne('SELECT txid_current()'),
+            $yo_pdo_driver->selectOne('SELECT txid_current()')
+        );
+
+        $yo_pdo_driver->queryMultiple('ROLLBACK');
     }
 
     /**
