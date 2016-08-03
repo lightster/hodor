@@ -20,7 +20,7 @@ A worker queue that is evolving to a job queue
 Install Hodor in your application via composer:
 
 ```bash
-composer require lightster/hodor:^0.0.2
+composer require lightster/hodor:^0.1.0
 ```
 
 Create a database on your Postgres server to use with your
