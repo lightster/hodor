@@ -170,10 +170,10 @@ class QueueManager
             return $this->database;
         }
 
-        $config = $this->config->getSuperqueueConfig();
-        $db_adapter_factory = new DbAdapterFactory($config['database']);
+        $config = $this->config->getDatabaseConfig();
+        $db_adapter_factory = new DbAdapterFactory($config);
 
-        $this->database = $db_adapter_factory->getAdapter($config['database']['type']);
+        $this->database = $db_adapter_factory->getAdapter($config['type']);
 
         return $this->database;
     }
