@@ -14,25 +14,19 @@ class AdapterFactory
     ];
 
     /**
-     * @var array
-     */
-    private $config;
-
-    /**
-     * @param array $config
-     */
-    public function __construct(array $config)
-    {
-        $this->config = $config;
-    }
-
-    /**
-     * @param  string $name
+     * @param  array $config
      * @return AdapterInterface
      * @throws Exception
      */
-    public function getAdapter($name)
+    public function getAdapter(array $config)
     {
+        if (empty($config['type'])) {
+            throw new Exception(
+                "The database connection 'type' must provided in connection config."
+            );
+        }
+
+        $name = $config['type'];
         if (!isset($this->adapter_factories[$name])) {
             throw new Exception(
                 "A database adapter factory is not associated with '{$name}'."
@@ -41,6 +35,6 @@ class AdapterFactory
 
         $adapter_class = $this->adapter_factories[$name];
 
-        return new $adapter_class($this->config);
+        return new $adapter_class($config);
     }
 }

@@ -171,9 +171,9 @@ class QueueManager
         }
 
         $config = $this->config->getDatabaseConfig();
-        $db_adapter_factory = new DbAdapterFactory($config);
+        $db_adapter_factory = new DbAdapterFactory();
 
-        $this->database = $db_adapter_factory->getAdapter($config['type']);
+        $this->database = $db_adapter_factory->getAdapter($config);
 
         return $this->database;
     }
