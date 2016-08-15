@@ -29,17 +29,6 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::getSuperqueueConfig
-     */
-    public function testSuperqueueConfigCanBeRetrieved()
-    {
-        $config = new Config(__FILE__, ['superqueue' => 'heya']);
-
-        $this->assertEquals('heya', $config->getSuperqueueConfig());
-    }
-
-    /**
-     * @covers ::__construct
      * @covers ::getDatabaseConfig
      * @dataProvider configProvider
      */

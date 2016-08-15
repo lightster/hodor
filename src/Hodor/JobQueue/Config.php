@@ -76,14 +76,6 @@ class Config implements ConfigInterface
     }
 
     /**
-     * @return array
-     */
-    public function getSuperqueueConfig()
-    {
-        return $this->getOption('superqueue');
-    }
-
-    /**
      * @param  string $queue_name
      * @return array
      */
