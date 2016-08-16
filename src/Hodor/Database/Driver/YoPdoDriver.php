@@ -5,6 +5,7 @@ namespace Hodor\Database\Driver;
 use Generator;
 use Lstr\YoPdo\Factory as YoPdoFactory;
 use Lstr\YoPdo\YoPdo;
+use PDOStatement;
 
 class YoPdoDriver
 {
@@ -28,7 +29,7 @@ class YoPdoDriver
 
     /**
      * @param string $sql
-     * @return void
+     * @return PDOStatement
      */
     public function queryMultiple($sql)
     {
