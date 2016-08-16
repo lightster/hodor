@@ -36,8 +36,8 @@ class Container extends Pimple
         );
 
         $this['hodor.database.factory'] = $this->share(
-            function (Pimple $container) {
-                return new DbFactory($container['hodor.database.config']);
+            function () {
+                return new DbFactory();
             }
         );
 
@@ -46,7 +46,7 @@ class Container extends Pimple
                 $db_factory = $container['hodor.database.factory'];
                 $db_config = $container['hodor.database.config'];
 
-                return $db_factory->getAdapter($db_config['type']);
+                return $db_factory->getAdapter($db_config);
             }
         );
 

@@ -9,34 +9,44 @@ use PHPUnit_Framework_TestCase;
  */
 class AdapterFactoryTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var AdapterFactory
+     */
     private $adapter_factory;
 
     public function setUp()
     {
         parent::setUp();
 
-        $this->adapter_factory = new AdapterFactory([]);
+        $this->adapter_factory = new AdapterFactory();
     }
 
     /**
-     * @covers ::__construct
      * @covers ::getAdapter
      * @expectedException \Exception
      */
-    public function testRequestingAnAdapterForUnknownNameThrowsAnException()
+    public function testRequestingAnAdapterWithoutProvidingATypeThrowsAnException()
     {
-        $this->adapter_factory->getAdapter('unk');
+        $this->adapter_factory->getAdapter([]);
     }
 
     /**
-     * @covers ::__construct
+     * @covers ::getAdapter
+     * @expectedException \Exception
+     */
+    public function testRequestingAnAdapterForUnknownTypeThrowsAnException()
+    {
+        $this->adapter_factory->getAdapter(['type' => 'unk']);
+    }
+
+    /**
      * @covers ::getAdapter
      */
     public function testAdapterForPgsqlNameIsAPgsqlAdapter()
     {
         $this->assertInstanceOf(
             '\Hodor\Database\PgsqlAdapter',
-            $this->adapter_factory->getAdapter('pgsql')
+            $this->adapter_factory->getAdapter(['type' => 'pgsql'])
         );
     }
 }
