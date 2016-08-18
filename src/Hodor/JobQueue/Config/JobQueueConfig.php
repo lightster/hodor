@@ -51,10 +51,11 @@ class JobQueueConfig
      */
     public function getWorkerQueueNameFactory()
     {
-        $worker_queue_name_factory = $this->config['worker_queue_name_factory'];
+        $worker_qname_factory = $this->config['worker_queue_name_factory'];
 
-        if (empty($worker_queue_name_factory)) {
-            $worker_queue_name_factory = function ($name, $params, $options) {
+        if (empty($worker_qname_factory)) {
+            $worker_qname_factory = function ($name, $params, $options) {
+                unset($name, $params);
                 if (empty($options['queue_name'])) {
                     throw new Exception(
                         "Job option 'queue_name' is required when using the "
@@ -63,13 +64,13 @@ class JobQueueConfig
                 }
                 return $options['queue_name'];
             };
-        } elseif (!is_callable($worker_queue_name_factory)) {
+        } elseif (!is_callable($worker_qname_factory)) {
             throw new Exception(
                 "The provided 'worker_queue_name_factory' config value is not a callable."
             );
         }
 
-        return $worker_queue_name_factory;
+        return $worker_qname_factory;
     }
 
     /**
@@ -78,18 +79,19 @@ class JobQueueConfig
      */
     public function getBufferQueueNameFactory()
     {
-        $buffer_queue_name_factory = $this->config['buffer_queue_name_factory'];
+        $buffer_qname_factory = $this->config['buffer_queue_name_factory'];
 
-        if (empty($buffer_queue_name_factory)) {
-            $buffer_queue_name_factory = function ($name, $params, $options) {
+        if (empty($buffer_qname_factory)) {
+            $buffer_qname_factory = function ($name, $params, $options) {
+                unset($name, $params, $options);
                 return 'default';
             };
-        } elseif (!is_callable($buffer_queue_name_factory)) {
+        } elseif (!is_callable($buffer_qname_factory)) {
             throw new Exception(
                 "The provided 'buffer_queue_name_factory' config value is not a callable."
             );
         }
 
-        return $buffer_queue_name_factory;
+        return $buffer_qname_factory;
     }
 }
