@@ -3,6 +3,7 @@
 namespace Hodor\JobQueue;
 
 use Exception;
+use Hodor\JobQueue\Config\JobQueueConfig;
 use Hodor\MessageQueue\Adapter\Amqp\Factory as AmqpFactory;
 use Hodor\MessageQueue\Adapter\ConfigInterface;
 use Hodor\MessageQueue\Adapter\FactoryInterface;
@@ -42,6 +43,11 @@ class Config implements ConfigInterface
     ];
 
     /**
+     * @var JobQueueConfig
+     */
+    private $job_queue_config;
+
+    /**
      * @param array config_path
      * @param array $config
      */
@@ -57,6 +63,21 @@ class Config implements ConfigInterface
     public function getConfigPath()
     {
         return $this->config_path;
+    }
+
+    public function getJobQueueConfig()
+    {
+        if ($this->job_queue_config) {
+            return $this->job_queue_config;
+        }
+
+        $this->job_queue_config = new JobQueueConfig([
+            'job_runner'                => $this->getOption('job_runner'),
+            'worker_queue_name_factory' => $this->getOption('worker_queue_name_factory'),
+            'buffer_queue_name_factory' => $this->getOption('buffer_queue_name_factory'),
+        ]);
+
+        return $this->job_queue_config;
     }
 
     /**
@@ -91,73 +112,6 @@ class Config implements ConfigInterface
     public function getBufferQueueConfig($queue_name)
     {
         return $this->getQueueConfig("bufferer-{$queue_name}");
-    }
-
-    /**
-     * @return callable
-     * @throws Exception
-     */
-    public function getJobRunnerFactory()
-    {
-        $job_runner = $this->getOption('job_runner');
-
-        if (empty($job_runner)) {
-            throw new Exception("The 'job_runner' config parameter is required.");
-        } elseif (!is_callable($job_runner)) {
-            throw new Exception(
-                "The provided 'job_runner' config value is not a callable."
-            );
-        }
-
-        return $job_runner;
-    }
-
-    /**
-     * @return callable
-     * @throws Exception
-     */
-    public function getWorkerQueueNameFactory()
-    {
-        $worker_queue_name_factory = $this->getOption('worker_queue_name_factory');
-
-        if (empty($worker_queue_name_factory)) {
-            $worker_queue_name_factory = function ($name, $params, $options) {
-                if (empty($options['queue_name'])) {
-                    throw new Exception(
-                        "Job option 'queue_name' is required when using the "
-                        . "default queue name factory."
-                    );
-                }
-                return $options['queue_name'];
-            };
-        } elseif (!is_callable($worker_queue_name_factory)) {
-            throw new Exception(
-                "The provided 'worker_queue_name_factory' config value is not a callable."
-            );
-        }
-
-        return $worker_queue_name_factory;
-    }
-
-    /**
-     * @return callable
-     * @throws Exception
-     */
-    public function getBufferQueueNameFactory()
-    {
-        $buffer_queue_name_factory = $this->getOption('buffer_queue_name_factory');
-
-        if (empty($buffer_queue_name_factory)) {
-            $buffer_queue_name_factory = function ($name, $params, $options) {
-                return 'default';
-            };
-        } elseif (!is_callable($buffer_queue_name_factory)) {
-            throw new Exception(
-                "The provided 'buffer_queue_name_factory' config value is not a callable."
-            );
-        }
-
-        return $buffer_queue_name_factory;
     }
 
     /**
