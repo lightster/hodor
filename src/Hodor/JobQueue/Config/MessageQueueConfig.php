@@ -33,10 +33,8 @@ class MessageQueueConfig implements ConfigInterface
                 'queue_defaults'        => [],
                 'worker_queues'         => [],
                 'worker_queue_defaults' => [],
-                'workers_per_server'    => null,
                 'buffer_queues'         => [],
                 'buffer_queue_defaults' => [],
-                'bufferers_per_server'  => null,
             ],
             $config
         );

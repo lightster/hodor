@@ -75,10 +75,8 @@ class Config
             'queue_defaults'        => $this->getOption('queue_defaults', []),
             'worker_queues'         => $this->getOption('worker_queues', []),
             'worker_queue_defaults' => $this->getOption('worker_queue_defaults', []),
-            'workers_per_server'    => $this->getOption('workers_per_server'),
             'buffer_queues'         => $this->getOption('buffer_queues', []),
             'buffer_queue_defaults' => $this->getOption('buffer_queue_defaults', []),
-            'bufferers_per_server'  => $this->getOption('bufferers_per_server'),
         ]);
 
         return $this->message_queue_config;
