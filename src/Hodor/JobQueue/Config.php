@@ -4,18 +4,10 @@ namespace Hodor\JobQueue;
 
 use Exception;
 use Hodor\JobQueue\Config\JobQueueConfig;
-use Hodor\MessageQueue\Adapter\Amqp\Factory as AmqpFactory;
-use Hodor\MessageQueue\Adapter\ConfigInterface;
-use Hodor\MessageQueue\Adapter\FactoryInterface;
-use Hodor\MessageQueue\Adapter\Testing\Factory as TestingFactory;
+use Hodor\JobQueue\Config\MessageQueueConfig;
 
-class Config implements ConfigInterface
+class Config
 {
-    /**
-     * @var FactoryInterface
-     */
-    private $adapter_factory;
-
     /**
      * @var string
      */
@@ -27,25 +19,14 @@ class Config implements ConfigInterface
     private $config;
 
     /**
-     * @var array
-     */
-    private $queue_types = [
-        'worker' => [
-            'queue_key'         => 'worker_queues',
-            'defaults_key'      => 'worker_queue_defaults',
-            'process_count_key' => 'workers_per_server',
-        ],
-        'bufferer' => [
-            'queue_key'         => 'buffer_queues',
-            'defaults_key'      => 'buffer_queue_defaults',
-            'process_count_key' => 'bufferers_per_server',
-        ],
-    ];
-
-    /**
      * @var JobQueueConfig
      */
     private $job_queue_config;
+
+    /**
+     * @var MessageQueueConfig
+     */
+    private $message_queue_config;
 
     /**
      * @param array config_path
@@ -81,6 +62,29 @@ class Config implements ConfigInterface
     }
 
     /**
+     * @return MessageQueueConfig
+     */
+    public function getMessageQueueConfig()
+    {
+        if ($this->message_queue_config) {
+            return $this->message_queue_config;
+        }
+
+        $this->message_queue_config = new MessageQueueConfig([
+            'adapter_factory'       => $this->getOption('adapter_factory'),
+            'queue_defaults'        => $this->getOption('queue_defaults', []),
+            'worker_queues'         => $this->getOption('worker_queues', []),
+            'worker_queue_defaults' => $this->getOption('worker_queue_defaults', []),
+            'workers_per_server'    => $this->getOption('workers_per_server'),
+            'buffer_queues'         => $this->getOption('buffer_queues', []),
+            'buffer_queue_defaults' => $this->getOption('buffer_queue_defaults', []),
+            'bufferers_per_server'  => $this->getOption('bufferers_per_server'),
+        ]);
+
+        return $this->message_queue_config;
+    }
+
+    /**
      * @return array
      * @throws Exception
      */
@@ -102,7 +106,7 @@ class Config implements ConfigInterface
      */
     public function getWorkerQueueConfig($queue_name)
     {
-        return $this->getQueueConfig("worker-{$queue_name}");
+        return $this->getMessageQueueConfig()->getQueueConfig("worker-{$queue_name}");
     }
 
     /**
@@ -111,7 +115,7 @@ class Config implements ConfigInterface
      */
     public function getBufferQueueConfig($queue_name)
     {
-        return $this->getQueueConfig("bufferer-{$queue_name}");
+        return $this->getMessageQueueConfig()->getQueueConfig("bufferer-{$queue_name}");
     }
 
     /**
@@ -131,80 +135,11 @@ class Config implements ConfigInterface
     }
 
     /**
-     * @return FactoryInterface
-     */
-    public function getAdapterFactory()
-    {
-        if ($this->adapter_factory) {
-            return $this->adapter_factory;
-        }
-
-        $this->adapter_factory = $this->generateAdapterFactory();
-
-        return $this->adapter_factory;
-    }
-
-    /**
      * @return array
      */
     public function getBufferQueueNames()
     {
         return array_keys($this->getOption('buffer_queues'));
-    }
-
-    /**
-     * @param  string $fully_qualified_queue_name
-     * @return array
-     * @throws Exception
-     */
-    public function getQueueConfig($fully_qualified_queue_name)
-    {
-        list($queue_type, $queue_name) = explode('-', $fully_qualified_queue_name, 2);
-        $queue_type_keys = $this->queue_types[$queue_type];
-
-        $queues_option = $queue_type_keys['queue_key'];
-
-        $queues = $this->getOption($queues_option);
-        if (!isset($queues[$queue_name])) {
-            throw new Exception(
-                "Queue name '{$queue_name}' not found in {$queues_option} config."
-            );
-        }
-
-        $config = array_merge(
-            [
-                'host'         => null,
-                'port'         => 5672,
-                'username'     => null,
-                'password'     => null,
-                'queue_prefix' => 'hodor-',
-            ],
-            $this->getOption('queue_defaults', []),
-            $this->getOption($queue_type_keys['defaults_key'], []),
-            $queues[$queue_name]
-        );
-        $config = array_merge(
-            $config,
-            ['queue_name' => "{$config['queue_prefix']}{$queue_name}"]
-        );
-        $config['key_name'] = $queue_name;
-        $config['fetch_count'] = 1;
-        $config['queue_type'] = $queue_type;
-        $config['process_count'] = $config[$queue_type_keys['process_count_key']];
-
-        return $config;
-    }
-
-    /**
-     * @return FactoryInterface
-     */
-    private function generateAdapterFactory()
-    {
-        if ('testing' === $this->getOption('adapter_factory')) {
-            return new TestingFactory($this);
-        }
-
-        return new AmqpFactory($this);
     }
 
     /**

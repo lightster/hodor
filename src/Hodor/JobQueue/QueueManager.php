@@ -196,7 +196,7 @@ class QueueManager
             return $this->mq_factory;
         }
 
-        $this->mq_factory = new MqFactory($this->config);
+        $this->mq_factory = new MqFactory($this->config->getMessageQueueConfig());
 
         return $this->mq_factory;
     }
