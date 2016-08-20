@@ -75,44 +75,6 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::generateAdapterFactory
-     * @covers ::getAdapterFactory
-     */
-    public function testAdapterFactoryCanBeRetrieved()
-    {
-        $this->assertInstanceOf(
-            'Hodor\MessageQueue\Adapter\Amqp\Factory',
-            (new Config(__FILE__, []))->getAdapterFactory()
-        );
-    }
-
-    /**
-     * @covers ::generateAdapterFactory
-     * @covers ::getAdapterFactory
-     */
-    public function testAdapterFactoryIsReused()
-    {
-        $config = new Config(__FILE__, []);
-
-        $this->assertSame(
-            $config->getAdapterFactory(),
-            $config->getAdapterFactory()
-        );
-    }
-
-    /**
-     * @covers ::generateAdapterFactory
-     * @covers ::getAdapterFactory
-     */
-    public function testTestingAdapterFactoryCanBeRetrieved()
-    {
-        $this->assertInstanceOf(
-            'Hodor\MessageQueue\Adapter\Testing\Factory',
-            (new Config(__FILE__, ['adapter_factory' => 'testing']))->getAdapterFactory()
-        );
-    }
-
-    /**
      * @covers ::__construct
      * @covers ::getJobQueueConfig
      * @dataProvider configProvider
@@ -147,6 +109,59 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $this->assertSame(
             [$uniqid, ['value' => $uniqid]],
             call_user_func($job_queue_config->getJobRunnerFactory(), $uniqid, ['value' => $uniqid], [])
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getMessageQueueConfig
+     * @dataProvider configProvider
+     * @param array $options
+     */
+    public function testMessageQueueConfigIsReused(array $options)
+    {
+        $config = new Config(__FILE__, $options);
+
+        $this->assertSame($config->getMessageQueueConfig(), $config->getMessageQueueConfig());
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::getMessageQueueConfig
+     * @covers ::<private>
+     * @dataProvider configProvider
+     * @param array $options
+     * @throws Exception
+     */
+    public function testMessageQueueConfigOptionsArePassedIn(array $options)
+    {
+        $config = new Config(__FILE__, $options);
+
+        $buffer_config = $config->getMessageQueueConfig()->getQueueConfig('bufferer-default');
+        $worker_config = $config->getMessageQueueConfig()->getQueueConfig('worker-default');
+
+        $this->assertEquals(
+            [
+                $options['queue_defaults']['host'],
+                $options['buffer_queue_defaults']['queue_prefix'],
+                $options['buffer_queues']['default']['bufferers_per_server'],
+                $options['queue_defaults']['host'],
+                $options['worker_queue_defaults']['queue_prefix'],
+                $options['worker_queues']['default']['workers_per_server'],
+            ],
+            [
+                $buffer_config['host'],
+                $buffer_config['queue_prefix'],
+                $buffer_config['bufferers_per_server'],
+                $worker_config['host'],
+                $worker_config['queue_prefix'],
+                $worker_config['workers_per_server'],
+            ]
+        );
+
+        $this->assertInstanceOf(
+            'Hodor\MessageQueue\Adapter\Testing\Factory',
+            $config->getMessageQueueConfig()->getAdapterFactory()
         );
     }
 
@@ -384,42 +399,6 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::getQueueConfig
-     * @covers ::getOption
-     * @dataProvider provideQueueConfigs
-     * @param array $expected_config
-     * @param $queue_name
-     * @param array $hodor_config
-     * @throws Exception
-     */
-    public function testQueueConfigCanBeGenerated(array $expected_config, $queue_name, array $hodor_config)
-    {
-        $config = new Config(__FILE__, $hodor_config);
-
-        $this->assertEquals($expected_config, $config->getQueueConfig($queue_name));
-    }
-
-    /**
-     * @covers ::__construct
-     * @covers ::getQueueConfig
-     * @expectedException Exception
-     */
-    public function testQueueConfigForUnknownConfigThrowsAnException()
-    {
-        $config = new Config(__FILE__, ['worker_queues' => []]);
-        $config->getQueueConfig('worker-missing');
-    }
-
-    /**
-     * @return array
-     */
-    public function provideQueueConfigs()
-    {
-        return require __DIR__ . '/ConfigTest.queue-config.dataset.php';
-    }
-
     public function configProvider()
     {
         return [
@@ -430,6 +409,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
                         'dsn'  => 'host=localhost user=test_hodor dbname=test_hodor',
                     ],
                 ],
+                'adapter_factory' => 'testing',
                 'queue_defaults' => [
                     'host' => 'queue-default-host',
                 ],

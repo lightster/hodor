@@ -4,6 +4,7 @@ namespace Hodor\JobQueue;
 
 use DateTime;
 use Exception;
+use Hodor\JobQueue\Config\MessageQueueConfig;
 use Hodor\MessageQueue\Adapter\ConsumerInterface;
 use Hodor\MessageQueue\Adapter\ProducerInterface;
 use Hodor\MessageQueue\IncomingMessage;
@@ -52,8 +53,9 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
                 ],
             ],
         ]);
-        $this->consumer = $this->config->getAdapterFactory()->getConsumer('bufferer-default');
-        $this->producer = $this->config->getAdapterFactory()->getProducer('bufferer-default');
+        $mq_config = $this->config->getMessageQueueConfig();
+        $this->consumer = $mq_config->getAdapterFactory()->getConsumer('bufferer-default');
+        $this->producer = $mq_config->getAdapterFactory()->getProducer('bufferer-default');
         $this->queue = new Queue($this->consumer, $this->producer);
         $this->queue_manager = new QueueManager($this->config);
     }

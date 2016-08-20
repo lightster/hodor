@@ -92,7 +92,7 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
         $expected_job = $this->queueJob();
 
         try {
-            $consumer = $config->getAdapterFactory()->getConsumer('bufferer-default');
+            $consumer = $config->getMessageQueueConfig()->getAdapterFactory()->getConsumer('bufferer-default');
             $consumer->consumeMessage(function () {
                 $this->fail('A message should not be available for consuming until after batch is published.');
             });
@@ -171,7 +171,7 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
      */
     private function assertBufferedJobEquals(array $expected_job, Config $config)
     {
-        $consumer = $config->getAdapterFactory()->getConsumer('bufferer-default');
+        $consumer = $config->getMessageQueueConfig()->getAdapterFactory()->getConsumer('bufferer-default');
         $consumer->consumeMessage(function (IncomingMessage $message) use ($expected_job) {
             $received_job = $message->getContent();
             $this->assertEquals($expected_job, [
