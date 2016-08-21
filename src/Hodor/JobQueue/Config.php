@@ -5,6 +5,7 @@ namespace Hodor\JobQueue;
 use Exception;
 use Hodor\JobQueue\Config\JobQueueConfig;
 use Hodor\JobQueue\Config\MessageQueueConfig;
+use Hodor\JobQueue\Config\QueueConfig;
 
 class Config
 {
@@ -70,14 +71,10 @@ class Config
             return $this->message_queue_config;
         }
 
-        $this->message_queue_config = new MessageQueueConfig([
-            'adapter_factory'       => $this->getOption('adapter_factory'),
-            'queue_defaults'        => $this->getOption('queue_defaults', []),
-            'worker_queues'         => $this->getOption('worker_queues', []),
-            'worker_queue_defaults' => $this->getOption('worker_queue_defaults', []),
-            'buffer_queues'         => $this->getOption('buffer_queues', []),
-            'buffer_queue_defaults' => $this->getOption('buffer_queue_defaults', []),
-        ]);
+        $this->message_queue_config = new MessageQueueConfig(
+            $this->getQueueConfig(),
+            $this->getOption('adapter_factory')
+        );
 
         return $this->message_queue_config;
     }
@@ -138,6 +135,20 @@ class Config
     public function getBufferQueueNames()
     {
         return array_keys($this->getOption('buffer_queues'));
+    }
+
+    /**
+     * @return QueueConfig
+     */
+    private function getQueueConfig()
+    {
+        return new QueueConfig([
+            'queue_defaults'        => $this->getOption('queue_defaults', []),
+            'worker_queues'         => $this->getOption('worker_queues', []),
+            'worker_queue_defaults' => $this->getOption('worker_queue_defaults', []),
+            'buffer_queues'         => $this->getOption('buffer_queues', []),
+            'buffer_queue_defaults' => $this->getOption('buffer_queue_defaults', []),
+        ]);
     }
 
     /**

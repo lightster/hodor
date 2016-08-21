@@ -22,7 +22,7 @@ class MessageQueueConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testQueueConfigCanBeGenerated(array $expected_config, $queue_name, array $hodor_config)
     {
-        $config = new MessageQueueConfig($hodor_config);
+        $config = new MessageQueueConfig(new QueueConfig($hodor_config));
 
         $this->assertEquals($expected_config, $config->getQueueConfig($queue_name));
     }
@@ -35,7 +35,7 @@ class MessageQueueConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testQueueConfigForUnknownConfigThrowsAnException()
     {
-        $config = new MessageQueueConfig(['worker_queues' => []]);
+        $config = new MessageQueueConfig(new QueueConfig(['worker_queues' => []]));
         $config->getQueueConfig('worker-missing');
     }
 
@@ -48,7 +48,7 @@ class MessageQueueConfigTest extends PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
             'Hodor\MessageQueue\Adapter\Amqp\Factory',
-            (new MessageQueueConfig([]))->getAdapterFactory()
+            (new MessageQueueConfig(new QueueConfig([])))->getAdapterFactory()
         );
     }
 
@@ -59,7 +59,7 @@ class MessageQueueConfigTest extends PHPUnit_Framework_TestCase
      */
     public function testAdapterFactoryIsReused()
     {
-        $config = new MessageQueueConfig([]);
+        $config = new MessageQueueConfig(new QueueConfig([]));
 
         $this->assertSame(
             $config->getAdapterFactory(),
@@ -76,7 +76,7 @@ class MessageQueueConfigTest extends PHPUnit_Framework_TestCase
     {
         $this->assertInstanceOf(
             'Hodor\MessageQueue\Adapter\Testing\Factory',
-            (new MessageQueueConfig(['adapter_factory' => 'testing']))->getAdapterFactory()
+            (new MessageQueueConfig(new QueueConfig([]), 'testing'))->getAdapterFactory()
         );
     }
 

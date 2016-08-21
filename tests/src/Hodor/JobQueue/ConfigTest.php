@@ -13,6 +13,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getConfigPath
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testConfigPathIsSet($options)
@@ -30,6 +31,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getDatabaseConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testDatabaseConfigCanBeRetrieved($options)
@@ -53,6 +55,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getDatabaseConfig
+     * @covers ::<private>
      * @expectedException \Exception
      */
     public function testRetrievingDatabaseConfigThrowsExceptionIfSuperqueuerConfigIsNotDefined()
@@ -65,6 +68,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getDatabaseConfig
+     * @covers ::<private>
      * @expectedException \Exception
      */
     public function testRetrievingDatabaseConfigThrowsExceptionIfDbConfigIsNotDefined()
@@ -77,6 +81,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getJobQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testJobQueueConfigIsReused($options)
@@ -89,6 +94,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getJobQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testJobQueueConfigOptionsArePassedIn($options)
@@ -115,6 +121,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getMessageQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      * @param array $options
      */
@@ -143,19 +150,19 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 $options['queue_defaults']['host'],
-                $options['buffer_queue_defaults']['queue_prefix'],
+                $options['buffer_queue_defaults']['username'],
                 $options['buffer_queues']['default']['bufferers_per_server'],
                 $options['queue_defaults']['host'],
-                $options['worker_queue_defaults']['queue_prefix'],
+                $options['worker_queue_defaults']['username'],
                 $options['worker_queues']['default']['workers_per_server'],
             ],
             [
                 $buffer_config['host'],
-                $buffer_config['queue_prefix'],
-                $buffer_config['bufferers_per_server'],
+                $buffer_config['username'],
+                $buffer_config['process_count'],
                 $worker_config['host'],
-                $worker_config['queue_prefix'],
-                $worker_config['workers_per_server'],
+                $worker_config['username'],
+                $worker_config['process_count'],
             ]
         );
 
@@ -168,6 +175,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getBufferQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      * @expectedException Exception
      */
@@ -181,6 +189,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getBufferQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testBufferQueueConfigIsComposedOfDefaultsAndSpecifics($options)
@@ -191,14 +200,14 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             [
-                'host'                 => $options['queue_defaults']['host'],
-                'queue_prefix'         => $options['buffer_queue_defaults']['queue_prefix'],
-                'bufferers_per_server' => $options['buffer_queues']['default']['bufferers_per_server'],
+                'host'          => $options['queue_defaults']['host'],
+                'username'      => $options['buffer_queue_defaults']['username'],
+                'process_count' => $options['buffer_queues']['default']['bufferers_per_server'],
             ],
             [
-                'host'                 => $queue_config['host'],
-                'queue_prefix'         => $queue_config['queue_prefix'],
-                'bufferers_per_server' => $queue_config['bufferers_per_server'],
+                'host'          => $queue_config['host'],
+                'username'      => $queue_config['username'],
+                'process_count' => $queue_config['process_count'],
             ]
         );
     }
@@ -206,6 +215,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getBufferQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testBufferQueueKeyNameIsSet($options)
@@ -223,6 +233,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getBufferQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testBufferQueueNameDefaultsToPrefixAndQueueKey($options)
@@ -232,7 +243,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $queue_config = $config->getBufferQueueConfig('default');
 
         $this->assertEquals(
-            "{$queue_config['queue_prefix']}{$queue_config['key_name']}",
+            "{$options['buffer_queue_defaults']['queue_prefix']}{$queue_config['key_name']}",
             $queue_config['queue_name']
         );
     }
@@ -240,6 +251,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getBufferQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testBufferQueueFetchCountIsDefaulted($options)
@@ -257,6 +269,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getWorkerQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      * @expectedException Exception
      */
@@ -270,6 +283,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getWorkerQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testWorkerConfigIsComposedOfDefaultsAndSpecifics($options)
@@ -280,14 +294,14 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             [
-                'host'               => $options['queue_defaults']['host'],
-                'queue_prefix'       => $options['worker_queue_defaults']['queue_prefix'],
-                'workers_per_server' => $options['worker_queues']['default']['workers_per_server'],
+                'host'          => $options['queue_defaults']['host'],
+                'username'      => $options['worker_queue_defaults']['username'],
+                'process_count' => $options['worker_queues']['default']['workers_per_server'],
             ],
             [
-                'host'               => $queue_config['host'],
-                'queue_prefix'       => $queue_config['queue_prefix'],
-                'workers_per_server' => $queue_config['workers_per_server'],
+                'host'          => $queue_config['host'],
+                'username'      => $queue_config['username'],
+                'process_count' => $queue_config['process_count'],
             ]
         );
     }
@@ -295,6 +309,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getWorkerQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testWorkerKeyNameIsSet($options)
@@ -312,6 +327,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getWorkerQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testWorkerQueueNameDefaultsToPrefixAndQueueKey($options)
@@ -321,7 +337,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $queue_config = $config->getWorkerQueueConfig('default');
 
         $this->assertEquals(
-            "{$queue_config['queue_prefix']}{$queue_config['key_name']}",
+            "{$options['worker_queue_defaults']['queue_prefix']}{$queue_config['key_name']}",
             $queue_config['queue_name']
         );
     }
@@ -329,6 +345,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getWorkerQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testWorkerQueueFetchCountIsOne($options)
@@ -414,6 +431,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
                     'host' => 'queue-default-host',
                 ],
                 'buffer_queue_defaults' => [
+                    'username'     => 'buffer-queue-default-username',
                     'queue_prefix' => 'buffer-queue-default-prefix',
                 ],
                 'buffer_queues' => [
@@ -422,6 +440,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
                     ],
                 ],
                 'worker_queue_defaults' => [
+                    'username'     => 'worker-queue-default-username',
                     'queue_prefix' => 'worker-queue-default-prefix',
                 ],
                 'worker_queues' => [
