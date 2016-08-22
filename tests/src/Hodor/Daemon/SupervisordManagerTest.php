@@ -14,9 +14,7 @@ class SupervisordManagerTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @covers ::__construct
-     * @covers ::getDaemonConfig
-     * @covers ::generateQueuePrograms
-     * @covers ::evaluateProgramName
+     * @covers ::<private>
      */
     public function testDaemonConfigContainsExpectedProcesses()
     {
@@ -37,8 +35,7 @@ class SupervisordManagerTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getDaemonConfig
-     * @covers ::generateQueuePrograms
-     * @covers ::getProgram
+     * @covers ::<private>
      * @dataProvider provideDaemonProcesses
      */
     public function testProcessesContainExpectedKeys()
@@ -71,11 +68,7 @@ class SupervisordManagerTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getDaemonConfig
-     * @covers ::generateQueuePrograms
-     * @covers ::getBinFilePath
-     * @covers ::evaluateProgramName
-     * @covers ::generateCommandString
-     * @covers ::getProgram
+     * @covers ::<private>
      */
     public function testDaemonConfigIsGeneratedAsExpected()
     {
@@ -101,8 +94,7 @@ class SupervisordManagerTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::setupDaemon
-     * @covers ::getRawDaemonConfig
-     * @covers ::generateProgramText
+     * @covers ::<private>
      * @expectedException \Exception
      */
     public function testSetupDaemonThrowsAnExceptionIfConfigFileIsNotWritable()
@@ -116,8 +108,7 @@ class SupervisordManagerTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::setupDaemon
-     * @covers ::getRawDaemonConfig
-     * @covers ::generateProgramText
+     * @covers ::<private>
      */
     public function testSetupDaemonGeneratesSupervisordConfig()
     {

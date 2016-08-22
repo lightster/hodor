@@ -46,53 +46,14 @@ class SupervisordManager implements ManagerInterface
      */
     public function getDaemonConfig()
     {
-        $programs = [];
-        $programs += $this->generateQueuePrograms(
-            ['default'],
-            function ($queue_name) {
-                return [
-                    'command'       => $this->getBinFilePath('superqueuer.php'),
-                    'key_name'      => $queue_name,
-                    'queue_type'    => 'superqueuer',
-                    'process_count' => 1,
-                ];
-            }
-        );
-        $programs += $this->generateQueuePrograms(
-            $this->config->getBufferQueueNames(),
-            function ($queue_name) {
-                $config = $this->config->getBufferQueueConfig($queue_name);
-                $config['command'] = $this->getBinFilePath('buffer-worker.php');
-                return $config;
-            }
-        );
-        $programs += $this->generateQueuePrograms(
-            $this->config->getWorkerQueueNames(),
-            function ($queue_name) {
-                $config = $this->config->getWorkerQueueConfig($queue_name);
-                $config['command'] = $this->getBinFilePath('job-worker.php');
-                return $config;
-            }
-        );
-
-        return $programs;
-    }
-
-    /**
-     * @param  array    $queue_names
-     * @param  callable $queue_config_generator
-     * @return array
-     */
-    private function generateQueuePrograms(
-        array $queue_names,
-        callable $queue_config_generator
-    ) {
+        $queue_configs = $this->config->getWorkerConfig()->getWorkerConfigs();
         $raw_daemon_config = $this->getRawDaemonConfig();
+
         $programs = [];
-        foreach ($queue_names as $queue_name) {
+        foreach ($queue_configs as $queue_config) {
             $program_config = array_replace_recursive(
                 $raw_daemon_config,
-                $queue_config_generator($queue_name)
+                $queue_config
             );
 
             $this->evaluateProgramName($program_config);

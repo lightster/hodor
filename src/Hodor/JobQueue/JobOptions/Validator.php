@@ -68,11 +68,11 @@ class Validator
      */
     private function validateQueueName(array $options)
     {
-        try {
-            $this->config->getWorkerQueueConfig($options['queue_name']);
-        } catch (Exception $exception) {
-            throw $exception;
+        if ($this->config->getWorkerConfig()->hasWorkerConfig("worker", $options['queue_name'])) {
+            return;
         }
+
+        throw new Exception("Worker named '{$options['queue_name']}' not found.");
     }
 
     /**

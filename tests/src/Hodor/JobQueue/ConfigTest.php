@@ -13,6 +13,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getConfigPath
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testConfigPathIsSet($options)
@@ -30,6 +31,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getDatabaseConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testDatabaseConfigCanBeRetrieved($options)
@@ -53,6 +55,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getDatabaseConfig
+     * @covers ::<private>
      * @expectedException \Exception
      */
     public function testRetrievingDatabaseConfigThrowsExceptionIfSuperqueuerConfigIsNotDefined()
@@ -65,6 +68,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getDatabaseConfig
+     * @covers ::<private>
      * @expectedException \Exception
      */
     public function testRetrievingDatabaseConfigThrowsExceptionIfDbConfigIsNotDefined()
@@ -77,6 +81,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getJobQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testJobQueueConfigIsReused($options)
@@ -89,6 +94,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getJobQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testJobQueueConfigOptionsArePassedIn($options)
@@ -115,6 +121,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      * @covers ::getMessageQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
      * @param array $options
      */
@@ -143,19 +150,19 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 $options['queue_defaults']['host'],
-                $options['buffer_queue_defaults']['queue_prefix'],
-                $options['buffer_queues']['default']['bufferers_per_server'],
+                $options['buffer_queue_defaults']['username'],
+                "{$options['buffer_queue_defaults']['queue_prefix']}default",
                 $options['queue_defaults']['host'],
-                $options['worker_queue_defaults']['queue_prefix'],
-                $options['worker_queues']['default']['workers_per_server'],
+                $options['worker_queue_defaults']['username'],
+                "{$options['worker_queue_defaults']['queue_prefix']}default",
             ],
             [
                 $buffer_config['host'],
-                $buffer_config['queue_prefix'],
-                $buffer_config['bufferers_per_server'],
+                $buffer_config['username'],
+                $buffer_config['queue_name'],
                 $worker_config['host'],
-                $worker_config['queue_prefix'],
-                $worker_config['workers_per_server'],
+                $worker_config['username'],
+                $worker_config['queue_name'],
             ]
         );
 
@@ -167,179 +174,73 @@ class ConfigTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::getBufferQueueConfig
+     * @covers ::getWorkerConfig
+     * @covers ::<private>
      * @dataProvider configProvider
-     * @expectedException Exception
+     * @param array $options
      */
-    public function testRequestingUndeclaredBufferConfigThrowsAnException($options)
+    public function testWorkerConfigIsReused(array $options)
     {
         $config = new Config(__FILE__, $options);
 
-        $config->getBufferQueueConfig('undeclared');
+        $this->assertSame($config->getWorkerConfig(), $config->getWorkerConfig());
     }
 
     /**
      * @covers ::__construct
-     * @covers ::getBufferQueueConfig
+     * @covers ::getWorkerConfig
+     * @covers ::<private>
      * @dataProvider configProvider
+     * @param array $options
+     * @throws Exception
      */
-    public function testBufferQueueConfigIsComposedOfDefaultsAndSpecifics($options)
+    public function testWorkerConfigOptionsArePassedIn(array $options)
     {
         $config = new Config(__FILE__, $options);
-
-        $queue_config = $config->getBufferQueueConfig('default');
+        $codebase_path = dirname(dirname(dirname(dirname(__DIR__))));
+        $base_path = "{$codebase_path}/src/Hodor/JobQueue/Config/../../../../bin";
 
         $this->assertEquals(
             [
-                'host'                 => $options['queue_defaults']['host'],
-                'queue_prefix'         => $options['buffer_queue_defaults']['queue_prefix'],
-                'bufferers_per_server' => $options['buffer_queues']['default']['bufferers_per_server'],
+                'superqueuer-default' => [
+                    'queue_type'    => 'superqueuer',
+                    'key_name'      => 'default',
+                    'process_count' => 1,
+                    'command'       => "{$base_path}/superqueuer.php",
+                ],
+                'bufferer-default' => [
+                    'queue_type'    => 'bufferer',
+                    'key_name'      => 'default',
+                    'process_count' => 5,
+                    'command'       => "{$base_path}/buffer-worker.php",
+                ],
+                'worker-default' => [
+                    'queue_type'    => 'worker',
+                    'key_name'      => 'default',
+                    'process_count' => 5,
+                    'command'       => "{$base_path}/job-worker.php",
+                ],
             ],
-            [
-                'host'                 => $queue_config['host'],
-                'queue_prefix'         => $queue_config['queue_prefix'],
-                'bufferers_per_server' => $queue_config['bufferers_per_server'],
-            ]
+            $config->getWorkerConfig()->getWorkerConfigs()
         );
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::getBufferQueueConfig
+     * @covers ::<private>
      * @dataProvider configProvider
+     * @param array $options
      */
-    public function testBufferQueueKeyNameIsSet($options)
+    public function testQueueConfigCanBeRequestedMultipleTimes(array $options)
     {
         $config = new Config(__FILE__, $options);
 
-        $queue_config = $config->getBufferQueueConfig('default');
-
-        $this->assertEquals(
-            'default',
-            $queue_config['key_name']
+        $this->assertInstanceOf(
+            'Hodor\JobQueue\Config\MessageQueueConfig',
+            $config->getMessageQueueConfig()
         );
-    }
-
-    /**
-     * @covers ::__construct
-     * @covers ::getBufferQueueConfig
-     * @dataProvider configProvider
-     */
-    public function testBufferQueueNameDefaultsToPrefixAndQueueKey($options)
-    {
-        $config = new Config(__FILE__, $options);
-
-        $queue_config = $config->getBufferQueueConfig('default');
-
-        $this->assertEquals(
-            "{$queue_config['queue_prefix']}{$queue_config['key_name']}",
-            $queue_config['queue_name']
-        );
-    }
-
-    /**
-     * @covers ::__construct
-     * @covers ::getBufferQueueConfig
-     * @dataProvider configProvider
-     */
-    public function testBufferQueueFetchCountIsDefaulted($options)
-    {
-        $config = new Config(__FILE__, $options);
-
-        $queue_config = $config->getBufferQueueConfig('default');
-
-        $this->assertEquals(
-            1,
-            $queue_config['fetch_count']
-        );
-    }
-
-    /**
-     * @covers ::__construct
-     * @covers ::getWorkerQueueConfig
-     * @dataProvider configProvider
-     * @expectedException Exception
-     */
-    public function testRequestingUndeclaredWorkerConfigThrowsAnException($options)
-    {
-        $config = new Config(__FILE__, $options);
-
-        $config->getWorkerQueueConfig('undeclared');
-    }
-
-    /**
-     * @covers ::__construct
-     * @covers ::getWorkerQueueConfig
-     * @dataProvider configProvider
-     */
-    public function testWorkerConfigIsComposedOfDefaultsAndSpecifics($options)
-    {
-        $config = new Config(__FILE__, $options);
-
-        $queue_config = $config->getWorkerQueueConfig('default');
-
-        $this->assertEquals(
-            [
-                'host'               => $options['queue_defaults']['host'],
-                'queue_prefix'       => $options['worker_queue_defaults']['queue_prefix'],
-                'workers_per_server' => $options['worker_queues']['default']['workers_per_server'],
-            ],
-            [
-                'host'               => $queue_config['host'],
-                'queue_prefix'       => $queue_config['queue_prefix'],
-                'workers_per_server' => $queue_config['workers_per_server'],
-            ]
-        );
-    }
-
-    /**
-     * @covers ::__construct
-     * @covers ::getWorkerQueueConfig
-     * @dataProvider configProvider
-     */
-    public function testWorkerKeyNameIsSet($options)
-    {
-        $config = new Config(__FILE__, $options);
-
-        $queue_config = $config->getWorkerQueueConfig('default');
-
-        $this->assertEquals(
-            'default',
-            $queue_config['key_name']
-        );
-    }
-
-    /**
-     * @covers ::__construct
-     * @covers ::getWorkerQueueConfig
-     * @dataProvider configProvider
-     */
-    public function testWorkerQueueNameDefaultsToPrefixAndQueueKey($options)
-    {
-        $config = new Config(__FILE__, $options);
-
-        $queue_config = $config->getWorkerQueueConfig('default');
-
-        $this->assertEquals(
-            "{$queue_config['queue_prefix']}{$queue_config['key_name']}",
-            $queue_config['queue_name']
-        );
-    }
-
-    /**
-     * @covers ::__construct
-     * @covers ::getWorkerQueueConfig
-     * @dataProvider configProvider
-     */
-    public function testWorkerQueueFetchCountIsOne($options)
-    {
-        $config = new Config(__FILE__, $options);
-
-        $queue_config = $config->getWorkerQueueConfig('default');
-
-        $this->assertEquals(
-            1,
-            $queue_config['fetch_count']
+        $this->assertInstanceOf(
+            'Hodor\JobQueue\Config\WorkerConfig',
+            $config->getWorkerConfig()
         );
     }
 
@@ -359,46 +260,6 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         );
     }
 
-    /**
-     * @covers ::__construct
-     * @covers ::getWorkerQueueNames
-     * @covers ::getOption
-     */
-    public function testWorkerQueueNamesCanBeRetrieved()
-    {
-        $config = new Config(__FILE__, [
-            'worker_queues' => [
-                'abc' => [],
-                '123' => [],
-            ]
-        ]);
-
-        $this->assertEquals(
-            ['abc', '123'],
-            $config->getWorkerQueueNames()
-        );
-    }
-
-    /**
-     * @covers ::__construct
-     * @covers ::getBufferQueueNames
-     * @covers ::getOption
-     */
-    public function testBufferQueueNamesCanBeRetrieved()
-    {
-        $config = new Config(__FILE__, [
-            'buffer_queues' => [
-                'xyz' => [],
-                '456' => [],
-            ]
-        ]);
-
-        $this->assertEquals(
-            ['xyz', '456'],
-            $config->getBufferQueueNames()
-        );
-    }
-
     public function configProvider()
     {
         return [
@@ -414,6 +275,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
                     'host' => 'queue-default-host',
                 ],
                 'buffer_queue_defaults' => [
+                    'username'     => 'buffer-queue-default-username',
                     'queue_prefix' => 'buffer-queue-default-prefix',
                 ],
                 'buffer_queues' => [
@@ -422,6 +284,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
                     ],
                 ],
                 'worker_queue_defaults' => [
+                    'username'     => 'worker-queue-default-username',
                     'queue_prefix' => 'worker-queue-default-prefix',
                 ],
                 'worker_queues' => [

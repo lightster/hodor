@@ -11,9 +11,9 @@ use Hodor\MessageQueue\Adapter\Testing\Factory as TestingFactory;
 class MessageQueueConfig implements ConfigInterface
 {
     /**
-     * @var array
+     * @var string
      */
-    private $config;
+    private $adapter_factory_type;
 
     /**
      * @var FactoryInterface
@@ -21,23 +21,18 @@ class MessageQueueConfig implements ConfigInterface
     private $adapter_factory;
 
     /**
-     * @var array
+     * @var QueueConfig
      */
-    private $queue_configs;
+    private $queue_config;
 
-    public function __construct($config)
+    /**
+     * @param QueueConfig $queue_config
+     * @param string $adapter_factory_type
+     */
+    public function __construct(QueueConfig $queue_config, $adapter_factory_type = null)
     {
-        $this->config = array_merge(
-            [
-                'adapter_factory'       => null,
-                'queue_defaults'        => [],
-                'worker_queues'         => [],
-                'worker_queue_defaults' => [],
-                'buffer_queues'         => [],
-                'buffer_queue_defaults' => [],
-            ],
-            $config
-        );
+        $this->adapter_factory_type = $adapter_factory_type ?: 'amqp';
+        $this->queue_config = $queue_config;
     }
 
     /**
@@ -61,17 +56,7 @@ class MessageQueueConfig implements ConfigInterface
      */
     public function getQueueConfig($queue_name)
     {
-        if (!$this->queue_configs) {
-            $this->initQueues();
-        }
-
-        if (!isset($this->queue_configs[$queue_name])) {
-            throw new Exception(
-                "Queue name '{$queue_name}' not found in queues config."
-            );
-        }
-
-        return $this->queue_configs[$queue_name];
+        return $this->queue_config->getMessageQueueConfig($queue_name);
     }
 
     /**
@@ -79,63 +64,10 @@ class MessageQueueConfig implements ConfigInterface
      */
     private function generateAdapterFactory()
     {
-        if ('testing' === $this->config['adapter_factory']) {
+        if ('testing' === $this->adapter_factory_type) {
             return new TestingFactory($this);
         }
 
         return new AmqpFactory($this);
-    }
-
-    /**
-     * @return array
-     */
-    private function initQueues()
-    {
-        $this->initQueuesForType(
-            'worker',
-            'worker_queues',
-            'worker_queue_defaults',
-            'workers_per_server'
-        );
-        $this->initQueuesForType(
-            'bufferer',
-            'buffer_queues',
-            'buffer_queue_defaults',
-            'bufferers_per_server'
-        );
-    }
-
-    /**
-     * @param string $type
-     * @param string $queue_key
-     * @param string $defaults_key
-     * @param string $process_count_key
-     */
-    private function initQueuesForType($type, $queue_key, $defaults_key, $process_count_key)
-    {
-        $queues = $this->config[$queue_key];
-
-        $defaults = array_merge(
-            [
-                'host'         => null,
-                'port'         => 5672,
-                'username'     => null,
-                'password'     => null,
-                'queue_prefix' => 'hodor-',
-            ],
-            $this->config['queue_defaults'],
-            $this->config[$defaults_key]
-        );
-
-        foreach ($queues as $queue_name => $queue) {
-            $queue_config = array_merge($defaults, $queue);
-            $queue_config['queue_name'] = "{$queue_config['queue_prefix']}{$queue_name}";
-            $queue_config['key_name'] = $queue_name;
-            $queue_config['fetch_count'] = 1;
-            $queue_config['queue_type'] = $type;
-            $queue_config['process_count'] = $queue_config[$process_count_key];
-
-            $this->queue_configs["{$type}-{$queue_name}"] = $queue_config;
-        }
     }
 }

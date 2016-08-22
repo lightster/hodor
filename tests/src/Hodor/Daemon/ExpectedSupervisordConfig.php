@@ -26,27 +26,27 @@ $template_config = [
 $program_details = [
     [
         'program_name' => 'hodor-superqueuer-default',
-        'command'      => "/usr/bin/env php '{$codebase_path}/src/Hodor/Daemon/../../../bin/superqueuer.php' -c '{$config_path}'",
+        'command'      => "/usr/bin/env php '{$codebase_path}/src/Hodor/JobQueue/Config/../../../../bin/superqueuer.php' -c '{$config_path}'",
         'numprocs'     => 1,
     ],
     [
         'program_name' => 'hodor-bufferer-default',
-        'command'      => "/usr/bin/env php '{$codebase_path}/src/Hodor/Daemon/../../../bin/buffer-worker.php' -c '{$config_path}' -q 'default'",
+        'command'      => "/usr/bin/env php '{$codebase_path}/src/Hodor/JobQueue/Config/../../../../bin/buffer-worker.php' -c '{$config_path}' -q 'default'",
         'numprocs'     => 10,
     ],
     [
         'program_name' => 'hodor-bufferer-special',
-        'command'      => "/usr/bin/env php '{$codebase_path}/src/Hodor/Daemon/../../../bin/buffer-worker.php' -c '{$config_path}' -q 'special'",
+        'command'      => "/usr/bin/env php '{$codebase_path}/src/Hodor/JobQueue/Config/../../../../bin/buffer-worker.php' -c '{$config_path}' -q 'special'",
         'numprocs'     => 10,
     ],
     [
         'program_name' => 'hodor-worker-default',
-        'command'      => "/usr/bin/env php '{$codebase_path}/src/Hodor/Daemon/../../../bin/job-worker.php' -c '{$config_path}' -q 'default'",
+        'command'      => "/usr/bin/env php '{$codebase_path}/src/Hodor/JobQueue/Config/../../../../bin/job-worker.php' -c '{$config_path}' -q 'default'",
         'numprocs'     => 10,
     ],
     [
         'program_name' => 'hodor-worker-intense',
-        'command'      => "/usr/bin/env php '{$codebase_path}/src/Hodor/Daemon/../../../bin/job-worker.php' -c '{$config_path}' -q 'intense'",
+        'command'      => "/usr/bin/env php '{$codebase_path}/src/Hodor/JobQueue/Config/../../../../bin/job-worker.php' -c '{$config_path}' -q 'intense'",
         'numprocs'     => 2,
     ],
 ];
