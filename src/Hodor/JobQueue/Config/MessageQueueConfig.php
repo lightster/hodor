@@ -56,10 +56,7 @@ class MessageQueueConfig implements ConfigInterface
      */
     public function getQueueConfig($queue_name)
     {
-        return array_merge(
-            $this->queue_config->getMessageQueueConfig($queue_name),
-            $this->queue_config->getWorkerConfig($queue_name)
-        );
+        return $this->queue_config->getMessageQueueConfig($queue_name);
     }
 
     /**

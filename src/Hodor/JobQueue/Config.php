@@ -6,6 +6,7 @@ use Exception;
 use Hodor\JobQueue\Config\JobQueueConfig;
 use Hodor\JobQueue\Config\MessageQueueConfig;
 use Hodor\JobQueue\Config\QueueConfig;
+use Hodor\JobQueue\Config\WorkerConfig;
 
 class Config
 {
@@ -30,6 +31,16 @@ class Config
     private $message_queue_config;
 
     /**
+     * @var WorkerConfig
+     */
+    private $worker_config;
+
+    /**
+     * @var QueueConfig
+     */
+    private $queue_config;
+
+    /**
      * @param array config_path
      * @param array $config
      */
@@ -47,6 +58,9 @@ class Config
         return $this->config_path;
     }
 
+    /**
+     * @return JobQueueConfig
+     */
     public function getJobQueueConfig()
     {
         if ($this->job_queue_config) {
@@ -80,6 +94,20 @@ class Config
     }
 
     /**
+     * @return WorkerConfig
+     */
+    public function getWorkerConfig()
+    {
+        if ($this->worker_config) {
+            return $this->worker_config;
+        }
+
+        $this->worker_config = new WorkerConfig($this->getQueueConfig());
+
+        return $this->worker_config;
+    }
+
+    /**
      * @return array
      * @throws Exception
      */
@@ -96,24 +124,6 @@ class Config
     }
 
     /**
-     * @param  string $queue_name
-     * @return array
-     */
-    public function getWorkerQueueConfig($queue_name)
-    {
-        return $this->getMessageQueueConfig()->getQueueConfig("worker-{$queue_name}");
-    }
-
-    /**
-     * @param  string $queue_name
-     * @return array
-     */
-    public function getBufferQueueConfig($queue_name)
-    {
-        return $this->getMessageQueueConfig()->getQueueConfig("bufferer-{$queue_name}");
-    }
-
-    /**
      * @return array
      */
     public function getDaemonConfig()
@@ -122,33 +132,23 @@ class Config
     }
 
     /**
-     * @return array
-     */
-    public function getWorkerQueueNames()
-    {
-        return array_keys($this->getOption('worker_queues'));
-    }
-
-    /**
-     * @return array
-     */
-    public function getBufferQueueNames()
-    {
-        return array_keys($this->getOption('buffer_queues'));
-    }
-
-    /**
      * @return QueueConfig
      */
     private function getQueueConfig()
     {
-        return new QueueConfig([
+        if ($this->queue_config) {
+            return $this->queue_config;
+        }
+
+        $this->queue_config = new QueueConfig([
             'queue_defaults'        => $this->getOption('queue_defaults', []),
             'worker_queues'         => $this->getOption('worker_queues', []),
             'worker_queue_defaults' => $this->getOption('worker_queue_defaults', []),
             'buffer_queues'         => $this->getOption('buffer_queues', []),
             'buffer_queue_defaults' => $this->getOption('buffer_queue_defaults', []),
         ]);
+
+        return $this->queue_config;
     }
 
     /**

@@ -108,6 +108,34 @@ class QueueConfigTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
+     * @covers ::hasWorkerConfig
+     * @covers ::<private>
+     */
+    public function testWorkerExistenceCanBeChecked()
+    {
+        $queue_config = $this->getSimpleQueueConfig();
+
+        $this->assertTrue($queue_config->hasWorkerConfig('worker', 'xyz'));
+        $this->assertFalse($queue_config->hasWorkerConfig('worker', 'abc'));
+        $this->assertTrue($queue_config->hasWorkerConfig('bufferer', 'abc'));
+        $this->assertFalse($queue_config->hasWorkerConfig('bufferer', 'xyz'));
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::hasWorkerConfig
+     * @covers ::<private>
+     * @expectedException Exception
+     */
+    public function testCheckingExistenceOfWorkerOfUnknownTypeThrowsAnException()
+    {
+        $queue_config = $this->getSimpleQueueConfig();
+
+        $this->assertTrue($queue_config->hasWorkerConfig('destructive', 'job-worker'));
+    }
+
+    /**
+     * @covers ::__construct
      * @covers ::getQueueNames
      * @covers ::getWorkerConfig
      * @covers ::<private>

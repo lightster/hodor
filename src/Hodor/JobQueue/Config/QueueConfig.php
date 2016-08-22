@@ -9,6 +9,15 @@ class QueueConfig
     /**
      * @var array
      */
+    private $worker_types = [
+        'superqueuer' => [],
+        'bufferer'    => [],
+        'worker'      => [],
+    ];
+
+    /**
+     * @var array
+     */
     private $config;
 
     /**
@@ -66,6 +75,21 @@ class QueueConfig
             'key_name'      => $queue_config['key_name'],
             'process_count' => $queue_config['process_count'],
         ];
+    }
+
+    /**
+     * @param string $worker_type
+     * @param string $worker_name
+     * @return bool
+     * @throws Exception
+     */
+    public function hasWorkerConfig($worker_type, $worker_name)
+    {
+        if (!array_key_exists($worker_type, $this->worker_types)) {
+            throw new Exception("Worker config for unknown worker type '{$worker_type}' requested.");
+        }
+
+        return array_key_exists("{$worker_type}-{$worker_name}", $this->getQueueNames());
     }
 
     /**

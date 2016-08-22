@@ -24,7 +24,17 @@ class MessageQueueConfigTest extends PHPUnit_Framework_TestCase
     {
         $config = new MessageQueueConfig(new QueueConfig($hodor_config));
 
-        $this->assertEquals($expected_config, $config->getQueueConfig($queue_name));
+        $this->assertEquals(
+            [
+                'host'        => $expected_config['host'],
+                'port'        => $expected_config['port'],
+                'username'    => $expected_config['username'],
+                'password'    => $expected_config['password'],
+                'queue_name'  => $expected_config['queue_name'],
+                'fetch_count' => $expected_config['fetch_count'],
+            ],
+            $config->getQueueConfig($queue_name)
+        );
     }
 
     /**
