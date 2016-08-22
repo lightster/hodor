@@ -78,8 +78,8 @@ class SupervisordManager implements ManagerInterface
             '-c ' . escapeshellarg($this->config->getConfigPath()),
         ];
 
-        if ('superqueuer' !== $program_config['queue_type']) {
-            $command_pieces[] = '-q ' . escapeshellarg($program_config['key_name']);
+        if ('superqueuer' !== $program_config['worker_type']) {
+            $command_pieces[] = '-q ' . escapeshellarg($program_config['worker_name']);
         }
 
         return implode(" ", $command_pieces);
@@ -102,13 +102,13 @@ class SupervisordManager implements ManagerInterface
     {
         $search = [
             '{{PROGRAM_PREFIX}}',
-            '{{QUEUE_TYPE}}',
-            '{{QUEUE_NAME}}',
+            '{{WORKER_TYPE}}',
+            '{{WORKER_NAME}}',
         ];
         $replace = [
             $program_config['program_prefix'],
-            $program_config['queue_type'],
-            $program_config['key_name'],
+            $program_config['worker_type'],
+            $program_config['worker_name'],
         ];
 
         $program_config['program_name'] = str_replace(
@@ -127,7 +127,7 @@ class SupervisordManager implements ManagerInterface
             'config_path'    => '/etc/supervisord/conf.d/hodor.conf',
             'process_owner'  => 'apache',
             'program_prefix' => 'hodor',
-            'program_name' => '{{PROGRAM_PREFIX}}-{{QUEUE_TYPE}}-{{QUEUE_NAME}}',
+            'program_name' => '{{PROGRAM_PREFIX}}-{{WORKER_TYPE}}-{{WORKER_NAME}}',
             'logs'           => [
                 'error' => [
                     'path'         => '/var/log/hodor/%(program_name)s_%(process_num)d.error.log',

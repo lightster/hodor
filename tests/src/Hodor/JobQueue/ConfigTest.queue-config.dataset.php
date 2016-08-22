@@ -1,6 +1,6 @@
 <?php
 
-$scenario_maker = function ($queue_type, $queue_key, $defaults_key, $process_count_key) {
+$scenario_maker = function ($worker_type, $queue_key, $defaults_key, $process_count_key) {
     return [
         [
             // expected queue config
@@ -10,13 +10,13 @@ $scenario_maker = function ($queue_type, $queue_key, $defaults_key, $process_cou
                 'username'           => null,
                 'password'           => null,
                 'queue_name'         => "hodor-minimal",
-                'key_name'           => "minimal",
+                'worker_name'        => "minimal",
                 'fetch_count'        => 1,
                 'process_count'      => 5,
-                'queue_type'         => $queue_type,
+                'worker_type'        => $worker_type,
             ],
             // queue name to test
-            "{$queue_type}-minimal",
+            "{$worker_type}-minimal",
             // config array passed to Config object
             [
                 'queue_defaults' => [$process_count_key   => 5],
@@ -34,13 +34,13 @@ $scenario_maker = function ($queue_type, $queue_key, $defaults_key, $process_cou
                 'username'           => 'hare',
                 'password'           => 'turtle',
                 'queue_name'         => "willis-test-queue-defaults",
-                'key_name'           => "test-queue-defaults",
+                'worker_name'        => "test-queue-defaults",
                 'fetch_count'        => 1,
                 'process_count'      => 10,
-                'queue_type'         => $queue_type,
+                'worker_type'        => $worker_type,
             ],
             // queue name to test
-            "{$queue_type}-test-queue-defaults",
+            "{$worker_type}-test-queue-defaults",
             // config array passed to Config object
             [
                 'queue_defaults' => [
@@ -65,13 +65,13 @@ $scenario_maker = function ($queue_type, $queue_key, $defaults_key, $process_cou
                 'username'           => 'hared',
                 'password'           => 'turtled',
                 'queue_name'         => "willis-hodor-test-worker-queue-defaults",
-                'key_name'           => "test-worker-queue-defaults",
+                'worker_name'        => "test-worker-queue-defaults",
                 'fetch_count'        => 1,
                 'process_count'      => 15,
-                'queue_type'         => $queue_type,
+                'worker_type'        => $worker_type,
             ],
             // queue name to test
-            "{$queue_type}-test-worker-queue-defaults",
+            "{$worker_type}-test-worker-queue-defaults",
             // config array passed to Config object
             [
                 'queue_defaults' => [
@@ -103,13 +103,13 @@ $scenario_maker = function ($queue_type, $queue_key, $defaults_key, $process_cou
                 'username'           => 'fast',
                 'password'           => 'slow',
                 'queue_name'         => "hold-the-door-test-worker-queue",
-                'key_name'           => "test-worker-queue",
+                'worker_name'        => "test-worker-queue",
                 'fetch_count'        => 1,
                 'process_count'      => 20,
-                'queue_type'         => $queue_type,
+                'worker_type'        => $worker_type,
             ],
             // queue name to test
-            "{$queue_type}-test-worker-queue",
+            "{$worker_type}-test-worker-queue",
             // config array passed to Config object
             [
                 'queue_defaults' => [
@@ -148,13 +148,13 @@ $scenario_maker = function ($queue_type, $queue_key, $defaults_key, $process_cou
                 'username'           => 'fast',
                 'password'           => 'slow',
                 'queue_name'         => "hold-the-door-defaults-are-optional",
-                'key_name'           => "defaults-are-optional",
+                'worker_name'        => "defaults-are-optional",
                 'fetch_count'        => 1,
                 'process_count'      => 20,
-                'queue_type'         => $queue_type,
+                'worker_type'        => $worker_type,
             ],
             // queue name to test
-            "{$queue_type}-defaults-are-optional",
+            "{$worker_type}-defaults-are-optional",
             // config array passed to Config object
             [
                 $queue_key => [
