@@ -71,8 +71,8 @@ class QueueConfig
         $queue_config = $this->getQueueConfig($queue_name);
 
         return [
-            'queue_type'    => $queue_config['queue_type'],
-            'key_name'      => $queue_config['key_name'],
+            'worker_type'   => $queue_config['worker_type'],
+            'worker_name'   => $queue_config['worker_name'],
             'process_count' => $queue_config['process_count'],
         ];
     }
@@ -131,8 +131,8 @@ class QueueConfig
 
         $this->queue_configs = [];
         $this->queue_configs['superqueuer-default'] = [
-            'queue_type'    => 'superqueuer',
-            'key_name'   => 'default',
+            'worker_type'   => 'superqueuer',
+            'worker_name'   => 'default',
             'process_count' => 1,
         ];
 
@@ -180,9 +180,9 @@ class QueueConfig
         foreach ($queues as $queue_name => $queue) {
             $queue_config = array_merge($defaults, $queue);
             $queue_config['queue_name'] = "{$queue_config['queue_prefix']}{$queue_name}";
-            $queue_config['key_name'] = $queue_name;
+            $queue_config['worker_name'] = $queue_name;
             $queue_config['fetch_count'] = 1;
-            $queue_config['queue_type'] = $type;
+            $queue_config['worker_type'] = $type;
             $queue_config['process_count'] = $queue_config[$process_count_key];
 
             $this->queue_configs["{$type}-{$queue_name}"] = $queue_config;

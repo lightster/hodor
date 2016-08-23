@@ -67,20 +67,20 @@ class WorkerConfigTest extends PHPUnit_Framework_TestCase
         $this->assertSame(
             [
                 'superqueuer-default' => [
-                    'queue_type'    => 'superqueuer',
-                    'key_name'      => 'default',
+                    'worker_type'   => 'superqueuer',
+                    'worker_name'   => 'default',
                     'process_count' => 1,
                     'command'       => "{$base_path}/superqueuer.php",
                 ],
                 'bufferer-buffer-worker' => [
-                    'queue_type'    => 'bufferer',
-                    'key_name'      => 'buffer-worker',
+                    'worker_type'   => 'bufferer',
+                    'worker_name'   => 'buffer-worker',
                     'process_count' => 15,
                     'command'       => "{$base_path}/buffer-worker.php",
                 ],
                 'worker-job-worker' => [
-                    'queue_type'    => 'worker',
-                    'key_name'      => 'job-worker',
+                    'worker_type'   => 'worker',
+                    'worker_name'   => 'job-worker',
                     'process_count' => 5,
                     'command'       => "{$base_path}/job-worker.php",
                 ],

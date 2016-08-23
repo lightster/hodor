@@ -65,8 +65,8 @@ class QueueConfigTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             [
-                'queue_type'    => $expected_config['queue_type'],
-                'key_name'      => $expected_config['key_name'],
+                'worker_type'   => $expected_config['worker_type'],
+                'worker_name'   => $expected_config['worker_name'],
                 'process_count' => $expected_config['process_count'],
             ],
             $config->getWorkerConfig($queue_name)

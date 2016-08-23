@@ -57,12 +57,12 @@ class WorkerConfig
         foreach ($this->queue_config->getQueueNames() as $queue_name) {
             $queue_config = $this->queue_config->getWorkerConfig($queue_name);
 
-            $key_name = "{$queue_config['queue_type']}-{$queue_config['key_name']}";
+            $key_name = "{$queue_config['worker_type']}-{$queue_config['worker_name']}";
             $this->worker_configs[$key_name] = [
-                'queue_type'    => $queue_config['queue_type'],
-                'key_name'      => $queue_config['key_name'],
+                'worker_type'   => $queue_config['worker_type'],
+                'worker_name'   => $queue_config['worker_name'],
                 'process_count' => $queue_config['process_count'],
-                'command'       => $this->getBinFilePath($this->worker_commands[$queue_config['queue_type']]),
+                'command'       => $this->getBinFilePath($this->worker_commands[$queue_config['worker_type']]),
             ];
         }
 

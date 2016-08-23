@@ -203,20 +203,20 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             [
                 'superqueuer-default' => [
-                    'queue_type'    => 'superqueuer',
-                    'key_name'      => 'default',
+                    'worker_type'   => 'superqueuer',
+                    'worker_name'   => 'default',
                     'process_count' => 1,
                     'command'       => "{$base_path}/superqueuer.php",
                 ],
                 'bufferer-default' => [
-                    'queue_type'    => 'bufferer',
-                    'key_name'      => 'default',
+                    'worker_type'   => 'bufferer',
+                    'worker_name'   => 'default',
                     'process_count' => 5,
                     'command'       => "{$base_path}/buffer-worker.php",
                 ],
                 'worker-default' => [
-                    'queue_type'    => 'worker',
-                    'key_name'      => 'default',
+                    'worker_type'   => 'worker',
+                    'worker_name'   => 'default',
                     'process_count' => 5,
                     'command'       => "{$base_path}/job-worker.php",
                 ],
