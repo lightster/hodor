@@ -108,6 +108,21 @@ class QueueConfigTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
+     * @covers ::getQueueNames
+     * @covers ::<private>
+     */
+    public function testQueueNamesCanBeRetrievedMultipleTimes()
+    {
+        $config = $this->getSimpleQueueConfig();
+
+        $this->assertSame(
+            $config->getQueueNames(),
+            $config->getQueueNames()
+        );
+    }
+
+    /**
+     * @covers ::__construct
      * @covers ::hasWorkerConfig
      * @covers ::<private>
      */

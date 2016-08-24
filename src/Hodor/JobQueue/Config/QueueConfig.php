@@ -11,8 +11,16 @@ class QueueConfig
      */
     private $worker_types = [
         'superqueuer' => [],
-        'bufferer'    => [],
-        'worker'      => [],
+        'bufferer'    => [
+            'defaults_key'      => 'buffer_queue_defaults',
+            'queues_key'        => 'buffer_queues',
+            'process_count_key' => 'bufferers_per_server',
+        ],
+        'worker'      => [
+            'defaults_key'      => 'worker_queue_defaults',
+            'queues_key'        => 'worker_queues',
+            'process_count_key' => 'workers_per_server',
+        ],
     ];
 
     /**
@@ -23,7 +31,23 @@ class QueueConfig
     /**
      * @var array
      */
-    private $queue_configs;
+    private $worker_type_defaults = [];
+
+    /**
+     * @var array
+     */
+    private $queue_names;
+
+    /**
+     * @var array
+     */
+    private $queue_configs = [
+        'superqueuer-default' => [
+            'worker_type'   => 'superqueuer',
+            'worker_name'   => 'default',
+            'process_count' => 1,
+        ],
+    ];
 
     /**
      * @param array $config
@@ -89,7 +113,9 @@ class QueueConfig
             throw new Exception("Worker config for unknown worker type '{$worker_type}' requested.");
         }
 
-        return array_key_exists("{$worker_type}-{$worker_name}", $this->getQueueNames());
+        $type_options = $this->worker_types[$worker_type];
+
+        return array_key_exists($worker_name, $this->config[$type_options['queues_key']]);
     }
 
     /**
@@ -97,9 +123,26 @@ class QueueConfig
      */
     public function getQueueNames()
     {
-        $queue_names = array_keys($this->getQueueConfigs());
+        if ($this->queue_names) {
+            return $this->queue_names;
+        }
 
-        return array_combine($queue_names, $queue_names);
+        $buffer_names = array_keys($this->config[$this->worker_types['bufferer']['queues_key']]);
+        $worker_names = array_keys($this->config[$this->worker_types['worker']['queues_key']]);
+
+        $queue_names = array_merge(
+            ['superqueuer-default'],
+            array_map(function ($buffer_name) {
+                return "bufferer-{$buffer_name}";
+            }, $buffer_names),
+            array_map(function ($buffer_name) {
+                return "worker-{$buffer_name}";
+            }, $worker_names)
+        );
+
+        $this->queue_names = array_combine($queue_names, $queue_names);
+
+        return $this->queue_names;
     }
 
     /**
@@ -109,60 +152,54 @@ class QueueConfig
      */
     private function getQueueConfig($queue_name)
     {
-        $queue_configs = $this->getQueueConfigs();
+        if (array_key_exists($queue_name, $this->queue_configs)) {
+            return $this->queue_configs[$queue_name];
+        }
 
-        if (!isset($queue_configs[$queue_name])) {
+        $name_parts = explode('-', $queue_name, 2);
+        if (!isset($name_parts[1]) || !$this->hasWorkerConfig($name_parts[0], $name_parts[1])) {
             throw new Exception(
                 "Queue name '{$queue_name}' not found in queues config."
             );
         }
 
-        return $queue_configs[$queue_name];
+        $this->initQueueConfig($name_parts[0], $name_parts[1]);
+
+        return $this->queue_configs[$queue_name];
     }
 
     /**
+     * @param string $worker_type
+     * @param string $worker_name
+     */
+    private function initQueueConfig($worker_type, $worker_name)
+    {
+        $type_options = $this->worker_types[$worker_type];
+
+        $queue_config = array_merge(
+            $this->getQueueTypeDefaults($worker_type),
+            $this->config[$type_options['queues_key']][$worker_name]
+        );
+        $queue_config['queue_name'] = "{$queue_config['queue_prefix']}{$worker_name}";
+        $queue_config['worker_name'] = $worker_name;
+        $queue_config['fetch_count'] = 1;
+        $queue_config['worker_type'] = $worker_type;
+        $queue_config['process_count'] = $queue_config[$type_options['process_count_key']];
+
+        $this->queue_configs["{$worker_type}-{$worker_name}"] = $queue_config;
+    }
+
+    /**
+     * @param string $worker_type
      * @return array
      */
-    private function getQueueConfigs()
+    private function getQueueTypeDefaults($worker_type)
     {
-        if ($this->queue_configs) {
-            return $this->queue_configs;
+        if (array_key_exists($worker_type, $this->worker_type_defaults)) {
+            return $this->worker_type_defaults[$worker_type];
         }
 
-        $this->queue_configs = [];
-        $this->queue_configs['superqueuer-default'] = [
-            'worker_type'   => 'superqueuer',
-            'worker_name'   => 'default',
-            'process_count' => 1,
-        ];
-
-        $this->initQueuesForType(
-            'bufferer',
-            'buffer_queues',
-            'buffer_queue_defaults',
-            'bufferers_per_server'
-        );
-        $this->initQueuesForType(
-            'worker',
-            'worker_queues',
-            'worker_queue_defaults',
-            'workers_per_server'
-        );
-
-        return $this->queue_configs;
-    }
-
-    /**
-     * @param string $type
-     * @param string $queue_key
-     * @param string $defaults_key
-     * @param string $process_count_key
-     */
-    private function initQueuesForType($type, $queue_key, $defaults_key, $process_count_key)
-    {
-        $queues = $this->config[$queue_key];
-
-        $defaults = array_merge(
+        $this->worker_type_defaults[$worker_type] = array_merge(
             [
                 'host'                     => null,
                 'port'                     => 5672,
@@ -174,18 +211,9 @@ class QueueConfig
                 'max_time_per_consume'     => 600,
             ],
             $this->config['queue_defaults'],
-            $this->config[$defaults_key]
+            $this->config[$this->worker_types[$worker_type]['defaults_key']]
         );
 
-        foreach ($queues as $queue_name => $queue) {
-            $queue_config = array_merge($defaults, $queue);
-            $queue_config['queue_name'] = "{$queue_config['queue_prefix']}{$queue_name}";
-            $queue_config['worker_name'] = $queue_name;
-            $queue_config['fetch_count'] = 1;
-            $queue_config['worker_type'] = $type;
-            $queue_config['process_count'] = $queue_config[$process_count_key];
-
-            $this->queue_configs["{$type}-{$queue_name}"] = $queue_config;
-        }
+        return $this->worker_type_defaults[$worker_type];
     }
 }
