@@ -6,6 +6,7 @@ engines:
         - php
     exclude_paths:
       - "**.dataset.php"
+      - "config/dist/*.php"
   fixme:
     enabled: true
   phpmd:
