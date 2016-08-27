@@ -88,8 +88,7 @@ class QueueManager
      */
     public function getBufferQueueForJob($name, array $params, array $options)
     {
-        $queue_name = call_user_func(
-            $this->config->getJobQueueConfig()->getBufferQueueNameFactory(),
+        $queue_name = $this->config->getJobQueueConfig()->getBufferQueueName(
             $name,
             $params,
             $options
@@ -124,8 +123,7 @@ class QueueManager
      */
     public function getWorkerQueueNameForJob($name, array $params, array $options)
     {
-        return call_user_func(
-            $this->config->getJobQueueConfig()->getWorkerQueueNameFactory(),
+        return $this->config->getJobQueueConfig()->getWorkerQueueName(
             $name,
             $params,
             $options

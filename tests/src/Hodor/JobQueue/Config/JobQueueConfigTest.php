@@ -56,7 +56,8 @@ class JobQueueConfigTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::getWorkerQueueNameFactory
+     * @covers ::getWorkerQueueName
+     * @covers ::<private>
      * @expectedException \Exception
      */
     public function testWorkerQueueNameFactoryThrowsExceptionIfItIsNotCallable()
@@ -65,12 +66,13 @@ class JobQueueConfigTest extends PHPUnit_Framework_TestCase
             'worker_queue_name_factory' => 'blah',
         ]);
 
-        $config->getWorkerQueueNameFactory();
+        $config->getWorkerQueueName('job-worker', [], []);
     }
 
     /**
      * @covers ::__construct
-     * @covers ::getWorkerQueueNameFactory
+     * @covers ::getWorkerQueueName
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testWorkerQueueNameFactoryIsDefaultedToQueueNameOptionsCallback($options)
@@ -78,22 +80,20 @@ class JobQueueConfigTest extends PHPUnit_Framework_TestCase
         unset($options['worker_queue_name_factory']);
         $config = new JobQueueConfig($options);
 
-        $callback = $config->getWorkerQueueNameFactory();
-
-        $this->assertTrue(is_callable($callback));
         $this->assertEquals(
             'default',
-            call_user_func($callback, 'n/a', [], ['queue_name' => 'default'])
+            $config->getWorkerQueueName('n/a', [], ['queue_name' => 'default'])
         );
         $this->assertEquals(
             'other',
-            call_user_func($callback, 'n/a', [], ['queue_name' => 'other'])
+            $config->getWorkerQueueName('n/a', [], ['queue_name' => 'other'])
         );
     }
 
     /**
      * @covers ::__construct
-     * @covers ::getWorkerQueueNameFactory
+     * @covers ::getWorkerQueueName
+     * @covers ::<private>
      * @dataProvider configProvider
      * @expectedException \Exception
      */
@@ -102,40 +102,36 @@ class JobQueueConfigTest extends PHPUnit_Framework_TestCase
         unset($options['worker_queue_name_factory']);
         $config = new JobQueueConfig($options);
 
-        $callback = $config->getWorkerQueueNameFactory();
-
-        $this->assertTrue(is_callable($callback));
         $this->assertEquals(
             'other',
-            call_user_func($callback, 'n/a', [], ['not_queue_name' => 'other'])
+            $config->getWorkerQueueName('n/a', [], ['not_queue_name' => 'other'])
         );
     }
 
     /**
      * @covers ::__construct
-     * @covers ::getWorkerQueueNameFactory
+     * @covers ::getWorkerQueueName
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testWorkerQueueNameFactoryCanBeProvided($options)
     {
         $config = new JobQueueConfig($options);
 
-        $callback = $config->getWorkerQueueNameFactory();
-
-        $this->assertTrue(is_callable($callback));
         $this->assertEquals(
             'non-default',
-            call_user_func($callback, 'non-default', [], ['queue_name' => 'default'])
+            $config->getWorkerQueueName('non-default', [], ['queue_name' => 'default'])
         );
         $this->assertEquals(
             'another',
-            call_user_func($callback, 'another', [], ['queue_name' => 'other'])
+            $config->getWorkerQueueName('another', [], ['queue_name' => 'other'])
         );
     }
 
     /**
      * @covers ::__construct
-     * @covers ::getBufferQueueNameFactory
+     * @covers ::getBufferQueueName
+     * @covers ::<private>
      * @expectedException \Exception
      */
     public function testBufferQueueNameFactoryThrowsExceptionIfItIsNotCallable()
@@ -144,12 +140,13 @@ class JobQueueConfigTest extends PHPUnit_Framework_TestCase
             'buffer_queue_name_factory' => 'blah',
         ]);
 
-        $config->getBufferQueueNameFactory();
+        $config->getBufferQueueName('buffer-worker', [], []);
     }
 
     /**
      * @covers ::__construct
-     * @covers ::getBufferQueueNameFactory
+     * @covers ::getBufferQueueName
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testBufferQueueNameFactoryIsDefaultedToDefaultQueue($options)
@@ -157,38 +154,33 @@ class JobQueueConfigTest extends PHPUnit_Framework_TestCase
         unset($options['buffer_queue_name_factory']);
         $config = new JobQueueConfig($options);
 
-        $callback = $config->getBufferQueueNameFactory();
-
-        $this->assertTrue(is_callable($callback));
         $this->assertEquals(
             'default',
-            call_user_func($callback, 'n/a', [], ['queue_name' => 'default'])
+            $config->getBufferQueueName('n/a', [], ['queue_name' => 'default'])
         );
         $this->assertEquals(
             'default',
-            call_user_func($callback, 'n/a', [], ['queue_name' => 'other'])
+            $config->getBufferQueueName('n/a', [], ['queue_name' => 'other'])
         );
     }
 
     /**
      * @covers ::__construct
-     * @covers ::getBufferQueueNameFactory
+     * @covers ::getBufferQueueName
+     * @covers ::<private>
      * @dataProvider configProvider
      */
     public function testBufferQueueNameFactoryCanBeProvided($options)
     {
         $config = new JobQueueConfig($options);
 
-        $callback = $config->getBufferQueueNameFactory();
-
-        $this->assertTrue(is_callable($callback));
         $this->assertEquals(
             'non-default',
-            call_user_func($callback, 'non-default', [], ['queue_name' => 'default'])
+            $config->getBufferQueueName('non-default', [], ['queue_name' => 'default'])
         );
         $this->assertEquals(
             'another',
-            call_user_func($callback, 'another', [], ['queue_name' => 'other'])
+            $config->getBufferQueueName('another', [], ['queue_name' => 'other'])
         );
     }
 
