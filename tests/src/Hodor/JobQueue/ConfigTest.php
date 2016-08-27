@@ -106,11 +106,11 @@ class ConfigTest extends PHPUnit_Framework_TestCase
         $uniqid = uniqid();
         $this->assertSame(
             $uniqid,
-            call_user_func($job_queue_config->getBufferQueueNameFactory(), $uniqid, [], [])
+            $job_queue_config->getBufferQueueName($uniqid, [], [])
         );
         $this->assertSame(
             $uniqid,
-            call_user_func($job_queue_config->getWorkerQueueNameFactory(), $uniqid, [], [])
+            $job_queue_config->getWorkerQueueName($uniqid, [], [])
         );
         $this->assertSame(
             [$uniqid, ['value' => $uniqid]],

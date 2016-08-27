@@ -46,10 +46,36 @@ class JobQueueConfig
     }
 
     /**
+     * @param string $name
+     * @param array $params
+     * @param array $options
+     * @return string
+     */
+    public function getWorkerQueueName($name, array $params, array $options)
+    {
+        $factory = $this->getWorkerQueueNameFactory();
+
+        return call_user_func($factory, $name, $params, $options);
+    }
+
+    /**
+     * @param string $name
+     * @param array $params
+     * @param array $options
+     * @return string
+     */
+    public function getBufferQueueName($name, array $params, array $options)
+    {
+        $factory = $this->getBufferQueueNameFactory();
+
+        return call_user_func($factory, $name, $params, $options);
+    }
+
+    /**
      * @return callable
      * @throws Exception
      */
-    public function getWorkerQueueNameFactory()
+    private function getWorkerQueueNameFactory()
     {
         $worker_qname_factory = $this->config['worker_queue_name_factory'];
 
@@ -77,7 +103,7 @@ class JobQueueConfig
      * @return callable
      * @throws Exception
      */
-    public function getBufferQueueNameFactory()
+    private function getBufferQueueNameFactory()
     {
         $buffer_qname_factory = $this->config['buffer_queue_name_factory'];
 
