@@ -4,14 +4,14 @@ namespace Hodor\JobQueue\JobOptions;
 
 use DateTime;
 use Exception;
-use Hodor\JobQueue\Config;
+use Hodor\JobQueue\Config\WorkerConfig;
 
 class Validator
 {
     /**
-     * @var Config
+     * @var WorkerConfig
      */
-    private $config;
+    private $worker_config;
 
     /**
      * @var array
@@ -24,11 +24,11 @@ class Validator
     ];
 
     /**
-     * @param Config $config
+     * @param WorkerConfig $worker_config
      */
-    public function __construct(Config $config)
+    public function __construct(WorkerConfig $worker_config)
     {
-        $this->config = $config;
+        $this->worker_config = $worker_config;
     }
 
     /**
@@ -68,7 +68,7 @@ class Validator
      */
     private function validateQueueName(array $options)
     {
-        if ($this->config->getWorkerConfig()->hasWorkerConfig("worker", $options['queue_name'])) {
+        if ($this->worker_config->hasWorkerConfig("worker", $options['queue_name'])) {
             return;
         }
 
