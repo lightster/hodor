@@ -5,6 +5,8 @@ namespace Hodor\JobQueue\JobOptions;
 use DateTime;
 use Exception;
 use Hodor\JobQueue\Config;
+use Hodor\JobQueue\Config\QueueConfig;
+use Hodor\JobQueue\Config\WorkerConfig;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -137,12 +139,12 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     private function generateValidator(Config $config = null)
     {
         if (!$config) {
-            $config = new Config(__FILE__, [
+            $config = new WorkerConfig(new QueueConfig([
                 'worker_queues' => [
                     'queue_a' => ['workers_per_server' => 5],
                     'queue_b' => ['workers_per_server' => 5],
                 ]
-            ]);
+            ]));
         }
 
         return new Validator($config);

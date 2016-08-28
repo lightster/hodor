@@ -139,7 +139,7 @@ class QueueManager
             return $this->job_options_validator;
         }
 
-        $this->job_options_validator = new JobOptionsValidator($this->config);
+        $this->job_options_validator = new JobOptionsValidator($this->config->getWorkerConfig());
 
         return $this->job_options_validator;
     }
