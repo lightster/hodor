@@ -3,6 +3,7 @@
 namespace Hodor\JobQueue;
 
 use DateTime;
+use Hodor\Database\Adapter\FactoryInterface;
 use Hodor\Database\AdapterInterface as DbAdapterInterface;
 use Hodor\Database\Exception\BufferedJobNotFoundException;
 use Hodor\MessageQueue\IncomingMessage;
@@ -44,7 +45,7 @@ class Superqueue
             $content['options']
         );
 
-        $this->getDatabase()->bufferJob($queue_name, [
+        $this->getDatabase()->getBufferWorker()->bufferJob($queue_name, [
             'name'    => $content['name'],
             'params'  => $content['params'],
             'options' => $content['options'],
@@ -59,7 +60,7 @@ class Superqueue
      */
     public function requestProcessLock()
     {
-        return $this->getDatabase()->requestAdvisoryLock('superqueuer', 'default');
+        return $this->getDatabase()->getSuperqueuer()->requestAdvisoryLock('superqueuer', 'default');
     }
 
     /**
@@ -67,7 +68,7 @@ class Superqueue
      */
     public function queueJobsFromDatabaseToWorkerQueue()
     {
-        $job_generator = $this->getDatabase()->getJobsToRunGenerator();
+        $job_generator = $this->getDatabase()->getSuperqueuer()->getJobsToRunGenerator();
         $total_jobs_queued = 0;
         foreach ($job_generator as $job) {
             $this->batchJob($job);
@@ -86,7 +87,7 @@ class Superqueue
     public function markJobAsSuccessful(IncomingMessage $message, DateTime $started_running_at)
     {
         $this->markJobAsFinished($message, $started_running_at, function ($meta) {
-            $this->getDatabase()->markJobAsSuccessful($meta);
+            $this->getDatabase()->getDequeuer()->markJobAsSuccessful($meta);
         });
     }
 
@@ -97,7 +98,7 @@ class Superqueue
     public function markJobAsFailed(IncomingMessage $message, DateTime $started_running_at)
     {
         $this->markJobAsFinished($message, $started_running_at, function ($meta) {
-            $this->getDatabase()->markJobAsFailed($meta);
+            $this->getDatabase()->getDequeuer()->markJobAsFailed($meta);
         });
     }
 
@@ -110,10 +111,10 @@ class Superqueue
 
         if (0 === $this->jobs_queued) {
             $this->queue_manager->beginBatch();
-            $db->beginTransaction();
+            $db->getSuperqueuer()->beginBatch();
         }
 
-        $meta = $db->markJobAsQueued($job);
+        $meta = $db->getSuperqueuer()->markJobAsQueued($job);
 
         $queue = $this->queue_manager->getWorkerQueue($job['queue_name']);
         $queue->push($job['job_name'], $job['job_params'], $meta);
@@ -135,7 +136,7 @@ class Superqueue
         // the database transaction needs to be committed before the
         // message is pushed to Rabbit MQ to prevent jobs from being
         // processed by workers before they have been moved to buffered_jobs
-        $this->getDatabase()->commitTransaction();
+        $this->getDatabase()->getSuperqueuer()->publishBatch();
         $this->queue_manager->publishBatch();
 
         $this->jobs_queued = 0;
@@ -174,7 +175,7 @@ class Superqueue
     }
 
     /**
-     * @return DbAdapterInterface
+     * @return FactoryInterface
      */
     private function getDatabase()
     {
@@ -182,7 +183,7 @@ class Superqueue
             return $this->database;
         }
 
-        $this->database = $this->queue_manager->getDatabase();
+        $this->database = $this->queue_manager->getDatabase()->getAdapterFactory();
 
         return $this->database;
     }

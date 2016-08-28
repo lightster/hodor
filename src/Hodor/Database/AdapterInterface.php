@@ -3,6 +3,7 @@
 namespace Hodor\Database;
 
 use Generator;
+use Hodor\Database\Adapter\FactoryInterface;
 
 interface AdapterInterface
 {
@@ -42,4 +43,9 @@ interface AdapterInterface
      * @return bool
      */
     public function requestAdvisoryLock($category, $name);
+
+    /**
+     * @return FactoryInterface
+     */
+    public function getAdapterFactory();
 }
