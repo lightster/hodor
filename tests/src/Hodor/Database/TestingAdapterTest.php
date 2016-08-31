@@ -28,6 +28,17 @@ class TestingAdapterTest extends AbstractAdapterTest
     }
 
     /**
+     * @covers ::getAdapterFactory
+     */
+    public function testFactoryInterfaceIsSameInterfacePassedToConstructor()
+    {
+        $factory = new Factory($this->database, ++$this->connection_id);
+        $adapter = new ConverterAdapter($factory);
+
+        $this->assertSame($factory, $adapter->getAdapterFactory());
+    }
+
+    /**
      * @return ConverterAdapter
      * @throws Exception
      */

@@ -83,4 +83,12 @@ class ConverterAdapter implements AdapterInterface
     {
         return $this->factory->getSuperqueuer()->requestAdvisoryLock($category, $name);
     }
+
+    /**
+     * @return FactoryInterface
+     */
+    public function getAdapterFactory()
+    {
+        return $this->factory;
+    }
 }
