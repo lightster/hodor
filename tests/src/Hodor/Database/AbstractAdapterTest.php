@@ -2,6 +2,7 @@
 
 namespace Hodor\Database;
 
+use Hodor\Database\Adapter\TestUtil\JobsToRunAsserter;
 use PHPUnit_Framework_TestCase;
 use Traversable;
 
@@ -347,23 +348,10 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
             $db_adapter = $this->getAdapter();
         }
 
-        $actual_jobs = [];
-        foreach ($db_adapter->getJobsToRunGenerator() as $actual_job) {
-            $actual_jobs[] = $actual_job;
-        }
+        $superqueuer_db = $db_adapter->getAdapterFactory()->getSuperqueuer();
 
-        if (empty($expected_jobs)) {
-            $this->assertSame($expected_jobs, $actual_jobs);
-            return [];
-        }
+        $asserter = new JobsToRunAsserter($this);
 
-        foreach ($actual_jobs as $actual_job) {
-            $expected_job = array_shift($expected_jobs);
-
-            $this->assertSame("job-{$uniqid}-{$expected_job}", $actual_job['job_name']);
-        }
-        $this->assertEmpty($expected_jobs);
-
-        return $actual_jobs;
+        return $asserter->assertJobsToRun($superqueuer_db, $uniqid, $expected_jobs);
     }
 }
