@@ -3,6 +3,7 @@
 namespace Hodor\Database;
 
 use Hodor\Database\Adapter\TestUtil\JobsToRunAsserter;
+use Hodor\Database\Adapter\TestUtil\ScenarioCreator;
 use PHPUnit_Framework_TestCase;
 use Traversable;
 
@@ -35,10 +36,9 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
      */
     public function testJobsCanBeBuffered(array $buffered_jobs, array $expected_jobs)
     {
-        $uniqid = uniqid();
-        $this->bufferJobs($uniqid, $buffered_jobs);
+        $scenario = $this->createScenario($this->getAdapter(), $buffered_jobs, []);
 
-        $this->assertJobsToRun($uniqid, $expected_jobs);
+        $this->assertJobsToRun($scenario['uniqid'], $expected_jobs);
     }
 
     /**
@@ -61,11 +61,9 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
      */
     public function testJobsCanBeQueued(array $buffered_jobs, array $queued_jobs, array $expected_jobs)
     {
-        $uniqid = uniqid();
-        $this->queueJobs($uniqid, $queued_jobs);
-        $this->bufferJobs($uniqid, $buffered_jobs);
+        $scenario = $this->createScenario($this->getAdapter(), $buffered_jobs, $queued_jobs);
 
-        $this->assertJobsToRun($uniqid, $expected_jobs);
+        $this->assertJobsToRun($scenario['uniqid'], $expected_jobs);
     }
 
     /**
@@ -155,11 +153,11 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
      */
     public function testQueueingJobsCanBeBatched()
     {
-        $uniqid = uniqid();
-        $this->bufferJobs($uniqid, [
+        $scenario = $this->createScenario($this->getAdapter(),  [
             ['name' => 1, 'mutex_id' => 'a'],
             ['name' => 2, 'mutex_id' => 'a'],
-        ]);
+        ], []);
+        $uniqid = $scenario['uniqid'];
 
         $current_connection = $this->getAdapter();
         $other_connection = $this->generateAdapter();
@@ -250,11 +248,11 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
      */
     private function markJobsAsCompleted(callable $mark_job_completed)
     {
-        $uniqid = uniqid();
-        $this->bufferJobs($uniqid, [
+        $scenario = $this->createScenario($this->getAdapter(),  [
             ['name' => 1, 'mutex_id' => 'a'],
             ['name' => 2, 'mutex_id' => 'a'],
-        ]);
+        ], []);
+        $uniqid = $scenario['uniqid'];
 
         $this->assertJobsToRun($uniqid, ['1']);
 
@@ -273,54 +271,6 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @param string $uniqid
-     * @param array $jobs
-     */
-    private function bufferJobs($uniqid, array $jobs)
-    {
-        $buffered_at = date('c', time() - 3600);
-
-        foreach ($jobs as $job) {
-            $options = [];
-            if (isset($job['run_after'])) {
-                $options['run_after'] = date('c', time() + $job['run_after']);
-            }
-            if (isset($job['job_rank'])) {
-                $options['job_rank'] = $job['job_rank'];
-            }
-            if (isset($job['mutex_id'])) {
-                $options['mutex_id'] = "mutex-{$uniqid}-{$job['mutex_id']}";
-            }
-
-            $this->getAdapter()->bufferJob(
-                'fast-jobs',
-                [
-                    'name'   => "job-{$uniqid}-{$job['name']}",
-                    'params' => [
-                        'value' => $uniqid,
-                    ],
-                    'options' => $options,
-                    'meta'   => [
-                        'buffered_at'   => $buffered_at,
-                        'buffered_from' => "host-{$uniqid}-{$job['name']}",
-                    ],
-                ]
-            );
-        }
-    }
-
-    /**
-     * @param string $uniqid
-     * @param array $jobs
-     * @return array
-     */
-    private function queueJobs($uniqid, array $jobs)
-    {
-        $this->bufferJobs($uniqid, $jobs);
-        return $this->markJobsAsQueued($this->getAdapter()->getJobsToRunGenerator());
-    }
-
-    /**
      * @param Traversable $jobs
      * @return array
      */
@@ -334,6 +284,18 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
         }
 
         return $jobs_queued;
+    }
+
+    /**
+     * @param AdapterInterface $db_adapter
+     * @param array $buffered_jobs
+     * @param array $queued_jobs
+     * @return array
+     */
+    private function createScenario(AdapterInterface $db_adapter, array $buffered_jobs, array $queued_jobs)
+    {
+        $scenario_creator = new ScenarioCreator();
+        return $scenario_creator->createScenario($db_adapter, $buffered_jobs, $queued_jobs);
     }
 
     /**
