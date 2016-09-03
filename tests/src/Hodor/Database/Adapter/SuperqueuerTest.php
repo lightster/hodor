@@ -98,9 +98,9 @@ abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
     public function testAdvisoryLockCanBeAcquired()
     {
         $connections = [
-            $this->getProvisioner()->generateAdapter(),
-            $this->getProvisioner()->generateAdapter(),
-            $this->getProvisioner()->generateAdapter(),
+            $this->getProvisioner()->generateAdapter()->getAdapterFactory()->getSuperqueuer(),
+            $this->getProvisioner()->generateAdapter()->getAdapterFactory()->getSuperqueuer(),
+            $this->getProvisioner()->generateAdapter()->getAdapterFactory()->getSuperqueuer(),
         ];
 
         $this->assertTrue($connections[0]->requestAdvisoryLock('test', 'lock'));
@@ -148,10 +148,12 @@ abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
      */
     private function markJobsAsQueued($jobs)
     {
+        $adapter = $this->getProvisioner()->getAdapter();
+
         $jobs_queued = [];
 
         foreach ($jobs as $job) {
-            $meta = $this->getProvisioner()->getAdapter()->markJobAsQueued($job);
+            $meta = $adapter->getAdapterFactory()->getSuperqueuer()->markJobAsQueued($job);
             $jobs_queued[] = $meta;
         }
 
