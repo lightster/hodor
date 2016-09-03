@@ -120,7 +120,7 @@ abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
      */
     public function provideQueueJobsScenarios()
     {
-        return require __DIR__ . '/../AbstractAdapter.queue-jobs.dataset.php';
+        return require __DIR__ . '/AbstractAdapter.queue-jobs.dataset.php';
     }
 
     /**

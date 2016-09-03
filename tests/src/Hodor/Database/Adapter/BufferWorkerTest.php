@@ -61,7 +61,7 @@ abstract class BufferWorkerTest extends PHPUnit_Framework_TestCase
      */
     public function provideBufferJobsScenarios()
     {
-        return require __DIR__ . '/../AbstractAdapter.buffer-jobs.dataset.php';
+        return require __DIR__ . '/AbstractAdapter.buffer-jobs.dataset.php';
     }
 
     /**
