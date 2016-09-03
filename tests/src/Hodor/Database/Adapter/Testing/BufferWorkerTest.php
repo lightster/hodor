@@ -3,7 +3,7 @@
 namespace Hodor\Database\Adapter\Testing;
 
 use Hodor\Database\Adapter\BufferWorkerTest as BufferWorkerBaseTest;
-use Hodor\Database\ConverterAdapter;
+use Hodor\Database\Adapter\TestUtil\TestingProvisioner;
 
 /**
  * @coversDefaultClass Hodor\Database\Adapter\Testing\BufferWorker
@@ -11,34 +11,10 @@ use Hodor\Database\ConverterAdapter;
 class BufferWorkerTest extends BufferWorkerBaseTest
 {
     /**
-     * @var Database
+     * @return TestingProvisioner
      */
-    private $database;
-
-    /**
-     * @var int
-     */
-    private $connection_id = 0;
-
-    /**
-     * @return ConverterAdapter
-     */
-    protected function generateAdapter()
+    protected function generateProvisioner()
     {
-        return new ConverterAdapter(new Factory($this->getDatabase(), ++$this->connection_id));
-    }
-
-    /**
-     * @return Database
-     */
-    private function getDatabase()
-    {
-        if ($this->database) {
-            return $this->database;
-        }
-
-        $this->database = new Database();
-
-        return $this->database;
+        return new TestingProvisioner();
     }
 }

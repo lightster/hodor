@@ -2,6 +2,7 @@
 
 namespace Hodor\Database\Adapter;
 
+use Hodor\Database\Adapter\TestUtil\AbstractProvisioner;
 use Hodor\Database\Adapter\TestUtil\JobsToRunAsserter;
 use Hodor\Database\Adapter\TestUtil\ScenarioCreator;
 use Hodor\Database\AdapterInterface;
@@ -22,17 +23,19 @@ abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
     /**
      * @var AdapterInterface
      */
-    private $adapter;
+    private $provisioner;
 
     public function setUp()
     {
         $this->asserter = new JobsToRunAsserter($this);
         $this->scenario_creator = new ScenarioCreator();
+
+        $this->getProvisioner()->setUp();
     }
 
     public function tearDown()
     {
-        $this->adapter = null;
+        $this->getProvisioner()->tearDown();
     }
 
     /**
@@ -47,9 +50,10 @@ abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
      */
     public function testJobsCanBeQueued(array $buffered_jobs, array $queued_jobs, array $expected_jobs)
     {
-        $superqueuer = $this->getAdapter()->getAdapterFactory()->getSuperqueuer();
+        $adapter = $this->getProvisioner()->getAdapter();
+        $superqueuer = $adapter->getAdapterFactory()->getSuperqueuer();
 
-        $scenario = $this->scenario_creator->createScenario($this->getAdapter(), $buffered_jobs, $queued_jobs);
+        $scenario = $this->scenario_creator->createScenario($adapter, $buffered_jobs, $queued_jobs);
 
         $this->asserter->assertJobsToRun($superqueuer, $scenario['uniqid'], $expected_jobs);
     }
@@ -61,14 +65,16 @@ abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
      */
     public function testQueueingJobsCanBeBatched()
     {
-        $scenario = $this->scenario_creator->createScenario($this->getAdapter(),  [
+        $provisioner = $this->getProvisioner();
+
+        $scenario = $this->scenario_creator->createScenario($provisioner->getAdapter(),  [
             ['name' => 1, 'mutex_id' => 'a'],
             ['name' => 2, 'mutex_id' => 'a'],
         ], []);
         $uniqid = $scenario['uniqid'];
 
-        $current_connection = $this->getAdapter()->getAdapterFactory()->getSuperqueuer();
-        $other_connection = $this->generateAdapter()->getAdapterFactory()->getSuperqueuer();
+        $current_connection = $provisioner->getAdapter()->getAdapterFactory()->getSuperqueuer();
+        $other_connection = $provisioner->generateAdapter()->getAdapterFactory()->getSuperqueuer();
 
         $current_connection->beginBatch();
 
@@ -92,9 +98,9 @@ abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
     public function testAdvisoryLockCanBeAcquired()
     {
         $connections = [
-            $this->generateAdapter(),
-            $this->generateAdapter(),
-            $this->generateAdapter(),
+            $this->getProvisioner()->generateAdapter(),
+            $this->getProvisioner()->generateAdapter(),
+            $this->getProvisioner()->generateAdapter(),
         ];
 
         $this->assertTrue($connections[0]->requestAdvisoryLock('test', 'lock'));
@@ -118,22 +124,22 @@ abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return AdapterInterface
+     * @return AbstractProvisioner
      */
-    abstract protected function generateAdapter();
+    abstract protected function generateProvisioner();
 
     /**
-     * @return AdapterInterface
+     * @return AbstractProvisioner
      */
-    protected function getAdapter()
+    protected function getProvisioner()
     {
-        if ($this->adapter) {
-            return $this->adapter;
+        if ($this->provisioner) {
+            return $this->provisioner;
         }
 
-        $this->adapter = $this->generateAdapter();
+        $this->provisioner = $this->generateProvisioner();
 
-        return $this->adapter;
+        return $this->provisioner;
     }
 
     /**
@@ -145,7 +151,7 @@ abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
         $jobs_queued = [];
 
         foreach ($jobs as $job) {
-            $meta = $this->getAdapter()->markJobAsQueued($job);
+            $meta = $this->getProvisioner()->getAdapter()->markJobAsQueued($job);
             $jobs_queued[] = $meta;
         }
 

@@ -2,6 +2,7 @@
 
 namespace Hodor\Database\Adapter;
 
+use Hodor\Database\Adapter\TestUtil\AbstractProvisioner;
 use Hodor\Database\Adapter\TestUtil\JobsToRunAsserter;
 use Hodor\Database\Adapter\TestUtil\ScenarioCreator;
 use Hodor\Database\AdapterInterface;
@@ -20,19 +21,21 @@ abstract class BufferWorkerTest extends PHPUnit_Framework_TestCase
     private $scenario_creator;
 
     /**
-     * @var AdapterInterface
+     * @var AbstractProvisioner
      */
-    private $adapter;
+    private $provisioner;
 
     public function setUp()
     {
         $this->asserter = new JobsToRunAsserter($this);
         $this->scenario_creator = new ScenarioCreator();
+
+        $this->getProvisioner()->setUp();
     }
 
     public function tearDown()
     {
-        $this->adapter = null;
+        $this->getProvisioner()->tearDown();
     }
 
     /**
@@ -45,9 +48,10 @@ abstract class BufferWorkerTest extends PHPUnit_Framework_TestCase
      */
     public function testJobsCanBeBuffered(array $buffered_jobs, array $expected_jobs)
     {
-        $superqueuer = $this->getAdapter()->getAdapterFactory()->getSuperqueuer();
+        $adapter = $this->getProvisioner()->getAdapter();
+        $superqueuer = $adapter->getAdapterFactory()->getSuperqueuer();
 
-        $scenario = $this->scenario_creator->createScenario($this->getAdapter(), $buffered_jobs, []);
+        $scenario = $this->scenario_creator->createScenario($adapter, $buffered_jobs, []);
 
         $this->asserter->assertJobsToRun($superqueuer, $scenario['uniqid'], $expected_jobs);
     }
@@ -61,21 +65,21 @@ abstract class BufferWorkerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @return AdapterInterface
+     * @return AbstractProvisioner
      */
-    abstract protected function generateAdapter();
+    abstract protected function generateProvisioner();
 
     /**
-     * @return AdapterInterface
+     * @return AbstractProvisioner
      */
-    protected function getAdapter()
+    protected function getProvisioner()
     {
-        if ($this->adapter) {
-            return $this->adapter;
+        if ($this->provisioner) {
+            return $this->provisioner;
         }
 
-        $this->adapter = $this->generateAdapter();
+        $this->provisioner = $this->generateProvisioner();
 
-        return $this->adapter;
+        return $this->provisioner;
     }
 }
