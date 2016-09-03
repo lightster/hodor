@@ -50,10 +50,10 @@ abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
      */
     public function testJobsCanBeQueued(array $buffered_jobs, array $queued_jobs, array $expected_jobs)
     {
-        $adapter = $this->getProvisioner()->getAdapter();
-        $superqueuer = $adapter->getAdapterFactory()->getSuperqueuer();
+        $adapter_factory = $this->getProvisioner()->getAdapterFactory();
+        $superqueuer = $adapter_factory->getSuperqueuer();
 
-        $scenario = $this->scenario_creator->createScenario($adapter, $buffered_jobs, $queued_jobs);
+        $scenario = $this->scenario_creator->createScenario($adapter_factory, $buffered_jobs, $queued_jobs);
 
         $this->asserter->assertJobsToRun($superqueuer, $scenario['uniqid'], $expected_jobs);
     }
@@ -67,14 +67,14 @@ abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
     {
         $provisioner = $this->getProvisioner();
 
-        $scenario = $this->scenario_creator->createScenario($provisioner->getAdapter(),  [
+        $scenario = $this->scenario_creator->createScenario($provisioner->getAdapterFactory(),  [
             ['name' => 1, 'mutex_id' => 'a'],
             ['name' => 2, 'mutex_id' => 'a'],
         ], []);
         $uniqid = $scenario['uniqid'];
 
-        $current_connection = $provisioner->getAdapter()->getAdapterFactory()->getSuperqueuer();
-        $other_connection = $provisioner->generateAdapter()->getAdapterFactory()->getSuperqueuer();
+        $current_connection = $provisioner->getAdapterFactory()->getSuperqueuer();
+        $other_connection = $provisioner->generateAdapterFactory()->getSuperqueuer();
 
         $current_connection->beginBatch();
 
@@ -98,9 +98,9 @@ abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
     public function testAdvisoryLockCanBeAcquired()
     {
         $connections = [
-            $this->getProvisioner()->generateAdapter()->getAdapterFactory()->getSuperqueuer(),
-            $this->getProvisioner()->generateAdapter()->getAdapterFactory()->getSuperqueuer(),
-            $this->getProvisioner()->generateAdapter()->getAdapterFactory()->getSuperqueuer(),
+            $this->getProvisioner()->generateAdapterFactory()->getSuperqueuer(),
+            $this->getProvisioner()->generateAdapterFactory()->getSuperqueuer(),
+            $this->getProvisioner()->generateAdapterFactory()->getSuperqueuer(),
         ];
 
         $this->assertTrue($connections[0]->requestAdvisoryLock('test', 'lock'));
@@ -148,12 +148,12 @@ abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
      */
     private function markJobsAsQueued($jobs)
     {
-        $adapter = $this->getProvisioner()->getAdapter();
+        $adapter_factory = $this->getProvisioner()->getAdapterFactory();
 
         $jobs_queued = [];
 
         foreach ($jobs as $job) {
-            $meta = $adapter->getAdapterFactory()->getSuperqueuer()->markJobAsQueued($job);
+            $meta = $adapter_factory->getSuperqueuer()->markJobAsQueued($job);
             $jobs_queued[] = $meta;
         }
 

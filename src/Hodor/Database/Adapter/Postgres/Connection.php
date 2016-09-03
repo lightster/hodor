@@ -2,7 +2,7 @@
 
 namespace Hodor\Database\Adapter\Postgres;
 
-use Hodor\Database\Driver\YoPdoDriver;
+use Lstr\YoPdo\Factory as YoPdoFactory;
 use Lstr\YoPdo\YoPdo;
 
 class Connection
@@ -13,9 +13,9 @@ class Connection
     private $config;
 
     /**
-     * @var YoPdoDriver
+     * @var YoPdo
      */
-    private $yo_pdo_driver;
+    private $yo_pdo;
 
     /**
      * @param array $config
@@ -26,24 +26,17 @@ class Connection
     }
 
     /**
-     * @return YoPdoDriver
-     */
-    public function getYoPdoDriver()
-    {
-        if ($this->yo_pdo_driver) {
-            return $this->yo_pdo_driver;
-        }
-
-        $this->yo_pdo_driver = new YoPdoDriver($this->config);
-
-        return $this->yo_pdo_driver;
-    }
-
-    /**
      * @return YoPdo
      */
     public function getYoPdo()
     {
-        return $this->getYoPdoDriver()->getYoPdo();
+        if ($this->yo_pdo) {
+            return $this->yo_pdo;
+        }
+
+        $factory = new YoPdoFactory();
+        $this->yo_pdo = $factory->createFromConfig($this->config);
+
+        return $this->yo_pdo;
     }
 }

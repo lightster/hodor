@@ -48,7 +48,7 @@ class Container extends Pimple
                 $db_factory = $container['hodor.database.factory'];
                 $db_config = $container['hodor.database.config'];
 
-                return $db_factory->getAdapter($db_config)->getAdapterFactory()->getYoPdo();
+                return $db_factory->getAdapter($db_config)->getYoPdo();
             }
         );
 

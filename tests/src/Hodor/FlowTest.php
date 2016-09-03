@@ -2,8 +2,8 @@
 
 namespace Hodor;
 
-use Hodor\Database\PgsqlAdapter;
 use Exception;
+use Hodor\Database\Adapter\Postgres\Factory;
 use PHPUnit_Framework_TestCase;
 
 class FlowTest extends PHPUnit_Framework_TestCase
@@ -12,7 +12,11 @@ class FlowTest extends PHPUnit_Framework_TestCase
     private $e_config_file;
     private $db_name;
     private $e_db_host;
-    private $db_adapter;
+
+    /**
+     * @var Factory
+     */
+    private $db_factory;
 
     public function setUp()
     {
@@ -30,7 +34,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
         $this->runCommand("psql -c 'create database {$this->db_name};' -h {$this->e_db_host} -U postgres");
         $this->runCommand("HODOR_CONFIG={$this->e_config_file} {$phpmig_bin} migrate");
 
-        $this->db_adapter = new PgsqlAdapter($config['superqueue']['database']);
+        $this->db_factory = new Factory($config['superqueue']['database']);
     }
 
     public function tearDown()
@@ -41,7 +45,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
             unlink($this->config_file);
         }
 
-        unset($this->db_adapter);
+        unset($this->db_factory);
         // without forcing garbage collection, the DB connections
         // are not guaranteed to be disconnected; force GC
         gc_collect_cycles();
@@ -110,7 +114,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
 
     public function testOnlyOneSuperqueuerCanRunAtOnce()
     {
-        $this->db_adapter->requestAdvisoryLock('superqueuer', 'default');
+        $this->db_factory->getSuperqueuer()->requestAdvisoryLock('superqueuer', 'default');
 
         $job_name = 'job-name-' . uniqid();
         $job_params = [
@@ -124,7 +128,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
         $this->queueJobs($job_name, [$job_params]);
 
         $count = 0;
-        foreach ($this->db_adapter->getJobsToRunGenerator() as $job) {
+        foreach ($this->db_factory->getSuperqueuer()->getJobsToRunGenerator() as $job) {
             ++$count;
         }
 

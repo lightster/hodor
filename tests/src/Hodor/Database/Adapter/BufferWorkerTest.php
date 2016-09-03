@@ -48,10 +48,10 @@ abstract class BufferWorkerTest extends PHPUnit_Framework_TestCase
      */
     public function testJobsCanBeBuffered(array $buffered_jobs, array $expected_jobs)
     {
-        $adapter = $this->getProvisioner()->getAdapter();
-        $superqueuer = $adapter->getAdapterFactory()->getSuperqueuer();
+        $adapter_factory = $this->getProvisioner()->getAdapterFactory();
+        $superqueuer = $adapter_factory->getSuperqueuer();
 
-        $scenario = $this->scenario_creator->createScenario($adapter, $buffered_jobs, []);
+        $scenario = $this->scenario_creator->createScenario($adapter_factory, $buffered_jobs, []);
 
         $this->asserter->assertJobsToRun($superqueuer, $scenario['uniqid'], $expected_jobs);
     }

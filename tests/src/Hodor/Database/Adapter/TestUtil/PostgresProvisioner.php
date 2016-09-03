@@ -3,6 +3,7 @@
 namespace Hodor\Database\Adapter\TestUtil;
 
 use Exception;
+use Hodor\Database\Adapter\Postgres\Factory;
 use Hodor\Database\PgsqlAdapter;
 use Hodor\Database\Phpmig\CommandWrapper;
 use Hodor\Database\Phpmig\Container;
@@ -14,7 +15,7 @@ class PostgresProvisioner extends AbstractProvisioner
     {
         $phpmig_container = new Container();
         $phpmig_container->addDefaultServices('no-config-file');
-        $phpmig_container['hodor.database'] = $this->getAdapter()->getAdapterFactory()->getYoPdo();
+        $phpmig_container['hodor.database'] = $this->getAdapterFactory()->getYoPdo();
 
         $command_wrapper = new CommandWrapper($phpmig_container, new NullOutput());
         $command_wrapper->rollbackMigrations();
@@ -31,10 +32,10 @@ class PostgresProvisioner extends AbstractProvisioner
     }
 
     /**
-     * @return PgsqlAdapter
+     * @return Factory
      * @throws Exception
      */
-    public function generateAdapter()
+    public function generateAdapterFactory()
     {
         $config_path = __DIR__ . '/../../../../../../config/config.test.php';
         if (!file_exists($config_path)) {
@@ -43,6 +44,6 @@ class PostgresProvisioner extends AbstractProvisioner
 
         $config = require $config_path;
 
-        return new PgsqlAdapter($config['test']['db']['yo-pdo-pgsql']);
+        return new Factory($config['test']['db']['yo-pdo-pgsql']);
     }
 }

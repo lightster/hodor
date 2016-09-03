@@ -183,7 +183,7 @@ class Superqueue
             return $this->database;
         }
 
-        $this->database = $this->queue_manager->getDatabase()->getAdapterFactory();
+        $this->database = $this->queue_manager->getDatabase();
 
         return $this->database;
     }

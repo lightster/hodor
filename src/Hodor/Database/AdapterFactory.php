@@ -3,6 +3,7 @@
 namespace Hodor\Database;
 
 use Exception;
+use Hodor\Database\Adapter\FactoryInterface;
 
 class AdapterFactory
 {
@@ -10,12 +11,12 @@ class AdapterFactory
      * @var array
      */
     private $adapter_factories = [
-        'pgsql' => '\Hodor\Database\PgsqlAdapter',
+        'pgsql' => '\Hodor\Database\Adapter\Postgres\Factory',
     ];
 
     /**
      * @param  array $config
-     * @return AdapterInterface
+     * @return FactoryInterface
      * @throws Exception
      */
     public function getAdapter(array $config)
