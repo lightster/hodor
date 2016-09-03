@@ -2,7 +2,7 @@
 
 namespace Hodor\Database\Phpmig;
 
-use Hodor\Database\AdapterInterface as DbAdapterInterface;
+use Lstr\YoPdo\YoPdo;
 use Phpmig\Migration\Migration as PhpmigMigration;
 
 abstract class Migration extends PhpmigMigration
@@ -12,12 +12,15 @@ abstract class Migration extends PhpmigMigration
      */
     public function up()
     {
+        /**
+         * @var $container Container
+         */
         $container = $this->getContainer();
-        $db = $container['hodor.database'];
+        $yo_pdo = $container->getYoPdo();
 
-        $db->beginTransaction();
-        $this->transactionalUp($db);
-        $db->commitTransaction();
+        $yo_pdo->transaction()->begin('phpmig');
+        $this->transactionalUp($yo_pdo);
+        $yo_pdo->transaction()->accept('phpmig');
     }
 
     /**
@@ -26,20 +29,20 @@ abstract class Migration extends PhpmigMigration
     public function down()
     {
         $container = $this->getContainer();
-        $db = $container['hodor.database'];
+        $yo_pdo = $container['hodor.database'];
 
-        $db->beginTransaction();
-        $this->transactionalDown($db);
-        $db->commitTransaction();
+        $yo_pdo->transaction()->begin('phpmig');
+        $this->transactionalDown($yo_pdo);
+        $yo_pdo->transaction()->accept('phpmig');
     }
 
     /**
-     * @param DbAdapterInterface $db
+     * @param YoPdo $yo_pdo
      */
-    abstract protected function transactionalUp(DbAdapterInterface $db);
+    abstract protected function transactionalUp(YoPdo $yo_pdo);
 
     /**
-     * @param DbAdapterInterface $db
+     * @param YoPdo $yo_pdo
      */
-    abstract protected function transactionalDown(DbAdapterInterface $db);
+    abstract protected function transactionalDown(YoPdo $yo_pdo);
 }

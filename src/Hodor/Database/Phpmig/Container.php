@@ -5,6 +5,8 @@ namespace Hodor\Database\Phpmig;
 use Exception;
 use Hodor\Config\LoaderFactory as ConfigFactory;
 use Hodor\Database\AdapterFactory as DbFactory;
+use Hodor\Database\PgsqlAdapter;
+use Lstr\YoPdo\YoPdo;
 use Pimple;
 
 class Container extends Pimple
@@ -46,7 +48,7 @@ class Container extends Pimple
                 $db_factory = $container['hodor.database.factory'];
                 $db_config = $container['hodor.database.config'];
 
-                return $db_factory->getAdapter($db_config);
+                return $db_factory->getAdapter($db_config)->getAdapterFactory()->getYoPdo();
             }
         );
 
@@ -54,7 +56,7 @@ class Container extends Pimple
             function (Pimple $container) {
                 $db_adapter = $container['hodor.database'];
 
-                return $db_adapter->getPhpmigAdapter();
+                return new PgsqlPhpmigAdapter($db_adapter);
             }
         );
 
@@ -69,6 +71,14 @@ class Container extends Pimple
                 return __DIR__ . '/MigrationTemplate.php';
             }
         );
+    }
+
+    /**
+     * @return YoPdo
+     */
+    public function getYoPdo()
+    {
+        return $this['hodor.database'];
     }
 
     /**

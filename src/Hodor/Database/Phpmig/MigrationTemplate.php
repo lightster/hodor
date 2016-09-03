@@ -1,23 +1,23 @@
 <?= "<?php\n";?>
 
-use Hodor\Database\AdapterInterface as DbAdapterInterface;
 use Hodor\Database\Phpmig\Migration;
+use Lstr\YoPdo\YoPdo;
 
 class <?= $className ?> extends Migration
 {
     /**
-     * @param DbAdapterInterface $db
+     * @param YoPdo $yo_pdo
      * @return void
      */
-    protected function transactionalUp(DbAdapterInterface $db)
+    protected function transactionalUp(YoPdo $yo_pdo)
     {
     }
 
     /**
-     * @param DbAdapterInterface $db
+     * @param YoPdo $yo_pdo
      * @return void
      */
-    protected function transactionalDown(DbAdapterInterface $db)
+    protected function transactionalDown(YoPdo $yo_pdo)
     {
     }
 }

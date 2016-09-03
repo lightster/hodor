@@ -14,7 +14,7 @@ class PostgresProvisioner extends AbstractProvisioner
     {
         $phpmig_container = new Container();
         $phpmig_container->addDefaultServices('no-config-file');
-        $phpmig_container['hodor.database'] = $this->getAdapter();
+        $phpmig_container['hodor.database'] = $this->getAdapter()->getAdapterFactory()->getYoPdo();
 
         $command_wrapper = new CommandWrapper($phpmig_container, new NullOutput());
         $command_wrapper->rollbackMigrations();

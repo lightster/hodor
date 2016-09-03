@@ -2,10 +2,9 @@
 
 namespace Hodor\Database;
 
-use Exception;
-
 use Hodor\Database\Adapter\Testing\Database;
 use Hodor\Database\Adapter\Testing\Factory;
+use Hodor\Database\Adapter\TestUtil\TestingProvisioner;
 
 /**
  * @coversDefaultClass Hodor\Database\ConverterAdapter
@@ -13,37 +12,21 @@ use Hodor\Database\Adapter\Testing\Factory;
 class TestingAdapterTest extends AbstractAdapterTest
 {
     /**
-     * @var Database
-     */
-    private $database;
-
-    /**
-     * @var int
-     */
-    private $connection_id = 0;
-
-    public function setUp()
-    {
-        $this->database = new Database();
-    }
-
-    /**
      * @covers ::getAdapterFactory
      */
     public function testFactoryInterfaceIsSameInterfacePassedToConstructor()
     {
-        $factory = new Factory($this->database, ++$this->connection_id);
+        $factory = new Factory(new Database(), 1);
         $adapter = new ConverterAdapter($factory);
 
         $this->assertSame($factory, $adapter->getAdapterFactory());
     }
 
     /**
-     * @return ConverterAdapter
-     * @throws Exception
+     * @return PostgresProvisioner
      */
-    protected function generateAdapter()
+    protected function generateProvisioner()
     {
-        return new ConverterAdapter(new Factory($this->database, ++$this->connection_id));
+        return new TestingProvisioner();
     }
 }

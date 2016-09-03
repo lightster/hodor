@@ -1,15 +1,15 @@
 <?php
 
-use Hodor\Database\AdapterInterface as DbAdapterInterface;
 use Hodor\Database\Phpmig\Migration;
+use Lstr\YoPdo\YoPdo;
 
 class CreateInitialSchema extends Migration
 {
     /**
-     * @param DbAdapterInterface $db
+     * @param YoPdo $yo_pdo
      * @return void
      */
-    protected function transactionalUp(DbAdapterInterface $db)
+    protected function transactionalUp(YoPdo $yo_pdo)
     {
         $sql = <<<SQL
 CREATE TABLE buffered_jobs
@@ -88,14 +88,14 @@ CREATE TABLE failed_jobs
 );
 SQL;
 
-        $db->queryMultiple($sql);
+        $yo_pdo->queryMultiple($sql);
     }
 
     /**
-     * @param DbAdapterInterface $db
+     * @param YoPdo $yo_pdo
      * @return void
      */
-    protected function transactionalDown(DbAdapterInterface $db)
+    protected function transactionalDown(YoPdo $yo_pdo)
     {
         $sql = <<<SQL
 DROP TABLE buffered_jobs;
@@ -104,6 +104,6 @@ DROP TABLE successful_jobs;
 DROP TABLE failed_jobs;
 SQL;
 
-        $db->queryMultiple($sql);
+        $yo_pdo->queryMultiple($sql);
     }
 }
