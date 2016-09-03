@@ -42,10 +42,10 @@ class AdapterFactoryTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::getAdapter
      */
-    public function testAdapterForPgsqlNameIsAPgsqlAdapter()
+    public function testAdapterForPgsqlNameIsAPostgresFactory()
     {
         $this->assertInstanceOf(
-            '\Hodor\Database\PgsqlAdapter',
+            '\Hodor\Database\Adapter\Postgres\Factory',
             $this->adapter_factory->getAdapter(['type' => 'pgsql'])
         );
     }

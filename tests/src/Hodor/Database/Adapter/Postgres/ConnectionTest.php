@@ -12,7 +12,6 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @covers ::__construct
-     * @covers ::getYoPdoDriver
      * @covers ::getYoPdo
      */
     public function testYoPdoObjectIsUseable()
@@ -32,15 +31,15 @@ class ConnectionTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::getYoPdoDriver
+     * @covers ::getYoPdo
      */
-    public function testYoPdoDriverIsReused()
+    public function testYoPdoIsReused()
     {
         $connection = new Connection($this->getDbConfig());
 
         $this->assertSame(
-            $connection->getYoPdoDriver(),
-            $connection->getYoPdoDriver()
+            $connection->getYoPdo(),
+            $connection->getYoPdo()
         );
     }
 

@@ -3,9 +3,6 @@
 namespace Hodor\Database\Adapter\Postgres;
 
 use Hodor\Database\Adapter\FactoryInterface;
-use Hodor\Database\Driver\YoPdoDriver;
-use Hodor\Database\PgsqlAdapter;
-use Hodor\Database\Phpmig\PgsqlPhpmigAdapter;
 use Lstr\YoPdo\YoPdo;
 
 class Factory implements FactoryInterface
@@ -31,22 +28,15 @@ class Factory implements FactoryInterface
     private $dequeuer;
 
     /**
-     * @var PgsqlAdapter
-     */
-    private $pgsql_adapter;
-
-    /**
      * @var Connection
      */
     private $connection;
 
     /**
-     * @param PgsqlAdapter $pgsql_adapter
      * @param array $config
      */
-    public function __construct(PgsqlAdapter $pgsql_adapter, array $config)
+    public function __construct(array $config)
     {
-        $this->pgsql_adapter = $pgsql_adapter;
         $this->config = $config;
     }
 
@@ -98,22 +88,6 @@ class Factory implements FactoryInterface
     public function getYoPdo()
     {
         return $this->getConnection()->getYoPdo();
-    }
-
-    /**
-     * @return YoPdoDriver
-     */
-    public function getYoPdoDriver()
-    {
-        return $this->getConnection()->getYoPdoDriver();
-    }
-
-    /**
-     * @return PgsqlAdapter
-     */
-    public function getPgsqlAdapter()
-    {
-        return $this->pgsql_adapter;
     }
 
     /**

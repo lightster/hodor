@@ -24,10 +24,10 @@ class TestingProvisioner extends AbstractProvisioner
     }
 
     /**
-     * @return ConverterAdapter
+     * @return Factory
      */
-    public function generateAdapter()
+    public function generateAdapterFactory()
     {
-        return new ConverterAdapter(new Factory($this->database, ++$this->connection_id));
+        return new Factory($this->database, ++$this->connection_id);
     }
 }

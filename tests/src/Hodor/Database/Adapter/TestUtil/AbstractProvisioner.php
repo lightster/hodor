@@ -3,8 +3,8 @@
 namespace Hodor\Database\Adapter\TestUtil;
 
 use Exception;
+use Hodor\Database\Adapter\FactoryInterface;
 use Hodor\Database\AdapterInterface;
-use Hodor\Database\PgsqlAdapter;
 
 abstract class AbstractProvisioner
 {
@@ -21,21 +21,21 @@ abstract class AbstractProvisioner
     }
 
     /**
-     * @return AdapterInterface
+     * @return FactoryInterface
      * @throws Exception
      */
-    abstract public function generateAdapter();
+    abstract public function generateAdapterFactory();
 
     /**
-     * @return AdapterInterface
+     * @return FactoryInterface
      */
-    public function getAdapter()
+    public function getAdapterFactory()
     {
         if ($this->adapter) {
             return $this->adapter;
         }
 
-        $this->adapter = $this->generateAdapter();
+        $this->adapter = $this->generateAdapterFactory();
 
         return $this->adapter;
     }

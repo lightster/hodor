@@ -5,7 +5,6 @@ namespace Hodor\Database\Adapter;
 use Hodor\Database\Adapter\TestUtil\AbstractProvisioner;
 use Hodor\Database\Adapter\TestUtil\JobsToRunAsserter;
 use Hodor\Database\Adapter\TestUtil\ScenarioCreator;
-use Hodor\Database\AdapterInterface;
 use PHPUnit_Framework_TestCase;
 use Traversable;
 
@@ -47,8 +46,8 @@ abstract class DequeuerTest extends PHPUnit_Framework_TestCase
     public function testJobCanBeMarkedAsSuccessful()
     {
         $this->markJobsAsCompleted(function ($meta) {
-            $adapter = $this->getProvisioner()->getAdapter();
-            $adapter->getAdapterFactory()->getDequeuer()->markJobAsSuccessful($meta);
+            $adapter_factory = $this->getProvisioner()->getAdapterFactory();
+            $adapter_factory->getDequeuer()->markJobAsSuccessful($meta);
         });
     }
 
@@ -60,8 +59,8 @@ abstract class DequeuerTest extends PHPUnit_Framework_TestCase
     public function testJobCanBeMarkedAsFailed()
     {
         $this->markJobsAsCompleted(function ($meta) {
-            $adapter = $this->getProvisioner()->getAdapter();
-            $adapter->getAdapterFactory()->getDequeuer()->markJobAsFailed($meta);
+            $adapter_factory = $this->getProvisioner()->getAdapterFactory();
+            $adapter_factory->getDequeuer()->markJobAsFailed($meta);
         });
     }
 
@@ -73,8 +72,8 @@ abstract class DequeuerTest extends PHPUnit_Framework_TestCase
      */
     public function testMarkingUnrecognizedJobAsSuccessfulTriggersAnException()
     {
-        $adapter = $this->getProvisioner()->getAdapter();
-        $adapter->getAdapterFactory()->getDequeuer()->markJobAsSuccessful([
+        $adapter_factory = $this->getProvisioner()->getAdapterFactory();
+        $adapter_factory->getDequeuer()->markJobAsSuccessful([
             'buffered_job_id' => -1,
         ]);
     }
@@ -87,8 +86,8 @@ abstract class DequeuerTest extends PHPUnit_Framework_TestCase
      */
     public function testMarkingUnrecognizedJobAsFailedTriggersAnException()
     {
-        $adapter = $this->getProvisioner()->getAdapter();
-        $adapter->getAdapterFactory()->getDequeuer()->markJobAsFailed([
+        $adapter_factory = $this->getProvisioner()->getAdapterFactory();
+        $adapter_factory->getDequeuer()->markJobAsFailed([
             'buffered_job_id' => -1,
         ]);
     }
@@ -117,10 +116,10 @@ abstract class DequeuerTest extends PHPUnit_Framework_TestCase
      */
     private function markJobsAsCompleted(callable $mark_job_completed)
     {
-        $adapter = $this->getProvisioner()->getAdapter();
-        $superqueuer = $adapter->getAdapterFactory()->getSuperqueuer();
+        $adapter_factory = $this->getProvisioner()->getAdapterFactory();
+        $superqueuer = $adapter_factory->getSuperqueuer();
 
-        $scenario = $this->scenario_creator->createScenario($adapter,  [
+        $scenario = $this->scenario_creator->createScenario($adapter_factory,  [
             ['name' => 1, 'mutex_id' => 'a'],
             ['name' => 2, 'mutex_id' => 'a'],
         ], []);
@@ -148,12 +147,12 @@ abstract class DequeuerTest extends PHPUnit_Framework_TestCase
      */
     private function markJobsAsQueued($jobs)
     {
-        $adapter = $this->getProvisioner()->getAdapter();
+        $adapter_factory = $this->getProvisioner()->getAdapterFactory();
 
         $jobs_queued = [];
 
         foreach ($jobs as $job) {
-            $meta = $adapter->getAdapterFactory()->getSuperqueuer()->markJobAsQueued($job);
+            $meta = $adapter_factory->getSuperqueuer()->markJobAsQueued($job);
             $jobs_queued[] = $meta;
         }
 

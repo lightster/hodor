@@ -42,34 +42,24 @@ class FactoryTest extends FactoryBaseTest
     }
 
     /**
-     * @covers ::getPgsqlAdapter
-     */
-    public function testPassedInPgsqlAdapterCanBeRetrieved()
-    {
-        $config = [];
-        $pgsql_adapter = new PgsqlAdapter($config);
-        $factory = new Factory($pgsql_adapter, $config);
-
-        $this->assertSame($pgsql_adapter, $factory->getPgsqlAdapter());
-    }
-
-    /**
-     * @covers ::getYoPdoDriver
+     * @covers ::__construct
+     * @covers ::getYoPdo
      */
     public function testYoPdoDriverIsUseable()
     {
         $factory = $this->getTestFactory();
-        $yo_pdo_driver = $factory->getYoPdoDriver();
+        $yo_pdo = $factory->getYoPdo();
 
-        $yo_pdo_driver->queryMultiple('BEGIN');
+        $yo_pdo->queryMultiple('BEGIN');
 
         $this->assertSame(
-            $yo_pdo_driver->selectOne('SELECT txid_current()'),
-            $yo_pdo_driver->selectOne('SELECT txid_current()')
+            $yo_pdo->query('SELECT txid_current()')->fetch(),
+            $yo_pdo->query('SELECT txid_current()')->fetch()
         );
 
-        $yo_pdo_driver->queryMultiple('ROLLBACK');
+        $yo_pdo->queryMultiple('ROLLBACK');
     }
+
 
     /**
      * @return Factory
@@ -99,9 +89,6 @@ class FactoryTest extends FactoryBaseTest
 
         $config = require $config_path;
 
-        return new Factory(
-            new PgsqlAdapter($config['test']['db']['yo-pdo-pgsql']),
-            $config['test']['db']['yo-pdo-pgsql']
-        );
+        return new Factory($config['test']['db']['yo-pdo-pgsql']);
     }
 }

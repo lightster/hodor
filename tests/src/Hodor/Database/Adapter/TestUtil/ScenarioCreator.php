@@ -2,33 +2,33 @@
 
 namespace Hodor\Database\Adapter\TestUtil;
 
-use Hodor\Database\AdapterInterface;
+use Hodor\Database\Adapter\FactoryInterface;
 
 class ScenarioCreator
 {
     /**
-     * @param AdapterInterface $db_adapter
+     * @param FactoryInterface $factory
      * @param array $buffered_jobs
      * @param array $queued_jobs
      * @return array
      */
-    public function createScenario(AdapterInterface $db_adapter, array $buffered_jobs, array $queued_jobs)
+    public function createScenario(FactoryInterface $factory, array $buffered_jobs, array $queued_jobs)
     {
         $uniqid = uniqid();
         return [
             'uniqid'        => $uniqid,
-            'queued_jobs'   => $this->queueJobs($db_adapter, $uniqid, $queued_jobs),
-            'buffered_jobs' => $this->bufferJobs($db_adapter, $uniqid, $buffered_jobs),
+            'queued_jobs'   => $this->queueJobs($factory, $uniqid, $queued_jobs),
+            'buffered_jobs' => $this->bufferJobs($factory, $uniqid, $buffered_jobs),
         ];
     }
 
     /**
-     * @param AdapterInterface $db_adapter
+     * @param FactoryInterface $factory
      * @param string $uniqid
      * @param array $jobs
      * @return array
      */
-    private function bufferJobs(AdapterInterface $db_adapter, $uniqid, array $jobs)
+    private function bufferJobs(FactoryInterface $factory, $uniqid, array $jobs)
     {
         $buffered_at = date('c', time() - 3600);
 
@@ -44,7 +44,7 @@ class ScenarioCreator
                 $options['mutex_id'] = "mutex-{$uniqid}-{$job['mutex_id']}";
             }
 
-            $db_adapter->bufferJob(
+            $factory->getBufferWorker()->bufferJob(
                 'fast-jobs',
                 [
                     'name'   => "job-{$uniqid}-{$job['name']}",
@@ -62,18 +62,18 @@ class ScenarioCreator
     }
 
     /**
-     * @param AdapterInterface $db_adapter
+     * @param FactoryInterface $factory
      * @param string $uniqid
      * @param array $jobs
      * @return array
      */
-    private function queueJobs(AdapterInterface $db_adapter, $uniqid, array $jobs)
+    private function queueJobs(FactoryInterface $factory, $uniqid, array $jobs)
     {
-        $this->bufferJobs($db_adapter, $uniqid, $jobs);
+        $this->bufferJobs($factory, $uniqid, $jobs);
 
         $jobs_queued = [];
-        foreach ($db_adapter->getJobsToRunGenerator() as $job) {
-            $jobs_queued[] = $db_adapter->markJobAsQueued($job);
+        foreach ($factory->getSuperqueuer()->getJobsToRunGenerator() as $job) {
+            $jobs_queued[] = $factory->getSuperqueuer()->markJobAsQueued($job);
         }
 
         return $jobs_queued;
