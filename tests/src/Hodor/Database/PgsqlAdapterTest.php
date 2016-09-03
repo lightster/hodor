@@ -17,7 +17,7 @@ class PgsqlAdapterTest extends AbstractAdapterTest
     {
         $phpmig_container = new Container();
         $phpmig_container->addDefaultServices('no-config-file');
-        $phpmig_container['hodor.database'] = $this->getAdapter();
+        $phpmig_container['hodor.database'] = $this->getAdapter()->getAdapterFactory()->getYoPdo();
 
         $command_wrapper = new CommandWrapper($phpmig_container, new NullOutput());
         $command_wrapper->rollbackMigrations();
@@ -31,17 +31,6 @@ class PgsqlAdapterTest extends AbstractAdapterTest
         // without forcing garbage collection, the DB connections
         // are not guaranteed to be disconnected; force GC
         gc_collect_cycles();
-    }
-
-    /**
-     * @covers ::getPhpmigAdapter
-     */
-    public function testPhpmigAdapterCanBeRetrieved()
-    {
-        $this->assertInstanceOf(
-            'Hodor\Database\Phpmig\PgsqlPhpmigAdapter',
-            $this->getAdapter()->getPhpmigAdapter()
-        );
     }
 
     /**

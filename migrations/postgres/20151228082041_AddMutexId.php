@@ -1,15 +1,15 @@
 <?php
 
-use Hodor\Database\AdapterInterface as DbAdapterInterface;
 use Hodor\Database\Phpmig\Migration;
+use Lstr\YoPdo\YoPdo;
 
 class AddMutexId extends Migration
 {
     /**
-     * @param DbAdapterInterface $db
+     * @param YoPdo $yo_pdo
      * @return void
      */
-    protected function transactionalUp(DbAdapterInterface $db)
+    protected function transactionalUp(YoPdo $yo_pdo)
     {
         $sql = <<<SQL
 ALTER TABLE buffered_jobs
@@ -43,14 +43,14 @@ ALTER TABLE failed_jobs
     ALTER COLUMN mutex_id SET NOT NULL;
 SQL;
 
-        $db->queryMultiple($sql);
+        $yo_pdo->queryMultiple($sql);
     }
 
     /**
-     * @param DbAdapterInterface $db
+     * @param YoPdo $yo_pdo
      * @return void
      */
-    protected function transactionalDown(DbAdapterInterface $db)
+    protected function transactionalDown(YoPdo $yo_pdo)
     {
         $sql = <<<SQL
 ALTER TABLE buffered_jobs
@@ -63,6 +63,6 @@ ALTER TABLE failed_jobs
     DROP COLUMN mutex_id;
 SQL;
 
-        $db->queryMultiple($sql);
+        $yo_pdo->queryMultiple($sql);
     }
 }

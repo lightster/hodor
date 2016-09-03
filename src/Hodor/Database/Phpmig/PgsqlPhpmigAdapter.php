@@ -2,23 +2,23 @@
 
 namespace Hodor\Database\Phpmig;
 
-use Hodor\Database\Driver\YoPdoDriver;
+use Lstr\YoPdo\YoPdo;
 use Phpmig\Migration\Migration;
 use ReflectionClass;
 
 class PgsqlPhpmigAdapter implements AdapterInterface
 {
     /**
-     * @var YoPdoDriver
+     * @var YoPdo
      */
-    private $driver;
+    private $yo_pdo;
 
     /**
-     * @param YoPdoDriver $driver
+     * @param YoPdo $yo_pdo
      */
-    public function __construct(YoPdoDriver $driver)
+    public function __construct(YoPdo $yo_pdo)
     {
-        $this->driver = $driver;
+        $this->yo_pdo = $yo_pdo;
     }
 
     /**
@@ -33,7 +33,7 @@ ORDER BY version
 SQL;
 
         $versions = [];
-        $row_generator = $this->driver->selectRowGenerator($sql);
+        $row_generator = $this->yo_pdo->getSelectRowGenerator($sql);
         foreach ($row_generator as $row) {
             $versions[] = $row['version'];
         }
@@ -49,7 +49,7 @@ SQL;
     {
         $migration_reflection = new ReflectionClass(get_class($migration));
 
-        $this->driver->insert('migrations.migrations', [
+        $this->yo_pdo->insert('migrations.migrations', [
             'version'        => $migration->getVersion(),
             'migration_hash' => hash_file('sha256', $migration_reflection->getFileName()),
         ]);
@@ -71,7 +71,7 @@ WHERE version = :version
 ORDER BY version
 SQL;
 
-        $version_row = $this->driver->selectOne($sql, ['version' => $version]);
+        $version_row = $this->yo_pdo->query($sql, ['version' => $version])->fetch();
         if (!$version_row) {
             throw new Exception(
                 "Migration '{$version}' cannot be rolled back because it is not currently applied."
@@ -79,13 +79,13 @@ SQL;
         }
 
         $migration_reflection = new ReflectionClass(get_class($migration));
-        $this->driver->insert('migrations.rollbacks', [
+        $this->yo_pdo->insert('migrations.rollbacks', [
             'version'        => $version_row['version'],
             'migrated_at'    => $version_row['migrated_at'],
             'migration_hash' => $version_row['migration_hash'],
             'rollback_hash'  => hash_file('sha256', $migration_reflection->getFileName()),
         ]);
-        $this->driver->delete(
+        $this->yo_pdo->delete(
             'migrations.migrations',
             'version = :version',
             ['version' => $migration->getVersion()]
@@ -106,7 +106,7 @@ WHERE schemaname = 'migrations'
     AND tablename = 'migrations'
 SQL;
 
-        $row = $this->driver->selectOne($sql);
+        $row = $this->yo_pdo->query($sql)->fetch();
         if ($row) {
             return (bool) $row['schema_exists'];
         }
@@ -139,7 +139,7 @@ CREATE TABLE migrations.rollbacks
 );
 SQL;
 
-        $this->driver->queryMultiple($sql);
+        $this->yo_pdo->queryMultiple($sql);
 
         return $this;
     }

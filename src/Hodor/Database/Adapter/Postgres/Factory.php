@@ -5,6 +5,7 @@ namespace Hodor\Database\Adapter\Postgres;
 use Hodor\Database\Adapter\FactoryInterface;
 use Hodor\Database\Driver\YoPdoDriver;
 use Hodor\Database\PgsqlAdapter;
+use Hodor\Database\Phpmig\PgsqlPhpmigAdapter;
 use Lstr\YoPdo\YoPdo;
 
 class Factory implements FactoryInterface
@@ -89,6 +90,14 @@ class Factory implements FactoryInterface
         $this->dequeuer = new Dequeuer($this->getConnection());
 
         return $this->dequeuer;
+    }
+
+    /**
+     * @return YoPdo
+     */
+    public function getYoPdo()
+    {
+        return $this->getConnection()->getYoPdo();
     }
 
     /**

@@ -97,9 +97,6 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::beginTransaction
      * @covers ::commitTransaction
-     * @covers Hodor\Database\PgsqlAdapter::queryMultiple
-     * @covers Hodor\Database\PgsqlAdapter::beginTransaction
-     * @covers Hodor\Database\PgsqlAdapter::commitTransaction
      */
     public function testQueueingJobsCanBeBatched()
     {
