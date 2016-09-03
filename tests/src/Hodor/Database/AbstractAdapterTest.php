@@ -2,6 +2,7 @@
 
 namespace Hodor\Database;
 
+use Hodor\Database\Adapter\TestUtil\AbstractProvisioner;
 use Hodor\Database\Adapter\TestUtil\JobsToRunAsserter;
 use Hodor\Database\Adapter\TestUtil\ScenarioCreator;
 use PHPUnit_Framework_TestCase;
@@ -10,13 +11,18 @@ use Traversable;
 abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var AdapterInterface
+     * @var AbstractProvisioner
      */
-    private $adapter;
+    private $provisioner;
+
+    public function setUp()
+    {
+        $this->getProvisioner()->setUp();
+    }
 
     public function tearDown()
     {
-        $this->adapter = null;
+        $this->getProvisioner()->tearDown();
     }
 
     /**
@@ -165,22 +171,38 @@ abstract class AbstractAdapterTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @return AbstractProvisioner
+     */
+    abstract protected function generateProvisioner();
+
+    /**
+     * @return AbstractProvisioner
+     */
+    protected function getProvisioner()
+    {
+        if ($this->provisioner) {
+            return $this->provisioner;
+        }
+
+        $this->provisioner = $this->generateProvisioner();
+
+        return $this->provisioner;
+    }
+
+    /**
      * @return AdapterInterface
      */
-    abstract protected function generateAdapter();
+    protected function generateAdapter()
+    {
+        return $this->getProvisioner()->generateAdapter();
+    }
 
     /**
      * @return AdapterInterface
      */
     protected function getAdapter()
     {
-        if ($this->adapter) {
-            return $this->adapter;
-        }
-
-        $this->adapter = $this->generateAdapter();
-
-        return $this->adapter;
+        return $this->getProvisioner()->getAdapter();
     }
 
     /**
