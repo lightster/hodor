@@ -6,7 +6,8 @@ Breaking Changes:
 
 Bug Fixes:
 
- - Stop attempting to mark job as failed if it has already been marked as successful (#213)
+ - Stop attempting to mark job as failed if it has already been marked as successful
+   ([#213](https://github.com/lightster/hodor/pull/213))
 
 Other Changes:
 
