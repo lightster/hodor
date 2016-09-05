@@ -2,8 +2,8 @@
 
 namespace Hodor\JobQueue;
 
+use Hodor\Database\Adapter\FactoryInterface;
 use Hodor\Database\AdapterFactory as DbAdapterFactory;
-use Hodor\Database\AdapterInterface as DbAdapterInterface;
 use Hodor\JobQueue\JobOptions\Validator as JobOptionsValidator;
 use Hodor\MessageQueue\Queue as MessageQueue;
 use Hodor\MessageQueue\QueueFactory as MqFactory;
@@ -36,7 +36,7 @@ class QueueManager
     private $job_options_validator;
 
     /**
-     * @var DbAdapterInterface
+     * @var FactoryInterface
      */
     private $database;
 
@@ -74,7 +74,8 @@ class QueueManager
 
         $this->buffer_queues[$queue_name] = new BufferQueue(
             $this->getMessageQueue("bufferer-{$queue_name}"),
-            $this
+            $this->getDatabase()->getBufferWorker(),
+            $this->config
         );
 
         return $this->buffer_queues[$queue_name];
@@ -160,7 +161,7 @@ class QueueManager
     }
 
     /**
-     * @return DbAdapterInterface
+     * @return FactoryInterface
      */
     public function getDatabase()
     {
@@ -186,7 +187,7 @@ class QueueManager
     }
 
     /**
-     * @return QueueManager
+     * @return MqFactory
      */
     private function getMessageQueueFactory()
     {

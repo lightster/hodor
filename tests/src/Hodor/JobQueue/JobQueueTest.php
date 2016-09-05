@@ -130,6 +130,7 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
     {
         $config = new Config(__FILE__, [
             'adapter_factory' => 'testing',
+            'superqueue' => ['database' => ['type' => 'testing']],
             'buffer_queues'   => [
                 'default' => [
                     'host' => 'localhost',
