@@ -34,28 +34,6 @@ class Superqueue
     }
 
     /**
-     * @param IncomingMessage $message
-     */
-    public function bufferJobFromBufferQueueToDatabase(IncomingMessage $message)
-    {
-        $content = $message->getContent();
-        $queue_name = $this->queue_manager->getWorkerQueueNameForJob(
-            $content['name'],
-            $content['params'],
-            $content['options']
-        );
-
-        $this->getDatabase()->getBufferWorker()->bufferJob($queue_name, [
-            'name'    => $content['name'],
-            'params'  => $content['params'],
-            'options' => $content['options'],
-            'meta'    => $content['meta'],
-        ]);
-
-        $message->acknowledge();
-    }
-
-    /**
      * @return bool
      */
     public function requestProcessLock()
