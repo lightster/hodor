@@ -112,6 +112,45 @@ class FlowTest extends PHPUnit_Framework_TestCase
         }
     }
 
+    public function testNonFatalErrorInJobResultsInZeroExitCode()
+    {
+        $job_name = 'non_fatal_error';
+        $job_params = [];
+
+        $this->queueJobs($job_name, [$job_params]);
+        try {
+            $this->runJobWorker();
+        } catch (Exception $exception) {
+            $this->assertEquals(0, $exception->getCode());
+        }
+    }
+
+    public function testFatalErrorInJobResultsInNonZeroExitCode()
+    {
+        $job_name = 'fatal_error';
+        $job_params = [];
+
+        $this->queueJobs($job_name, [$job_params]);
+        try {
+            $this->runJobWorker();
+        } catch (Exception $exception) {
+            $this->assertGreaterThan(0, $exception->getCode());
+        }
+    }
+
+    public function testExceptionInJobResultsInNonZeroExitCode()
+    {
+        $job_name = 'exception';
+        $job_params = [];
+
+        $this->queueJobs($job_name, [$job_params]);
+        try {
+            $this->runJobWorker();
+        } catch (Exception $exception) {
+            $this->assertGreaterThan(0, $exception->getCode());
+        }
+    }
+
     public function testOnlyOneSuperqueuerCanRunAtOnce()
     {
         $this->db_factory->getSuperqueuer()->requestAdvisoryLock('superqueuer', 'default');
@@ -241,9 +280,10 @@ class FlowTest extends PHPUnit_Framework_TestCase
         if ($exit_code) {
             throw new Exception(
                 "An error occurred runninga command:\n"
-                . "  > Command:   {$command}\n"
-                . "  > Exit code: {$exit_code}\n"
-                . "  > Output:    {$output}\n\n"
+                    . "  > Command:   {$command}\n"
+                    . "  > Exit code: {$exit_code}\n"
+                    . "  > Output:    {$output}\n\n",
+                $exit_code
             );
         }
 
@@ -351,6 +391,19 @@ PHP;
     {
         return <<<'PHP'
 function($name, $params) {
+    if ('non_fatal_error' === $name) {
+        echo $z;
+        return;
+    }
+    if ('fatal_error' === $name) {
+        call_undefined_function();
+        return;
+    }
+    if ('exception' === $name) {
+        throw new Exception('exception');
+        return;
+    }
+
     echo json_encode([
         'name'   => $name,
         'params' => $params,

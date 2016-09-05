@@ -52,13 +52,14 @@ class WorkerQueue
 
             register_shutdown_function(
                 function (IncomingMessage $message, DateTime $start_time, QueueManager $queue_manager) {
-                    if (error_get_last()) {
-                        $queue_manager->getSuperqueue()->markJobAsFailed(
-                            $message,
-                            $start_time
-                        );
-                        exit(1);
+                    if ($message->isAcked()) {
+                        return;
                     }
+
+                    $queue_manager->getSuperqueue()->markJobAsFailed(
+                        $message,
+                        $start_time
+                    );
                 },
                 $message,
                 $start_time,
