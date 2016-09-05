@@ -59,4 +59,12 @@ class IncomingMessage
 
         $this->was_acked = true;
     }
+
+    /**
+     * @return bool
+     */
+    public function isAcked()
+    {
+        return $this->was_acked;
+    }
 }
