@@ -2,18 +2,15 @@
 
 namespace Hodor\Database;
 
+use Closure;
 use Exception;
 use Hodor\Database\Adapter\FactoryInterface;
+use Hodor\Database\Adapter\Postgres\Factory as PostgresFactory;
+use Hodor\Database\Adapter\Testing\Database;
+use Hodor\Database\Adapter\Testing\Factory as TestingFactory;
 
 class AdapterFactory
 {
-    /**
-     * @var array
-     */
-    private $adapter_factories = [
-        'pgsql' => '\Hodor\Database\Adapter\Postgres\Factory',
-    ];
-
     /**
      * @param  array $config
      * @return FactoryInterface
@@ -27,15 +24,38 @@ class AdapterFactory
             );
         }
 
-        $name = $config['type'];
-        if (!isset($this->adapter_factories[$name])) {
-            throw new Exception(
-                "A database adapter factory is not associated with '{$name}'."
-            );
+        $adapter_factory = $this->getAdapterFactory($config['type']);
+
+        return $adapter_factory($config);
+    }
+
+    /**
+     * @param string $type
+     * @return Closure
+     * @throws Exception
+     */
+    private function getAdapterFactory($type)
+    {
+        if ('pgsql' === $type) {
+            return function (array $config) {
+                return new PostgresFactory($config);
+            };
         }
 
-        $adapter_class = $this->adapter_factories[$name];
+        if ('testing' === $type) {
+            return function (array $config) {
+                $config = array_merge(
+                    [
+                        'database'      => new Database(),
+                        'connection_id' => 1,
+                    ],
+                    $config
+                );
 
-        return new $adapter_class($config);
+                return new TestingFactory($config['database'], $config['connection_id']);
+            };
+        }
+
+        throw new Exception("A database adapter factory is not associated with '{$type}'.");
     }
 }

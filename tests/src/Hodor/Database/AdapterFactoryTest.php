@@ -32,6 +32,7 @@ class AdapterFactoryTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::getAdapter
+     * @covers ::<private>
      * @expectedException \Exception
      */
     public function testRequestingAnAdapterForUnknownTypeThrowsAnException()
@@ -41,12 +42,25 @@ class AdapterFactoryTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::getAdapter
+     * @covers ::<private>
      */
-    public function testAdapterForPgsqlNameIsAPostgresFactory()
+    public function testAdapterForPgsqlTypeIsAPostgresFactory()
     {
         $this->assertInstanceOf(
             '\Hodor\Database\Adapter\Postgres\Factory',
             $this->adapter_factory->getAdapter(['type' => 'pgsql'])
+        );
+    }
+
+    /**
+     * @covers ::getAdapter
+     * @covers ::<private>
+     */
+    public function testAdapterForTestingTypeIsATestingFactory()
+    {
+        $this->assertInstanceOf(
+            '\Hodor\Database\Adapter\Testing\Factory',
+            $this->adapter_factory->getAdapter(['type' => 'testing'])
         );
     }
 }
