@@ -4,6 +4,7 @@ namespace Hodor\Database\Adapter\Testing;
 
 use Exception;
 use PHPUnit_Framework_TestCase;
+use stdClass;
 
 /**
  * @coversDefaultClass \Hodor\Database\Adapter\Testing\Database
@@ -86,10 +87,12 @@ class DatabaseTest extends PHPUnit_Framework_TestCase
      */
     public function testRowCanBeDeletedFromTable()
     {
-        $this->database->insert('buffered_jobs', 1, []);
-        $this->database->delete('buffered_jobs', 1);
+        $object = new stdClass();
+        $this->database->insert('buffered_jobs', 1, ['object' => $object]);
+        $row = $this->database->delete('buffered_jobs', 1);
 
         $this->assertSame([], $this->database->getAll('buffered_jobs'));
+        $this->assertSame($object, $row['object']);
     }
 
     /**

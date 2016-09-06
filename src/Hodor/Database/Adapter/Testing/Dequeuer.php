@@ -25,7 +25,7 @@ class Dequeuer implements DequeuerInterface
      */
     public function markJobAsSuccessful(array $meta)
     {
-        $this->markJobAsFinished($meta);
+        $this->markJobAsFinished('successful', $meta);
     }
 
     /**
@@ -33,19 +33,21 @@ class Dequeuer implements DequeuerInterface
      */
     public function markJobAsFailed(array $meta)
     {
-        $this->markJobAsFinished($meta);
+        $this->markJobAsFinished('failed', $meta);
     }
 
     /**
+     * @param string $status
      * @param array $meta
      * @throws BufferedJobNotFoundException
      */
-    private function markJobAsFinished(array $meta)
+    private function markJobAsFinished($status, array $meta)
     {
         if (!$this->database->has('queued_jobs', $meta['buffered_job_id'])) {
             throw new BufferedJobNotFoundException("", $meta['buffered_job_id'], $meta);
         }
 
-        $this->database->delete('queued_jobs', $meta['buffered_job_id']);
+        $row = $this->database->delete('queued_jobs', $meta['buffered_job_id']);
+        $this->database->insert("{$status}_jobs", $meta['buffered_job_id'], $row);
     }
 }
