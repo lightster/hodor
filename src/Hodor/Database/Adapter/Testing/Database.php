@@ -25,8 +25,10 @@ class Database
      * @var array
      */
     private $tables = [
-        'buffered_jobs' => [],
-        'queued_jobs'   => [],
+        'buffered_jobs'   => [],
+        'queued_jobs'     => [],
+        'successful_jobs' => [],
+        'failed_jobs'     => [],
     ];
 
     /**
@@ -47,6 +49,7 @@ class Database
     /**
      * @param string $table_name
      * @param string $row_id
+     * @return array
      * @throws Exception
      */
     public function delete($table_name, $row_id)
@@ -55,7 +58,10 @@ class Database
             throw new Exception("Row with id '{$row_id}' does not exist in '{$table_name}'.");
         }
 
+        $row = $this->tables[$table_name][$row_id];
         unset($this->tables[$table_name][$row_id]);
+
+        return $row;
     }
 
     /**
