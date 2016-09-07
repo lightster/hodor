@@ -6,7 +6,6 @@ use DateTime;
 use Exception;
 use Hodor\Database\Adapter\Testing\BufferWorker;
 use Hodor\Database\Adapter\Testing\Database;
-use Hodor\JobQueue\Config\MessageQueueConfig;
 use Hodor\MessageQueue\Adapter\ConsumerInterface;
 use Hodor\MessageQueue\Adapter\ProducerInterface;
 use Hodor\MessageQueue\Adapter\Testing\Consumer;

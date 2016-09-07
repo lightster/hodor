@@ -4,7 +4,6 @@ namespace Hodor\Database\Adapter\Postgres;
 
 use Exception;
 use Hodor\Database\Adapter\FactoryTest as FactoryBaseTest;
-use Hodor\Database\PgsqlAdapter;
 use Hodor\Database\Phpmig\CommandWrapper;
 use Hodor\Database\Phpmig\Container;
 use Symfony\Component\Console\Output\NullOutput;
