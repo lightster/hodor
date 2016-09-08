@@ -3,7 +3,6 @@
 namespace Hodor\JobQueue\JobOptions;
 
 use DateTime;
-use Exception;
 use Hodor\JobQueue\Config;
 use Hodor\JobQueue\Config\QueueConfig;
 use Hodor\JobQueue\Config\WorkerConfig;
