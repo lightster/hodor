@@ -110,7 +110,7 @@ class QueueManager
 
         $this->worker_queues[$queue_name] = new WorkerQueue(
             $this->getMessageQueue("worker-{$queue_name}"),
-            $this
+            $this->getDatabase()->getDequeuer()
         );
 
         return $this->worker_queues[$queue_name];
