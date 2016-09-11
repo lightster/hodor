@@ -2,6 +2,7 @@
 
 namespace Hodor\JobQueue;
 
+use Closure;
 use DateTime;
 use Hodor\Database\Adapter\DequeuerInterface;
 use Hodor\Database\Exception\BufferedJobNotFoundException;
@@ -52,7 +53,9 @@ class WorkerQueue
         $this->message_queue->consume(function (IncomingMessage $message) use ($job_runner) {
             $start_time = new DateTime;
 
-            register_shutdown_function([$this, 'markJobAsFailedIfUnsuccessful'], $message, $start_time);
+            $mark_job_as_failed_if_not_successful = $this->getFailureCallback();
+
+            register_shutdown_function($mark_job_as_failed_if_not_successful, $message, $start_time);
 
             $content = $message->getContent();
             $name = $content['name'];
@@ -62,24 +65,13 @@ class WorkerQueue
             $title = implode(" ", $_SERVER['argv']) . " ({$meta['buffered_job_id']}:{$name})";
             cli_set_process_title($title);
 
-            call_user_func($job_runner, $name, $params);
+            try {
+                call_user_func($job_runner, $name, $params);
 
-            $this->markJobAsSuccessful($message, $start_time);
-        });
-    }
-
-    /**
-     * @param IncomingMessage $message
-     * @param DateTime $started_running_at
-     */
-    public function markJobAsFailedIfUnsuccessful(IncomingMessage $message, DateTime $started_running_at)
-    {
-        if ($message->isAcked()) {
-            return;
-        }
-
-        $this->markJobAsFinished($message, $started_running_at, function ($meta) {
-            $this->database->markJobAsFailed($meta);
+                $this->markJobAsSuccessful($message, $start_time);
+            } finally {
+                $mark_job_as_failed_if_not_successful($message, $start_time);
+            }
         });
     }
 
@@ -92,6 +84,22 @@ class WorkerQueue
         $this->markJobAsFinished($message, $started_running_at, function ($meta) {
             $this->database->markJobAsSuccessful($meta);
         });
+    }
+
+    /**
+     * @return Closure
+     */
+    private function getFailureCallback()
+    {
+        return function (IncomingMessage $message, DateTime $started_running_at) {
+            if ($message->isAcked()) {
+                return;
+            }
+
+            $this->markJobAsFinished($message, $started_running_at, function ($meta) {
+                $this->database->markJobAsFailed($meta);
+            });
+        };
     }
 
     /**

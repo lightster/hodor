@@ -208,4 +208,109 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
             $this->worker_queue->runNext(function () {});
         }
     }
+
+
+
+
+
+
+    /**
+     * @covers ::__construct
+     * @covers ::runNext
+     * @covers ::<private>
+     */
+    public function testDatabaseRecordForJobMarkedAsFailedIsMovedToFailedJobs()
+    {
+        $uniqid = uniqid();
+        $expected_job = [
+            'name'    => "some-job-{$uniqid}",
+            'params'  => ['value' => $uniqid],
+            'meta'   => ['buffered_job_id' => rand(1, 10)],
+        ];
+
+        $this->database->insert(
+            'queued_jobs',
+            $expected_job['meta']['buffered_job_id'],
+            [
+                'job_name'   => $expected_job['name'],
+                'job_params' => json_encode($expected_job['params']),
+            ]
+        );
+
+        $this->worker_queue->push($expected_job['name'], $expected_job['params'], $expected_job['meta']);
+        try {
+            $this->worker_queue->runNext(
+                function () {
+                    throw new Exception("Failed job");
+                }
+            );
+        } catch (Exception $ex) {
+            $job = current($this->database->getAll('failed_jobs'));
+            $this->assertEquals(
+                [
+                    'job_name' => $expected_job['name'],
+                    'param'    => $expected_job['params']['value'],
+                    'meta'     => $expected_job['meta']['buffered_job_id'],
+                ],
+                [
+                    'job_name' => $job['job_name'],
+                    'param'    => json_decode($job['job_params'], true)['value'],
+                    'meta'     => $expected_job['meta']['buffered_job_id'],
+                ]
+            );
+        }
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::runNext
+     * @covers ::<private>
+     * @expectedException Exception
+     */
+    public function testMessageForJobMarkedAsFailedIsAcknowledged()
+    {
+        $uniqid = uniqid();
+        $expected_job = [
+            'name'    => "some-job-{$uniqid}",
+            'params'  => ['value' => $uniqid],
+            'meta'   => ['buffered_job_id' => rand(1, 10)],
+        ];
+
+        $this->database->insert('queued_jobs', $expected_job['meta']['buffered_job_id'], []);
+        $this->worker_queue->push($expected_job['name'], $expected_job['params'], $expected_job['meta']);
+
+        $this->worker_queue->runNext(function () {
+            throw new Exception("Failed job");
+        });
+        $this->message_bank->emulateReconnect();
+        $this->worker_queue->runNext(function () {});
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::runNext
+     * @covers ::<private>
+     * @expectedException \Hodor\MessageQueue\Adapter\Testing\Exception\EmptyQueueException
+     */
+    public function testJobMarkedAsFailedButNotAcknowledgedCanBeAcknowledgedSecondTime()
+    {
+        $uniqid = uniqid();
+        $expected_job = [
+            'name'    => "some-job-{$uniqid}",
+            'params'  => ['value' => $uniqid],
+            'meta'   => ['buffered_job_id' => rand(1, 10)],
+        ];
+
+        $this->worker_queue->push($expected_job['name'], $expected_job['params'], $expected_job['meta']);
+
+        try {
+            $this->worker_queue->runNext(function () {
+                throw new Exception("Failed job");
+            });
+        } catch (BufferedJobNotFoundException $exception) {
+            $this->worker_queue->runNext(function () {
+                throw new Exception("Failed job");
+            });
+        }
+    }
 }
