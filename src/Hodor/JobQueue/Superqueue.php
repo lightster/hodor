@@ -59,28 +59,6 @@ class Superqueue
     }
 
     /**
-     * @param IncomingMessage $message
-     * @param DateTime $started_running_at
-     */
-    public function markJobAsSuccessful(IncomingMessage $message, DateTime $started_running_at)
-    {
-        $this->markJobAsFinished($message, $started_running_at, function ($meta) {
-            $this->getDatabase()->getDequeuer()->markJobAsSuccessful($meta);
-        });
-    }
-
-    /**
-     * @param IncomingMessage $message
-     * @param DateTime $started_running_at
-     */
-    public function markJobAsFailed(IncomingMessage $message, DateTime $started_running_at)
-    {
-        $this->markJobAsFinished($message, $started_running_at, function ($meta) {
-            $this->getDatabase()->getDequeuer()->markJobAsFailed($meta);
-        });
-    }
-
-    /**
      * @param array $job
      */
     private function batchJob(array $job)
@@ -126,30 +104,6 @@ class Superqueue
     private function getBatchSize()
     {
         return 250;
-    }
-
-    /**
-     * @param IncomingMessage $message
-     * @param DateTime $started_running_at
-     * @param callable $mark_finished
-     * @throws BufferedJobNotFoundException
-     */
-    private function markJobAsFinished(
-        IncomingMessage $message,
-        DateTime $started_running_at,
-        callable $mark_finished
-    ) {
-        $content = $message->getContent();
-        $meta = $content['meta'];
-        $meta['started_running_at'] = $started_running_at->format('c');
-
-        try {
-            $mark_finished($meta);
-            $message->acknowledge();
-        } catch (BufferedJobNotFoundException $exception) {
-            $message->acknowledge();
-            throw $exception;
-        }
     }
 
     /**

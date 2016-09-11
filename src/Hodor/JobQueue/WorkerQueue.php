@@ -3,6 +3,8 @@
 namespace Hodor\JobQueue;
 
 use DateTime;
+use Hodor\Database\Adapter\DequeuerInterface;
+use Hodor\Database\Exception\BufferedJobNotFoundException;
 use Hodor\MessageQueue\IncomingMessage;
 use Hodor\MessageQueue\Queue;
 
@@ -14,18 +16,18 @@ class WorkerQueue
     private $message_queue;
 
     /**
-     * @var QueueManager
+     * @var DequeuerInterface
      */
-    private $queue_manager;
+    private $database;
 
     /**
      * @param Queue $message_queue
-     * @param QueueManager $queue_manager
+     * @param DequeuerInterface $database
      */
-    public function __construct(Queue $message_queue, QueueManager $queue_manager)
+    public function __construct(Queue $message_queue, DequeuerInterface $database)
     {
         $this->message_queue = $message_queue;
-        $this->queue_manager = $queue_manager;
+        $this->database = $database;
     }
 
     /**
@@ -50,21 +52,7 @@ class WorkerQueue
         $this->message_queue->consume(function (IncomingMessage $message) use ($job_runner) {
             $start_time = new DateTime;
 
-            register_shutdown_function(
-                function (IncomingMessage $message, DateTime $start_time, QueueManager $queue_manager) {
-                    if ($message->isAcked()) {
-                        return;
-                    }
-
-                    $queue_manager->getSuperqueue()->markJobAsFailed(
-                        $message,
-                        $start_time
-                    );
-                },
-                $message,
-                $start_time,
-                $this->queue_manager
-            );
+            register_shutdown_function([$this, 'markJobAsFailedIfUnsuccessful'], $message, $start_time);
 
             $content = $message->getContent();
             $name = $content['name'];
@@ -76,8 +64,57 @@ class WorkerQueue
 
             call_user_func($job_runner, $name, $params);
 
-            $superqueue = $this->queue_manager->getSuperqueue();
-            $superqueue->markJobAsSuccessful($message, $start_time);
+            $this->markJobAsSuccessful($message, $start_time);
         });
+    }
+
+    /**
+     * @param IncomingMessage $message
+     * @param DateTime $started_running_at
+     */
+    public function markJobAsFailedIfUnsuccessful(IncomingMessage $message, DateTime $started_running_at)
+    {
+        if ($message->isAcked()) {
+            return;
+        }
+
+        $this->markJobAsFinished($message, $started_running_at, function ($meta) {
+            $this->database->markJobAsFailed($meta);
+        });
+    }
+
+    /**
+     * @param IncomingMessage $message
+     * @param DateTime $started_running_at
+     */
+    private function markJobAsSuccessful(IncomingMessage $message, DateTime $started_running_at)
+    {
+        $this->markJobAsFinished($message, $started_running_at, function ($meta) {
+            $this->database->markJobAsSuccessful($meta);
+        });
+    }
+
+    /**
+     * @param IncomingMessage $message
+     * @param DateTime $started_running_at
+     * @param callable $mark_finished
+     * @throws BufferedJobNotFoundException
+     */
+    private function markJobAsFinished(
+        IncomingMessage $message,
+        DateTime $started_running_at,
+        callable $mark_finished
+    ) {
+        $content = $message->getContent();
+        $meta = $content['meta'];
+        $meta['started_running_at'] = $started_running_at->format('c');
+
+        try {
+            $mark_finished($meta);
+            $message->acknowledge();
+        } catch (BufferedJobNotFoundException $exception) {
+            $message->acknowledge();
+            throw $exception;
+        }
     }
 }
