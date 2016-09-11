@@ -76,4 +76,22 @@ class IncomingMessageTest extends PHPUnit_Framework_TestCase
         $message->acknowledge();
         $message->acknowledge();
     }
+
+    /**
+     * @covers ::__construct
+     * @covers ::acknowledge
+     * @covers ::isAcked
+     */
+    public function testAcknowledgingMessageCanBeDetected()
+    {
+        $message_interface = $this->getMock('Hodor\MessageQueue\Adapter\MessageInterface');
+        $message_interface
+            ->expects($this->once())
+            ->method('acknowledge');
+
+        $message = new IncomingMessage($message_interface);
+        $this->assertFalse($message->isAcked());
+        $message->acknowledge();
+        $this->assertTrue($message->isAcked());
+    }
 }
