@@ -86,15 +86,6 @@ class SupervisordManager implements ManagerInterface
     }
 
     /**
-     * @param $bin_file
-     * @return string
-     */
-    private function getBinFilePath($bin_file)
-    {
-        return __DIR__ . '/../../../bin/' . $bin_file;
-    }
-
-    /**
      * @param  array & $program_config
      * @return void
      */
