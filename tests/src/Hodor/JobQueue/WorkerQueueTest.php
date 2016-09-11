@@ -14,6 +14,7 @@ use Hodor\MessageQueue\Adapter\Testing\Producer;
 use Hodor\MessageQueue\IncomingMessage;
 use Hodor\MessageQueue\Queue;
 use PHPUnit_Framework_TestCase;
+use UnexpectedValueException;
 
 /**
  * @coversDefaultClass Hodor\JobQueue\WorkerQueue
@@ -128,6 +129,82 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      */
     public function testDatabaseRecordForJobMarkedAsSuccessfulIsMovedToSuccessfulJobs()
     {
+        $this->checkDatabaseRecordIsMoved(
+            'successful_jobs',
+            function () {}
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::runNext
+     * @covers ::<private>
+     * @expectedException Exception
+     */
+    public function testMessageForJobMarkedAsSuccessfulIsAcknowledged()
+    {
+        $this->checkMessageForJobIsAcknowledged(function () {});
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::runNext
+     * @covers ::<private>
+     * @expectedException \Hodor\MessageQueue\Adapter\Testing\Exception\EmptyQueueException
+     */
+    public function testJobMarkedAsSuccessfulButNotAcknowledgedCanBeAcknowledgedSecondTime()
+    {
+        $this->checkUnacknowledgedJobMissingFromBufferCanBeAcknowledge(function () {});
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::runNext
+     * @covers ::<private>
+     * @expectedException UnexpectedValueException
+     */
+    public function testDatabaseRecordForJobMarkedAsFailedIsMovedToFailedJobs()
+    {
+        $this->checkDatabaseRecordIsMoved(
+            'failed_jobs',
+            function () {
+                throw new UnexpectedValueException("Failed job");
+            }
+        );
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::runNext
+     * @covers ::<private>
+     * @expectedException UnexpectedValueException
+     */
+    public function testMessageForJobMarkedAsFailedIsAcknowledged()
+    {
+        $this->checkMessageForJobIsAcknowledged(function () {
+            throw new UnexpectedValueException("Failed job");
+        });
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::runNext
+     * @covers ::<private>
+     * @expectedException \Hodor\MessageQueue\Adapter\Testing\Exception\EmptyQueueException
+     */
+    public function testJobMarkedAsFailedButNotAcknowledgedCanBeAcknowledgedSecondTime()
+    {
+        $this->checkUnacknowledgedJobMissingFromBufferCanBeAcknowledge(function () {
+            throw new Exception("Failed job");
+        });
+    }
+
+    /**
+     * @param string $finished_jobs_table
+     * @param callable $job_runner
+     */
+    private function checkDatabaseRecordIsMoved($finished_jobs_table, callable $job_runner)
+    {
         $uniqid = uniqid();
         $expected_job = [
             'name'    => "some-job-{$uniqid}",
@@ -145,30 +222,30 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
         );
 
         $this->worker_queue->push($expected_job['name'], $expected_job['params'], $expected_job['meta']);
-        $this->worker_queue->runNext(function () {});
 
-        $job = current($this->database->getAll('successful_jobs'));
-        $this->assertEquals(
-            [
-                'job_name' => $expected_job['name'],
-                'param'    => $expected_job['params']['value'],
-                'meta'     => $expected_job['meta']['buffered_job_id'],
-            ],
-            [
-                'job_name' => $job['job_name'],
-                'param'    => json_decode($job['job_params'], true)['value'],
-                'meta'     => $expected_job['meta']['buffered_job_id'],
-            ]
-        );
+        try {
+            $this->worker_queue->runNext($job_runner);
+        } finally {
+            $job = current($this->database->getAll($finished_jobs_table));
+            $this->assertEquals(
+                [
+                    'job_name' => $expected_job['name'],
+                    'param'    => $expected_job['params']['value'],
+                    'meta'     => $expected_job['meta']['buffered_job_id'],
+                ],
+                [
+                    'job_name' => $job['job_name'],
+                    'param'    => json_decode($job['job_params'], true)['value'],
+                    'meta'     => $expected_job['meta']['buffered_job_id'],
+                ]
+            );
+        }
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::runNext
-     * @covers ::<private>
-     * @expectedException Exception
+     * @param callable $job_runner
      */
-    public function testMessageForJobMarkedAsSuccessfulIsAcknowledged()
+    private function checkMessageForJobIsAcknowledged(callable $job_runner)
     {
         $uniqid = uniqid();
         $expected_job = [
@@ -180,18 +257,15 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
         $this->database->insert('queued_jobs', $expected_job['meta']['buffered_job_id'], []);
         $this->worker_queue->push($expected_job['name'], $expected_job['params'], $expected_job['meta']);
 
-        $this->worker_queue->runNext(function () {});
+        $this->worker_queue->runNext($job_runner);
         $this->message_bank->emulateReconnect();
         $this->worker_queue->runNext(function () {});
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::runNext
-     * @covers ::<private>
-     * @expectedException \Hodor\MessageQueue\Adapter\Testing\Exception\EmptyQueueException
+     * @param callable $job_runner
      */
-    public function testJobMarkedAsSuccessfulButNotAcknowledgedCanBeAcknowledgedSecondTime()
+    private function checkUnacknowledgedJobMissingFromBufferCanBeAcknowledge(callable $job_runner)
     {
         $uniqid = uniqid();
         $expected_job = [
@@ -203,9 +277,9 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
         $this->worker_queue->push($expected_job['name'], $expected_job['params'], $expected_job['meta']);
 
         try {
-            $this->worker_queue->runNext(function () {});
+            $this->worker_queue->runNext($job_runner);
         } catch (BufferedJobNotFoundException $exception) {
-            $this->worker_queue->runNext(function () {});
+            $this->worker_queue->runNext($job_runner);
         }
     }
 }
