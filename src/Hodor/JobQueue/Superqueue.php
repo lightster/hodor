@@ -2,11 +2,7 @@
 
 namespace Hodor\JobQueue;
 
-use DateTime;
 use Hodor\Database\Adapter\FactoryInterface;
-use Hodor\Database\AdapterInterface as DbAdapterInterface;
-use Hodor\Database\Exception\BufferedJobNotFoundException;
-use Hodor\MessageQueue\IncomingMessage;
 
 class Superqueue
 {
@@ -16,7 +12,7 @@ class Superqueue
     private $queue_manager;
 
     /**
-     * @var DbAdapterInterface
+     * @var FactoryInterface
      */
     private $database;
 
