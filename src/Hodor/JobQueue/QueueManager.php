@@ -116,35 +116,6 @@ class QueueManager
         return $this->worker_queues[$queue_name];
     }
 
-    /**
-     * @param  string $name
-     * @param  array  $params
-     * @param  array  $options
-     * @return WorkerQueue
-     */
-    public function getWorkerQueueNameForJob($name, array $params, array $options)
-    {
-        return $this->config->getJobQueueConfig()->getWorkerQueueName(
-            $name,
-            $params,
-            $options
-        );
-    }
-
-    /**
-     * @return JobOptionsValidator
-     */
-    public function getJobOptionsValidator()
-    {
-        if ($this->job_options_validator) {
-            return $this->job_options_validator;
-        }
-
-        $this->job_options_validator = new JobOptionsValidator($this->config->getWorkerConfig());
-
-        return $this->job_options_validator;
-    }
-
     public function beginBatch()
     {
         $this->getMessageQueueFactory()->beginBatch();
