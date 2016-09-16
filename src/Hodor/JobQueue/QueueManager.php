@@ -4,7 +4,6 @@ namespace Hodor\JobQueue;
 
 use Hodor\Database\Adapter\FactoryInterface;
 use Hodor\Database\AdapterFactory as DbAdapterFactory;
-use Hodor\JobQueue\JobOptions\Validator as JobOptionsValidator;
 use Hodor\MessageQueue\Queue as MessageQueue;
 use Hodor\MessageQueue\QueueFactory as MqFactory;
 
@@ -29,11 +28,6 @@ class QueueManager
      * @var QueueManager
      */
     private $mq_factory;
-
-    /**
-     * @var JobOptionsValidator
-     */
-    private $job_options_validator;
 
     /**
      * @var FactoryInterface
