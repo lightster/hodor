@@ -13,7 +13,7 @@ class JobQueue
     private $config_file;
 
     /**
-     * @var LoaderFactory
+     * @var Config
      */
     private $config;
 
