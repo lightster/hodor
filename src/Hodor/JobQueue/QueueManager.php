@@ -25,7 +25,7 @@ class QueueManager
     private $worker_queues = [];
 
     /**
-     * @var QueueManager
+     * @var MqFactory
      */
     private $mq_factory;
 
@@ -51,7 +51,7 @@ class QueueManager
             return $this->superqueue;
         }
 
-        $this->superqueue = new Superqueue($this);
+        $this->superqueue = new Superqueue($this->getDatabase()->getSuperqueuer(), $this);
 
         return $this->superqueue;
     }
@@ -128,7 +128,7 @@ class QueueManager
     /**
      * @return FactoryInterface
      */
-    public function getDatabase()
+    private function getDatabase()
     {
         if ($this->database) {
             return $this->database;
