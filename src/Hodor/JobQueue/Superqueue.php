@@ -3,6 +3,7 @@
 namespace Hodor\JobQueue;
 
 use Hodor\Database\Adapter\FactoryInterface;
+use Hodor\Database\Adapter\SuperqueuerInterface;
 
 class Superqueue
 {
@@ -22,10 +23,12 @@ class Superqueue
     private $jobs_queued = 0;
 
     /**
+     * @param SuperqueuerInterface $database
      * @param QueueManager $queue_manager
      */
-    public function __construct(QueueManager $queue_manager)
+    public function __construct(SuperqueuerInterface $database, QueueManager $queue_manager)
     {
+        $this->database = $database;
         $this->queue_manager = $queue_manager;
     }
 
@@ -34,7 +37,7 @@ class Superqueue
      */
     public function requestProcessLock()
     {
-        return $this->getDatabase()->getSuperqueuer()->requestAdvisoryLock('superqueuer', 'default');
+        return $this->database->requestAdvisoryLock('superqueuer', 'default');
     }
 
     /**
@@ -42,7 +45,7 @@ class Superqueue
      */
     public function queueJobsFromDatabaseToWorkerQueue()
     {
-        $job_generator = $this->getDatabase()->getSuperqueuer()->getJobsToRunGenerator();
+        $job_generator = $this->database->getJobsToRunGenerator();
         $total_jobs_queued = 0;
         foreach ($job_generator as $job) {
             $this->batchJob($job);
@@ -59,14 +62,14 @@ class Superqueue
      */
     private function batchJob(array $job)
     {
-        $db = $this->getDatabase();
+        $db = $this->database;
 
         if (0 === $this->jobs_queued) {
             $this->queue_manager->beginBatch();
-            $db->getSuperqueuer()->beginBatch();
+            $db->beginBatch();
         }
 
-        $meta = $db->getSuperqueuer()->markJobAsQueued($job);
+        $meta = $db->markJobAsQueued($job);
 
         $queue = $this->queue_manager->getWorkerQueue($job['queue_name']);
         $queue->push($job['job_name'], $job['job_params'], $meta);
@@ -88,7 +91,7 @@ class Superqueue
         // the database transaction needs to be committed before the
         // message is pushed to Rabbit MQ to prevent jobs from being
         // processed by workers before they have been moved to buffered_jobs
-        $this->getDatabase()->getSuperqueuer()->publishBatch();
+        $this->database->publishBatch();
         $this->queue_manager->publishBatch();
 
         $this->jobs_queued = 0;
@@ -100,19 +103,5 @@ class Superqueue
     private function getBatchSize()
     {
         return 250;
-    }
-
-    /**
-     * @return FactoryInterface
-     */
-    private function getDatabase()
-    {
-        if ($this->database) {
-            return $this->database;
-        }
-
-        $this->database = $this->queue_manager->getDatabase();
-
-        return $this->database;
     }
 }
