@@ -25,16 +25,18 @@ class Factory implements FactoryInterface
     private $producers = [];
 
     /**
-     * @var MessageBank[]
+     * @var MessageBankFactory
      */
-    private $message_banks = [];
+    private $message_bank_factory;
 
     /**
      * @param ConfigInterface $config
+     * @param MessageBankFactory $message_bank_factory
      */
-    public function __construct(ConfigInterface $config)
+    public function __construct(ConfigInterface $config, MessageBankFactory $message_bank_factory = null)
     {
         $this->config = $config;
+        $this->message_bank_factory = $message_bank_factory ?: new MessageBankFactory($config);
     }
 
     /**
@@ -73,12 +75,6 @@ class Factory implements FactoryInterface
      */
     private function getMessageBank($queue_key)
     {
-        if (!empty($this->message_banks[$queue_key])) {
-            return $this->message_banks[$queue_key];
-        }
-
-        $this->message_banks[$queue_key] = new MessageBank($this->config->getQueueConfig($queue_key));
-
-        return $this->message_banks[$queue_key];
+        return $this->message_bank_factory->getMessageBank($queue_key);
     }
 }
