@@ -36,7 +36,9 @@ class Factory implements FactoryInterface
     public function __construct(ConfigInterface $config, MessageBankFactory $message_bank_factory = null)
     {
         $this->config = $config;
-        $this->message_bank_factory = $message_bank_factory ?: new MessageBankFactory($config);
+        $this->message_bank_factory = $message_bank_factory ?: new MessageBankFactory();
+
+        $this->message_bank_factory->setConfig($config);
     }
 
     /**
