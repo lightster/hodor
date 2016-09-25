@@ -2,6 +2,7 @@
 
 namespace Hodor\MessageQueue\Adapter\Testing;
 
+use Exception;
 use Hodor\MessageQueue\Adapter\ConfigInterface;
 
 class MessageBankFactory
@@ -17,9 +18,24 @@ class MessageBankFactory
     private $message_banks = [];
 
     /**
+     * @return ConfigInterface
+     * @throws Exception
+     */
+    public function getConfig()
+    {
+        if (!$this->config) {
+            throw new Exception(
+                'A ConfigInterface must be provided to the MessageBankFactory via setConfig()'
+            );
+        }
+
+        return $this->config;
+    }
+
+    /**
      * @param ConfigInterface $config
      */
-    public function __construct(ConfigInterface $config)
+    public function setConfig(ConfigInterface $config)
     {
         $this->config = $config;
     }
@@ -34,7 +50,7 @@ class MessageBankFactory
             return $this->message_banks[$queue_key];
         }
 
-        $this->message_banks[$queue_key] = new MessageBank($this->config->getQueueConfig($queue_key));
+        $this->message_banks[$queue_key] = new MessageBank($this->getConfig()->getQueueConfig($queue_key));
 
         return $this->message_banks[$queue_key];
     }
