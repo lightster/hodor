@@ -27,9 +27,7 @@ class ConfigProvider
      */
     public function getConfigAdapter(array $queues, array $config_overrides = [])
     {
-        $config = new Config(function () {
-            return $this->test_case->getMock('Hodor\MessageQueue\Adapter\FactoryInterface');
-        });
+        $config = new Config([]);
         foreach ($queues as $queue_key => $queue_config) {
             $config->addQueueConfig($queue_key, array_merge($queue_config, $config_overrides));
         }

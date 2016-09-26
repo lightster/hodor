@@ -87,7 +87,7 @@ class Config
 
         $this->message_queue_config = new MessageQueueConfig(
             $this->getQueueConfig(),
-            $this->getOption('adapter_factory')
+            $this->getOption('message_queue_factory', [])
         );
 
         return $this->message_queue_config;

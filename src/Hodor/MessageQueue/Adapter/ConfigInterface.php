@@ -5,9 +5,9 @@ namespace Hodor\MessageQueue\Adapter;
 interface ConfigInterface
 {
     /**
-     * @return FactoryInterface
+     * @return string
      */
-    public function getAdapterFactory();
+    public function getAdapterFactoryConfig();
 
     /**
      * @param string $queue_name

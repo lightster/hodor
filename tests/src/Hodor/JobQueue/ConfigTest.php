@@ -166,9 +166,9 @@ class ConfigTest extends PHPUnit_Framework_TestCase
             ]
         );
 
-        $this->assertInstanceOf(
-            'Hodor\MessageQueue\Adapter\Testing\Factory',
-            $config->getMessageQueueConfig()->getAdapterFactory()
+        $this->assertEquals(
+            ['type' => 'testing'],
+            $config->getMessageQueueConfig()->getAdapterFactoryConfig()
         );
     }
 
@@ -270,7 +270,9 @@ class ConfigTest extends PHPUnit_Framework_TestCase
                         'dsn'  => 'host=localhost user=test_hodor dbname=test_hodor',
                     ],
                 ],
-                'adapter_factory' => 'testing',
+                'message_queue_factory' => [
+                    'type' => 'testing'
+                ],
                 'queue_defaults' => [
                     'host' => 'queue-default-host',
                 ],

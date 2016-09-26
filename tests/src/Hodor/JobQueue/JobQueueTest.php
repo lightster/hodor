@@ -3,6 +3,9 @@
 namespace Hodor\JobQueue;
 
 use Exception;
+use Hodor\MessageQueue\Adapter\FactoryInterface;
+use Hodor\MessageQueue\Adapter\Testing\MessageBankFactory;
+use Hodor\MessageQueue\AdapterFactory;
 use Hodor\MessageQueue\IncomingMessage;
 use PHPUnit_Framework_TestCase;
 
@@ -73,9 +76,9 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
      */
     public function testPushAppendsJobsToBufferQueue()
     {
-        $config = $this->setupTestConfig();
+        $mq_adapter = $this->setupMqAdapter();
         $expected_job = $this->queueJob();
-        $this->assertBufferedJobEquals($expected_job, $config);
+        $this->assertBufferedJobEquals($expected_job, $mq_adapter);
     }
 
     /**
@@ -86,13 +89,13 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
      */
     public function testBatchedJobIsPublishedIfAndOnlyIfBatchIsPublished()
     {
-        $config = $this->setupTestConfig();
+        $mq_adapter = $this->setupMqAdapter();
 
         $this->job_queue->beginBatch();
         $expected_job = $this->queueJob();
 
         try {
-            $consumer = $config->getMessageQueueConfig()->getAdapterFactory()->getConsumer('bufferer-default');
+            $consumer = $mq_adapter->getConsumer('bufferer-default');
             $consumer->consumeMessage(function () {
                 $this->fail('A message should not be available for consuming until after batch is published.');
             });
@@ -102,7 +105,7 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
 
         $this->job_queue->publishBatch();
 
-        $this->assertBufferedJobEquals($expected_job, $config);
+        $this->assertBufferedJobEquals($expected_job, $mq_adapter);
     }
 
     /**
@@ -114,22 +117,25 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
      */
     public function testBatchedJobIsDiscardedIfBatchIsDiscarded()
     {
-        $config = $this->setupTestConfig();
+        $mq_adapter = $this->setupMqAdapter();
 
         $this->job_queue->beginBatch();
         $expected_job = $this->queueJob();
         $this->job_queue->discardBatch();
 
-        $this->assertBufferedJobEquals($expected_job, $config);
+        $this->assertBufferedJobEquals($expected_job, $mq_adapter);
     }
 
     /**
-     * @return Config
+     * @return FactoryInterface
      */
-    private function setupTestConfig()
+    private function setupMqAdapter()
     {
         $config = new Config(__FILE__, [
-            'adapter_factory' => 'testing',
+            'message_queue_factory' => [
+                'type' => 'testing',
+                'message_bank_factory' => new MessageBankFactory(),
+            ],
             'superqueue' => ['database' => ['type' => 'testing']],
             'buffer_queues'   => [
                 'default' => [
@@ -143,7 +149,7 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
 
         $this->job_queue->setConfig($config);
 
-        return $config;
+        return (new AdapterFactory())->getAdapter($config->getMessageQueueConfig());
     }
 
     /**
@@ -168,11 +174,11 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
 
     /**
      * @param array $expected_job
-     * @param Config $config
+     * @param FactoryInterface $mq_adapter
      */
-    private function assertBufferedJobEquals(array $expected_job, Config $config)
+    private function assertBufferedJobEquals(array $expected_job, FactoryInterface $mq_adapter)
     {
-        $consumer = $config->getMessageQueueConfig()->getAdapterFactory()->getConsumer('bufferer-default');
+        $consumer = $mq_adapter->getConsumer('bufferer-default');
         $consumer->consumeMessage(function (IncomingMessage $message) use ($expected_job) {
             $received_job = $message->getContent();
             $this->assertEquals($expected_job, [
