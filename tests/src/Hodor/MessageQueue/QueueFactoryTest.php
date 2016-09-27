@@ -138,12 +138,10 @@ class QueueFactoryTest extends PHPUnit_Framework_TestCase
     {
         $config_provider = new ConfigProvider($this);
 
-        $config = new Config(function (Config $config) {
-            return new Factory($config);
-        });
+        $config = new Config([]);
         $config->addQueueConfig('fast_jobs', $config_provider->getQueueConfig());
         $config->addQueueConfig('slow_jobs', $config_provider->getQueueConfig());
 
-        return new QueueFactory($config);
+        return new QueueFactory(new Factory($config));
     }
 }

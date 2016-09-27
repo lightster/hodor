@@ -2,16 +2,10 @@
 
 namespace Hodor\MessageQueue;
 
-use Hodor\MessageQueue\Adapter\ConfigInterface;
 use Hodor\MessageQueue\Adapter\FactoryInterface;
 
 class QueueFactory
 {
-    /**
-     * @var ConfigInterface
-     */
-    private $config;
-
     /**
      * @var FactoryInterface
      */
@@ -28,11 +22,11 @@ class QueueFactory
     private $is_in_batch = false;
 
     /**
-     * @param ConfigInterface $config
+     * @param FactoryInterface $adapter_factory
      */
-    public function __construct(ConfigInterface $config)
+    public function __construct(FactoryInterface $adapter_factory)
     {
-        $this->config = $config;
+        $this->adapter_factory = $adapter_factory;
     }
 
     /**
@@ -85,12 +79,6 @@ class QueueFactory
      */
     private function getAdapterFactory()
     {
-        if ($this->adapter_factory) {
-            return $this->adapter_factory;
-        }
-
-        $this->adapter_factory = $this->config->getAdapterFactory();
-
         return $this->adapter_factory;
     }
 }

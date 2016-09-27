@@ -4,6 +4,7 @@ namespace Hodor\JobQueue;
 
 use Hodor\Database\Adapter\FactoryInterface;
 use Hodor\Database\AdapterFactory as DbAdapterFactory;
+use Hodor\MessageQueue\AdapterFactory;
 use Hodor\MessageQueue\Queue as MessageQueue;
 use Hodor\MessageQueue\QueueFactory as MqFactory;
 
@@ -160,7 +161,9 @@ class QueueManager
             return $this->mq_factory;
         }
 
-        $this->mq_factory = new MqFactory($this->config->getMessageQueueConfig());
+        $mq_adapter_factory = new AdapterFactory();
+        $mq_adapter = $mq_adapter_factory->getAdapter($this->config->getMessageQueueConfig());
+        $this->mq_factory = new MqFactory($mq_adapter);
 
         return $this->mq_factory;
     }

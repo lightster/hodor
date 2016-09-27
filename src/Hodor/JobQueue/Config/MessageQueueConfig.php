@@ -3,22 +3,14 @@
 namespace Hodor\JobQueue\Config;
 
 use Exception;
-use Hodor\MessageQueue\Adapter\Amqp\Factory as AmqpFactory;
 use Hodor\MessageQueue\Adapter\ConfigInterface;
-use Hodor\MessageQueue\Adapter\FactoryInterface;
-use Hodor\MessageQueue\Adapter\Testing\Factory as TestingFactory;
 
 class MessageQueueConfig implements ConfigInterface
 {
     /**
      * @var string
      */
-    private $adapter_factory_type;
-
-    /**
-     * @var FactoryInterface
-     */
-    private $adapter_factory;
+    private $adapter_factory_config;
 
     /**
      * @var QueueConfig
@@ -27,26 +19,23 @@ class MessageQueueConfig implements ConfigInterface
 
     /**
      * @param QueueConfig $queue_config
-     * @param string $adapter_factory_type
+     * @param array $adapter_factory_config
      */
-    public function __construct(QueueConfig $queue_config, $adapter_factory_type = null)
+    public function __construct(QueueConfig $queue_config, array $adapter_factory_config = [])
     {
-        $this->adapter_factory_type = $adapter_factory_type ?: 'amqp';
+        $this->adapter_factory_config = array_merge(
+            ['type' => 'amqp'],
+            $adapter_factory_config
+        );
         $this->queue_config = $queue_config;
     }
 
     /**
-     * @return FactoryInterface
+     * @return array
      */
-    public function getAdapterFactory()
+    public function getAdapterFactoryConfig()
     {
-        if ($this->adapter_factory) {
-            return $this->adapter_factory;
-        }
-
-        $this->adapter_factory = $this->generateAdapterFactory();
-
-        return $this->adapter_factory;
+        return $this->adapter_factory_config;
     }
 
     /**
@@ -57,17 +46,5 @@ class MessageQueueConfig implements ConfigInterface
     public function getQueueConfig($queue_name)
     {
         return $this->queue_config->getMessageQueueConfig($queue_name);
-    }
-
-    /**
-     * @return FactoryInterface
-     */
-    private function generateAdapterFactory()
-    {
-        if ('testing' === $this->adapter_factory_type) {
-            return new TestingFactory($this);
-        }
-
-        return new AmqpFactory($this);
     }
 }

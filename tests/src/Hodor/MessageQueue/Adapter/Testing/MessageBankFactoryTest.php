@@ -17,7 +17,7 @@ class MessageBankFactoryTest extends PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $config = new Config(function () {});
+        $config = new Config([]);
         $config->addQueueConfig('test-queue', ['workers_per_server' => 5]);
 
         $this->message_bank_factory = new MessageBankFactory();

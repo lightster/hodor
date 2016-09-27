@@ -3,6 +3,7 @@
 namespace Hodor\JobQueue\Config;
 
 use Exception;
+use Hodor\MessageQueue\Adapter\Testing\MessageBankFactory;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -50,43 +51,35 @@ class MessageQueueConfigTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::generateAdapterFactory
-     * @covers ::getAdapterFactory
+     * @covers ::getAdapterFactoryConfig
      * @covers ::<private>
      */
     public function testAdapterFactoryCanBeRetrieved()
     {
-        $this->assertInstanceOf(
-            'Hodor\MessageQueue\Adapter\Amqp\Factory',
-            (new MessageQueueConfig(new QueueConfig([])))->getAdapterFactory()
+        $this->assertEquals(
+            ['type' => 'amqp'],
+            (new MessageQueueConfig(new QueueConfig([])))->getAdapterFactoryConfig()
         );
     }
 
     /**
-     * @covers ::generateAdapterFactory
-     * @covers ::getAdapterFactory
-     * @covers ::<private>
-     */
-    public function testAdapterFactoryIsReused()
-    {
-        $config = new MessageQueueConfig(new QueueConfig([]));
-
-        $this->assertSame(
-            $config->getAdapterFactory(),
-            $config->getAdapterFactory()
-        );
-    }
-
-    /**
-     * @covers ::generateAdapterFactory
-     * @covers ::getAdapterFactory
+     * @covers ::getAdapterFactoryConfig
      * @covers ::<private>
      */
     public function testTestingAdapterFactoryCanBeRetrieved()
     {
-        $this->assertInstanceOf(
-            'Hodor\MessageQueue\Adapter\Testing\Factory',
-            (new MessageQueueConfig(new QueueConfig([]), 'testing'))->getAdapterFactory()
+        $message_bank_factory = new MessageBankFactory();
+
+        $adapter_factory_config = [
+            'type'                 => 'testing',
+            'message_bank_factory' => $message_bank_factory,
+        ];
+        $message_queue_config = new MessageQueueConfig(new QueueConfig([]), $adapter_factory_config);
+        $message_bank_factory->setConfig($message_queue_config);
+
+        $this->assertEquals(
+            $adapter_factory_config,
+            $message_queue_config->getAdapterFactoryConfig()
         );
     }
 

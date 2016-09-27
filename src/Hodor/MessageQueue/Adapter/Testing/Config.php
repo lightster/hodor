@@ -3,15 +3,14 @@
 namespace Hodor\MessageQueue\Adapter\Testing;
 
 use Hodor\MessageQueue\Adapter\ConfigInterface;
-use Hodor\MessageQueue\Adapter\FactoryInterface;
 use OutOfBoundsException;
 
 class Config implements ConfigInterface
 {
     /**
-     * @var FactoryInterface
+     * @var array
      */
-    private $adapter_factory;
+    private $adapter_factory_config;
 
     /**
      * @var array
@@ -19,31 +18,19 @@ class Config implements ConfigInterface
     private $queues = [];
 
     /**
-     * @var callable
+     * @param array $adapter_factory_config
      */
-    private $adapter_factory_generator;
-
-    /**
-     * @param callable $adapter_factory_generator
-     */
-    public function __construct(callable $adapter_factory_generator)
+    public function __construct(array $adapter_factory_config)
     {
-        $this->adapter_factory_generator = $adapter_factory_generator;
+        $this->adapter_factory_config = $adapter_factory_config;
     }
 
     /**
-     * @return FactoryInterface
+     * @return array
      */
-    public function getAdapterFactory()
+    public function getAdapterFactoryConfig()
     {
-        if ($this->adapter_factory) {
-            return $this->adapter_factory;
-        }
-
-        $adapter_factory_generator = $this->adapter_factory_generator;
-        $this->adapter_factory = $adapter_factory_generator($this);
-
-        return $this->adapter_factory;
+        return $this->adapter_factory_config;
     }
 
     /**
