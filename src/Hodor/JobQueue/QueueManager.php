@@ -21,9 +21,9 @@ class QueueManager
     private $buffer_queues = [];
 
     /**
-     * @var array
+     * @var WorkerQueueFactory
      */
-    private $worker_queues = [];
+    private $worker_queue_factory;
 
     /**
      * @var MqFactory
@@ -94,21 +94,20 @@ class QueueManager
     }
 
     /**
-     * @param  string $queue_name [description]
-     * @return WorkerQueue
+     * @return WorkerQueueFactory
      */
-    public function getWorkerQueue($queue_name)
+    public function getWorkerQueueFactory()
     {
-        if (isset($this->worker_queues[$queue_name])) {
-            return $this->worker_queues[$queue_name];
+        if ($this->worker_queue_factory) {
+            return $this->worker_queue_factory;
         }
 
-        $this->worker_queues[$queue_name] = new WorkerQueue(
-            $this->getMessageQueue("worker-{$queue_name}"),
+        $this->worker_queue_factory = new WorkerQueueFactory(
+            $this->getMessageQueueFactory(),
             $this->getDatabase()->getDequeuer()
         );
 
-        return $this->worker_queues[$queue_name];
+        return $this->worker_queue_factory;
     }
 
     public function beginBatch()
