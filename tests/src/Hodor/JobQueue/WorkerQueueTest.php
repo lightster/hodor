@@ -8,11 +8,14 @@ use Hodor\Database\Adapter\Testing\Dequeuer;
 use Hodor\Database\Exception\BufferedJobNotFoundException;
 use Hodor\MessageQueue\Adapter\ConsumerInterface;
 use Hodor\MessageQueue\Adapter\ProducerInterface;
+use Hodor\MessageQueue\Adapter\Testing\Config as TestingConfig;
 use Hodor\MessageQueue\Adapter\Testing\Consumer;
+use Hodor\MessageQueue\Adapter\Testing\Factory;
 use Hodor\MessageQueue\Adapter\Testing\MessageBank;
+use Hodor\MessageQueue\Adapter\Testing\MessageBankFactory;
 use Hodor\MessageQueue\Adapter\Testing\Producer;
 use Hodor\MessageQueue\IncomingMessage;
-use Hodor\MessageQueue\Queue;
+use Hodor\MessageQueue\QueueFactory;
 use PHPUnit_Framework_TestCase;
 use UnexpectedValueException;
 
@@ -37,9 +40,9 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
     private $producer;
 
     /**
-     * @var Queue
+     * @var WorkerQueueFactory
      */
-    private $queue;
+    private $worker_queue_factory;
 
     /**
      * @var WorkerQueue
@@ -55,21 +58,28 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->message_bank = new MessageBank();
+        $message_bank_factory = new MessageBankFactory();
+        $config = new TestingConfig([]);
+        $config->addQueueConfig('worker-default-worker', ['workers_per_server' => 5]);
+        $message_bank_factory->setConfig($config);
+        $mq_factory = new QueueFactory(new Factory($config, $message_bank_factory));
+
+        $this->message_bank = $message_bank_factory->getMessageBank('worker-default-worker');
         $this->consumer = new Consumer($this->message_bank);
         $this->producer = new Producer($this->message_bank);
-        $this->queue = new Queue($this->consumer, $this->producer);
         $this->database = new Database();
-        $this->worker_queue = new WorkerQueue(
-            $this->queue,
-            new Dequeuer($this->database)
-        );
+
+        $dequeuer = new Dequeuer($this->database);
+        $this->worker_queue_factory = new WorkerQueueFactory($mq_factory, $dequeuer);
+
+        $this->worker_queue = $this->worker_queue_factory->getWorkerQueue('default-worker');
     }
 
     /**
      * @covers ::__construct
      * @covers ::push
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
      */
     public function testJobCanBeQueued()
     {
@@ -95,6 +105,7 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
      */
     public function testJobNameAndParamsArePassedToJobRunner()
     {
@@ -126,6 +137,7 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
      */
     public function testDatabaseRecordForJobMarkedAsSuccessfulIsMovedToSuccessfulJobs()
     {
@@ -139,6 +151,7 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException Exception
      */
     public function testMessageForJobMarkedAsSuccessfulIsAcknowledged()
@@ -150,6 +163,7 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException \Hodor\MessageQueue\Adapter\Testing\Exception\EmptyQueueException
      */
     public function testJobMarkedAsSuccessfulButNotAcknowledgedCanBeAcknowledgedSecondTime()
@@ -161,6 +175,7 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException UnexpectedValueException
      */
     public function testDatabaseRecordForJobMarkedAsFailedIsMovedToFailedJobs()
@@ -177,6 +192,7 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException UnexpectedValueException
      */
     public function testMessageForJobMarkedAsFailedIsAcknowledged()
@@ -190,6 +206,7 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException \Hodor\MessageQueue\Adapter\Testing\Exception\EmptyQueueException
      */
     public function testJobMarkedAsFailedButNotAcknowledgedCanBeAcknowledgedSecondTime()
@@ -197,6 +214,17 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
         $this->checkUnacknowledgedJobMissingFromBufferCanBeAcknowledge(function () {
             throw new Exception("Failed job");
         });
+    }
+
+    /**
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
+     */
+    public function testWorkerQueueIsReused()
+    {
+        $this->assertSame(
+            $this->worker_queue,
+            $this->worker_queue_factory->getWorkerQueue('default-worker')
+        );
     }
 
     /**
