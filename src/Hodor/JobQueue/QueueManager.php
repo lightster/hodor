@@ -52,7 +52,11 @@ class QueueManager
             return $this->superqueue;
         }
 
-        $this->superqueue = new Superqueue($this->getDatabase()->getSuperqueuer(), $this);
+        $this->superqueue = new Superqueue(
+            $this->getDatabase()->getSuperqueuer(),
+            $this->getWorkerQueueFactory(),
+            $this
+        );
 
         return $this->superqueue;
     }

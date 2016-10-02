@@ -18,17 +18,27 @@ class Superqueue
     private $database;
 
     /**
+     * @var WorkerQueueFactory
+     */
+    private $worker_queue_factory;
+
+    /**
      * @var int
      */
     private $jobs_queued = 0;
 
     /**
      * @param SuperqueuerInterface $database
+     * @param WorkerQueueFactory $worker_queue_factory
      * @param QueueManager $queue_manager
      */
-    public function __construct(SuperqueuerInterface $database, QueueManager $queue_manager)
-    {
+    public function __construct(
+        SuperqueuerInterface $database,
+        WorkerQueueFactory $worker_queue_factory,
+        QueueManager $queue_manager
+    ) {
         $this->database = $database;
+        $this->worker_queue_factory = $worker_queue_factory;
         $this->queue_manager = $queue_manager;
     }
 
@@ -71,7 +81,7 @@ class Superqueue
 
         $meta = $db->markJobAsQueued($job);
 
-        $queue = $this->queue_manager->getWorkerQueueFactory()->getWorkerQueue($job['queue_name']);
+        $queue = $this->worker_queue_factory->getWorkerQueue($job['queue_name']);
         $queue->push($job['job_name'], $job['job_params'], $meta);
 
         ++$this->jobs_queued;
