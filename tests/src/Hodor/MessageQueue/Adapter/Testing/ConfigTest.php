@@ -52,6 +52,7 @@ class ConfigTest extends PHPUnit_Framework_TestCase
     public function queueConfigProvider()
     {
         return [
+            ['no-custom-params', []],
             ['default-queue-key', ['queue_name' => 'default-queue-name', 'host' => 'localhost']],
             [uniqid(), ['queue_name' => uniqid(), 'host' => uniqid()]],
         ];
