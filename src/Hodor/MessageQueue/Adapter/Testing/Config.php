@@ -48,7 +48,7 @@ class Config implements ConfigInterface
      */
     public function getQueueConfig($queue_key)
     {
-        if (empty($this->queues[$queue_key])) {
+        if (!array_key_exists($queue_key, $this->queues)) {
             throw new OutOfBoundsException("Queue with '{$queue_key}' not found.");
         }
 
