@@ -49,7 +49,28 @@ class Queue
             return;
         }
 
+        $this->publishMessage($message);
+    }
+
+    /**
+     * @param  mixed $message
+     */
+    public function publishMessage($message)
+    {
         $this->producer->produceMessage(new OutgoingMessage($message));
+    }
+
+    /**
+     * @param array $raw_messages
+     */
+    public function publishMessageBatch(array $raw_messages)
+    {
+        $messages = [];
+        foreach ($raw_messages as $message) {
+            $messages[] = new OutgoingMessage($message);
+        }
+
+        $this->producer->produceMessageBatch($messages);
     }
 
     /**
