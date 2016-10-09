@@ -4,7 +4,6 @@ namespace Hodor\MessageQueue\Adapter\Amqp;
 
 use Hodor\MessageQueue\Adapter\ProducerInterface;
 use Hodor\MessageQueue\OutgoingMessage;
-use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use RuntimeException;
 
@@ -21,7 +20,7 @@ class Producer implements ProducerInterface
     private $channel_factory;
 
     /**
-     * @var AMQPChannel
+     * @var Channel
      */
     private $channel;
 

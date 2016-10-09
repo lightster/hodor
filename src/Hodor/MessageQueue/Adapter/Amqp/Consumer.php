@@ -4,7 +4,6 @@ namespace Hodor\MessageQueue\Adapter\Amqp;
 
 use Hodor\MessageQueue\Adapter\ConsumerInterface;
 use Hodor\MessageQueue\IncomingMessage as MqMessage;
-use PhpAmqpLib\Channel\AMQPChannel;
 
 class Consumer implements ConsumerInterface
 {
@@ -19,7 +18,7 @@ class Consumer implements ConsumerInterface
     private $channel_factory;
 
     /**
-     * @var AMQPChannel
+     * @var Channel
      */
     private $channel;
 
