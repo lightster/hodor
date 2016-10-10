@@ -40,25 +40,25 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::push
+     * @covers ::getQueue
      * @covers ::<private>
      * @expectedException Exception
      */
     public function testQueueingAMessageForANonExistentQueueThrowsAnException()
     {
-        $this->batch_manager->push('non-existent-queue-name', 1);
+        $this->batch_manager->getQueue('non-existent-queue-name');
     }
 
     /**
      * @covers ::__construct
-     * @covers ::push
+     * @covers ::getQueue
      * @covers ::<private>
      */
     public function testMessagesCanBeProducedOutsideOfBatch()
     {
         $expected = ['name' => __METHOD__, 'number' => 1];
 
-        $this->batch_manager->push('some-queue-name', $expected);
+        $this->batch_manager->getQueue('some-queue-name')->push($expected);
 
         $queue = $this->queue_factory->getQueue('some-queue-name');
         $queue->consume(function (IncomingMessage $message) use ($expected) {
@@ -69,15 +69,16 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::push
+     * @covers ::getQueue
      * @covers ::beginBatch
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testMessagesPushedInsideOfBatchAreNotImmediatelyProduced()
     {
         $this->batch_manager->beginBatch();
         for ($i = 1; $i <= 2; $i++) {
-            $this->batch_manager->push('some-queue-name', $i);
+            $this->batch_manager->getQueue('some-queue-name')->push($i);
         }
 
         $queue = $this->queue_factory->getQueue('some-queue-name');
@@ -88,8 +89,9 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::push
+     * @covers ::getQueue
      * @covers ::beginBatch
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testStartingABatchWhileABatchIsAlreadyStartedThrowsAnException()
@@ -100,15 +102,16 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::push
+     * @covers ::getQueue
      * @covers ::beginBatch
      * @covers ::publishBatch
+     * @covers ::<private>
      */
     public function testMessagesPushedInsideOfBatchAreAvailableAfterBatchIsPublished()
     {
         $this->batch_manager->beginBatch();
         for ($i = 1; $i <= 2; $i++) {
-            $this->batch_manager->push('some-queue-name', $i);
+            $this->batch_manager->getQueue('some-queue-name')->push($i);
         }
         $this->batch_manager->publishBatch();
 
@@ -128,16 +131,17 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::push
+     * @covers ::getQueue
      * @covers ::beginBatch
      * @covers ::publishBatch
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testNoMessagesAreLeftToProduceAfterBatchIsPublished()
     {
         $this->batch_manager->beginBatch();
         for ($i = 1; $i <= 2; $i++) {
-            $this->batch_manager->push('some-queue-name', $i);
+            $this->batch_manager->getQueue('some-queue-name')->push($i);
         }
         $this->batch_manager->publishBatch();
 
@@ -157,6 +161,7 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::beginBatch
      * @covers ::publishBatch
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testPublishingABatchAfterItWasAlreadyPublishedThrowsAnException()
@@ -170,6 +175,7 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::beginBatch
      * @covers ::publishBatch
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testANewBatchCanBeStartedAfterABatchHasAlreadyBeenPublished()
@@ -178,7 +184,7 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
         $this->batch_manager->publishBatch();
         $this->batch_manager->beginBatch();
 
-        $this->batch_manager->push('some-queue-name', 1);
+        $this->batch_manager->getQueue('some-queue-name')->push(1);
 
         $queue = $this->queue_factory->getQueue('some-queue-name');
         $queue->consume(function () {
@@ -187,15 +193,16 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
-     * @covers ::push
+     * @covers ::getQueue
      * @covers ::beginBatch
      * @covers ::discardBatch
+     * @covers ::<private>
      * @expectedException Exception
      */
     public function testBatchedMessagesCanBeDiscarded()
     {
         $this->batch_manager->beginBatch();
-        $this->batch_manager->push('some-queue-name', 1);
+        $this->batch_manager->getQueue('some-queue-name')->push(1);
         $this->batch_manager->discardBatch();
 
         $queue = $this->queue_factory->getQueue('some-queue-name');
@@ -265,7 +272,7 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
         $this->batch_manager->discardBatch();
         $this->batch_manager->beginBatch();
 
-        $this->batch_manager->push('some-queue-name', 1);
+        $this->batch_manager->getQueue('some-queue-name')->push(1);
 
         $queue = $this->queue_factory->getQueue('some-queue-name');
         $queue->consume(function () {
