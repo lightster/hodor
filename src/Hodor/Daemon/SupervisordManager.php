@@ -135,7 +135,7 @@ class SupervisordManager implements ManagerInterface
 
         return array_replace_recursive(
             $defaults,
-            $this->config->getDaemonConfig('daemon', [])
+            $this->config->getDaemonConfig()
         );
     }
 
