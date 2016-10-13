@@ -335,46 +335,6 @@ class QueueTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::__construct
-     * @covers ::publishMessage
-     * @depends testMessageCanBeConsumed
-     */
-    public function testIndividualMessageCanBePublished()
-    {
-        $message_bank = new MessageBank();
-        $queue = $this->getQueue($message_bank);
-
-        $expected = ['name' => __METHOD__, 'number' => 1];
-
-        $queue->publishMessage($expected);
-        $queue->consume(function (IncomingMessage $message) use ($expected) {
-            $this->assertSame($expected, $message->getContent());
-            $message->acknowledge();
-        });
-    }
-
-    /**
-     * @covers ::__construct
-     * @covers ::publishMessageBatch
-     * @depends testMessageCanBeConsumed
-     */
-    public function testMessageBatchesCanBePublished()
-    {
-        $message_bank = new MessageBank(['max_messages_per_consume' => 2]);
-        $queue = $this->getQueue($message_bank);
-
-        $queue->publishMessageBatch([1, 2]);
-
-        $count = 0;
-        $queue->consume(function (IncomingMessage $message) use (&$count) {
-            ++$count;
-            $message->acknowledge();
-        });
-
-        $this->assertSame(2, $count);
-    }
-
-    /**
      * @param MessageBank $message_bank
      * @return Queue
      */

@@ -3,13 +3,14 @@
 namespace Hodor\MessageQueue;
 
 use Exception;
+use Hodor\MessageQueue\Adapter\FactoryInterface;
 
 class BatchManager
 {
     /**
-     * @var QueueFactory
+     * @var FactoryInterface
      */
-    private $queue_factory;
+    private $adapter_factory;
 
     /**
      * @var bool
@@ -27,11 +28,11 @@ class BatchManager
     private $batches = [];
 
     /**
-     * @param QueueFactory $queue_factory
+     * @param FactoryInterface $adapter_factory
      */
-    public function __construct(QueueFactory $queue_factory)
+    public function __construct(FactoryInterface $adapter_factory)
     {
-        $this->queue_factory = $queue_factory;
+        $this->adapter_factory = $adapter_factory;
     }
 
     /**
@@ -69,7 +70,7 @@ class BatchManager
         }
 
         foreach ($this->batches as $queue_name => $batch) {
-            $this->queue_factory->getQueue($queue_name)->publishMessageBatch($batch);
+            $this->adapter_factory->getProducer($queue_name)->produceMessageBatch($batch);
         }
 
         $this->is_in_batch = false;
@@ -93,11 +94,11 @@ class BatchManager
     private function push($queue_name, $message)
     {
         if ($this->is_in_batch) {
-            $this->batches[$queue_name][] = $message;
+            $this->batches[$queue_name][] = new OutgoingMessage($message);
             return;
         }
 
-        $this->queue_factory->getQueue($queue_name)->publishMessage($message);
+        $this->adapter_factory->getProducer($queue_name)->produceMessage(new OutgoingMessage($message));
     }
 
     /**
@@ -105,6 +106,6 @@ class BatchManager
      */
     private function checkQueueName($queue_name)
     {
-        $this->queue_factory->getQueue($queue_name);
+        $this->adapter_factory->getProducer($queue_name);
     }
 }
