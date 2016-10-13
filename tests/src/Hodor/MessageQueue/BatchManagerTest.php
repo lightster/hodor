@@ -35,7 +35,7 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
         $config->addQueueConfig('some-queue-name', []);
         $this->adapter_factory = new Factory($config);
         $this->queue_factory = new QueueFactory($this->adapter_factory);
-        $this->batch_manager = new BatchManager($this->queue_factory);
+        $this->batch_manager = new BatchManager($this->adapter_factory);
     }
 
     /**
