@@ -5,7 +5,7 @@ namespace Hodor\MessageQueue;
 use Exception;
 use Hodor\MessageQueue\Adapter\FactoryInterface;
 
-class BatchManager
+class Producer
 {
     /**
      * @var FactoryInterface
@@ -20,7 +20,7 @@ class BatchManager
     /**
      * @var array
      */
-    private $batch_queues = [];
+    private $producer_queues = [];
 
     /**
      * @var array
@@ -37,21 +37,21 @@ class BatchManager
 
     /**
      * @param string $queue_name
-     * @return BatchQueue
+     * @return ProducerQueue
      */
     public function getQueue($queue_name)
     {
-        if (isset($this->batch_queues[$queue_name])) {
-            return $this->batch_queues[$queue_name];
+        if (isset($this->producer_queues[$queue_name])) {
+            return $this->producer_queues[$queue_name];
         }
 
         $this->checkQueueName($queue_name);
 
-        $this->batch_queues[$queue_name] = new BatchQueue(function ($message) use ($queue_name) {
+        $this->producer_queues[$queue_name] = new ProducerQueue(function ($message) use ($queue_name) {
             $this->push($queue_name, $message);
         });
 
-        return $this->batch_queues[$queue_name];
+        return $this->producer_queues[$queue_name];
     }
 
     public function beginBatch()

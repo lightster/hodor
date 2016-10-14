@@ -2,9 +2,7 @@
 
 namespace Hodor\MessageQueue;
 
-use Exception;
-
-class BatchQueue
+class ProducerQueue
 {
     /**
      * @var callable

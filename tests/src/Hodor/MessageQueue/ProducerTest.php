@@ -8,9 +8,9 @@ use Hodor\MessageQueue\Adapter\Testing\Factory;
 use PHPUnit_Framework_TestCase;
 
 /**
- * @coversDefaultClass Hodor\MessageQueue\BatchManager
+ * @coversDefaultClass Hodor\MessageQueue\Producer
  */
-class BatchManagerTest extends PHPUnit_Framework_TestCase
+class ProducerTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @var Factory
@@ -23,9 +23,9 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
     private $queue_factory;
 
     /**
-     * @var BatchManager
+     * @var Producer
      */
-    private $batch_manager;
+    private $producer;
 
     public function setUp()
     {
@@ -35,7 +35,7 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
         $config->addQueueConfig('some-queue-name', []);
         $this->adapter_factory = new Factory($config);
         $this->queue_factory = new QueueFactory($this->adapter_factory);
-        $this->batch_manager = new BatchManager($this->adapter_factory);
+        $this->producer = new Producer($this->adapter_factory);
     }
 
     /**
@@ -46,7 +46,7 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      */
     public function testQueueingAMessageForANonExistentQueueThrowsAnException()
     {
-        $this->batch_manager->getQueue('non-existent-queue-name');
+        $this->producer->getQueue('non-existent-queue-name');
     }
 
     /**
@@ -58,7 +58,7 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
     {
         $expected = ['name' => __METHOD__, 'number' => 1];
 
-        $this->batch_manager->getQueue('some-queue-name')->push($expected);
+        $this->producer->getQueue('some-queue-name')->push($expected);
 
         $queue = $this->queue_factory->getQueue('some-queue-name');
         $queue->consume(function (IncomingMessage $message) use ($expected) {
@@ -76,9 +76,9 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      */
     public function testMessagesPushedInsideOfBatchAreNotImmediatelyProduced()
     {
-        $this->batch_manager->beginBatch();
+        $this->producer->beginBatch();
         for ($i = 1; $i <= 2; $i++) {
-            $this->batch_manager->getQueue('some-queue-name')->push($i);
+            $this->producer->getQueue('some-queue-name')->push($i);
         }
 
         $queue = $this->queue_factory->getQueue('some-queue-name');
@@ -96,8 +96,8 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      */
     public function testStartingABatchWhileABatchIsAlreadyStartedThrowsAnException()
     {
-        $this->batch_manager->beginBatch();
-        $this->batch_manager->beginBatch();
+        $this->producer->beginBatch();
+        $this->producer->beginBatch();
     }
 
     /**
@@ -109,11 +109,11 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      */
     public function testMessagesPushedInsideOfBatchAreAvailableAfterBatchIsPublished()
     {
-        $this->batch_manager->beginBatch();
+        $this->producer->beginBatch();
         for ($i = 1; $i <= 2; $i++) {
-            $this->batch_manager->getQueue('some-queue-name')->push($i);
+            $this->producer->getQueue('some-queue-name')->push($i);
         }
-        $this->batch_manager->publishBatch();
+        $this->producer->publishBatch();
 
         $count = 0;
         $queue = $this->queue_factory->getQueue('some-queue-name');
@@ -139,11 +139,11 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      */
     public function testNoMessagesAreLeftToProduceAfterBatchIsPublished()
     {
-        $this->batch_manager->beginBatch();
+        $this->producer->beginBatch();
         for ($i = 1; $i <= 2; $i++) {
-            $this->batch_manager->getQueue('some-queue-name')->push($i);
+            $this->producer->getQueue('some-queue-name')->push($i);
         }
-        $this->batch_manager->publishBatch();
+        $this->producer->publishBatch();
 
         $queue = $this->queue_factory->getQueue('some-queue-name');
         $queue->consume(function (IncomingMessage $message) {
@@ -166,9 +166,9 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      */
     public function testPublishingABatchAfterItWasAlreadyPublishedThrowsAnException()
     {
-        $this->batch_manager->beginBatch();
-        $this->batch_manager->publishBatch();
-        $this->batch_manager->publishBatch();
+        $this->producer->beginBatch();
+        $this->producer->publishBatch();
+        $this->producer->publishBatch();
     }
 
     /**
@@ -180,11 +180,11 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      */
     public function testANewBatchCanBeStartedAfterABatchHasAlreadyBeenPublished()
     {
-        $this->batch_manager->beginBatch();
-        $this->batch_manager->publishBatch();
-        $this->batch_manager->beginBatch();
+        $this->producer->beginBatch();
+        $this->producer->publishBatch();
+        $this->producer->beginBatch();
 
-        $this->batch_manager->getQueue('some-queue-name')->push(1);
+        $this->producer->getQueue('some-queue-name')->push(1);
 
         $queue = $this->queue_factory->getQueue('some-queue-name');
         $queue->consume(function () {
@@ -201,9 +201,9 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      */
     public function testBatchedMessagesCanBeDiscarded()
     {
-        $this->batch_manager->beginBatch();
-        $this->batch_manager->getQueue('some-queue-name')->push(1);
-        $this->batch_manager->discardBatch();
+        $this->producer->beginBatch();
+        $this->producer->getQueue('some-queue-name')->push(1);
+        $this->producer->discardBatch();
 
         $queue = $this->queue_factory->getQueue('some-queue-name');
         $queue->consume(function () {
@@ -218,7 +218,7 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      */
     public function testDiscardingABatchThatWasNeverStartedThrowsAnException()
     {
-        $this->batch_manager->discardBatch();
+        $this->producer->discardBatch();
     }
 
     /**
@@ -229,9 +229,9 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      */
     public function testDiscardingABatchAfterItWasAlreadyDiscardedThrowsAnException()
     {
-        $this->batch_manager->beginBatch();
-        $this->batch_manager->discardBatch();
-        $this->batch_manager->discardBatch();
+        $this->producer->beginBatch();
+        $this->producer->discardBatch();
+        $this->producer->discardBatch();
     }
 
     /**
@@ -242,9 +242,9 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      */
     public function testDiscardingABatchAfterItWasAlreadyPublishedThrowsAnException()
     {
-        $this->batch_manager->beginBatch();
-        $this->batch_manager->publishBatch();
-        $this->batch_manager->discardBatch();
+        $this->producer->beginBatch();
+        $this->producer->publishBatch();
+        $this->producer->discardBatch();
     }
 
     /**
@@ -255,9 +255,9 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      */
     public function testPublishingABatchAfterItWasAlreadyDiscardedThrowsAnException()
     {
-        $this->batch_manager->beginBatch();
-        $this->batch_manager->publishBatch();
-        $this->batch_manager->discardBatch();
+        $this->producer->beginBatch();
+        $this->producer->publishBatch();
+        $this->producer->discardBatch();
     }
 
     /**
@@ -268,11 +268,11 @@ class BatchManagerTest extends PHPUnit_Framework_TestCase
      */
     public function testANewBatchCanBeStartedAfterABatchHasAlreadyBeenDiscarded()
     {
-        $this->batch_manager->beginBatch();
-        $this->batch_manager->discardBatch();
-        $this->batch_manager->beginBatch();
+        $this->producer->beginBatch();
+        $this->producer->discardBatch();
+        $this->producer->beginBatch();
 
-        $this->batch_manager->getQueue('some-queue-name')->push(1);
+        $this->producer->getQueue('some-queue-name')->push(1);
 
         $queue = $this->queue_factory->getQueue('some-queue-name');
         $queue->consume(function () {
