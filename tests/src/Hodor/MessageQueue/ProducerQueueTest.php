@@ -8,9 +8,9 @@ use Hodor\MessageQueue\Adapter\Testing\Factory;
 use PHPUnit_Framework_TestCase;
 
 /**
- * @coversDefaultClass Hodor\MessageQueue\BatchQueue
+ * @coversDefaultClass Hodor\MessageQueue\ProducerQueue
  */
-class BatchQueueTest extends PHPUnit_Framework_TestCase
+class ProducerQueueTest extends PHPUnit_Framework_TestCase
 {
     /**
      * @covers ::__construct
@@ -23,7 +23,7 @@ class BatchQueueTest extends PHPUnit_Framework_TestCase
             $this->assertSame($expected_value, $message);
         };
 
-        $batch_queue = new BatchQueue($pusher);
-        $batch_queue->push($expected_value);
+        $producer_queue = new ProducerQueue($pusher);
+        $producer_queue->push($expected_value);
     }
 }
