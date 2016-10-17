@@ -18,11 +18,6 @@ class ProducerTest extends PHPUnit_Framework_TestCase
     private $adapter_factory;
 
     /**
-     * @var QueueFactory
-     */
-    private $queue_factory;
-
-    /**
      * @var Producer
      */
     private $producer;
@@ -34,7 +29,6 @@ class ProducerTest extends PHPUnit_Framework_TestCase
         $config = new Config([]);
         $config->addQueueConfig('some-queue-name', []);
         $this->adapter_factory = new Factory($config);
-        $this->queue_factory = new QueueFactory($this->adapter_factory);
         $this->producer = new Producer($this->adapter_factory);
     }
 
@@ -60,8 +54,8 @@ class ProducerTest extends PHPUnit_Framework_TestCase
 
         $this->producer->getQueue('some-queue-name')->push($expected);
 
-        $queue = $this->queue_factory->getQueue('some-queue-name');
-        $queue->consume(function (IncomingMessage $message) use ($expected) {
+        $consumer = $this->adapter_factory->getConsumer('some-queue-name');
+        $consumer->consumeMessage(function (IncomingMessage $message) use ($expected) {
             $this->assertSame($expected, $message->getContent());
             $message->acknowledge();
         });
@@ -81,8 +75,8 @@ class ProducerTest extends PHPUnit_Framework_TestCase
             $this->producer->getQueue('some-queue-name')->push($i);
         }
 
-        $queue = $this->queue_factory->getQueue('some-queue-name');
-        $queue->consume(function () {
+        $consumer = $this->adapter_factory->getConsumer('some-queue-name');
+        $consumer->consumeMessage(function () {
             $this->fail('A message should not be consumed');
         });
     }
@@ -116,12 +110,12 @@ class ProducerTest extends PHPUnit_Framework_TestCase
         $this->producer->publishBatch();
 
         $count = 0;
-        $queue = $this->queue_factory->getQueue('some-queue-name');
-        $queue->consume(function (IncomingMessage $message) use (&$count) {
+        $consumer = $this->adapter_factory->getConsumer('some-queue-name');
+        $consumer->consumeMessage(function (IncomingMessage $message) use (&$count) {
             ++$count;
             $message->acknowledge();
         });
-        $queue->consume(function (IncomingMessage $message) use (&$count) {
+        $consumer->consumeMessage(function (IncomingMessage $message) use (&$count) {
             ++$count;
             $message->acknowledge();
         });
@@ -145,15 +139,15 @@ class ProducerTest extends PHPUnit_Framework_TestCase
         }
         $this->producer->publishBatch();
 
-        $queue = $this->queue_factory->getQueue('some-queue-name');
-        $queue->consume(function (IncomingMessage $message) {
+        $consumer = $this->adapter_factory->getConsumer('some-queue-name');
+        $consumer->consumeMessage(function (IncomingMessage $message) {
             $message->acknowledge();
         });
-        $queue->consume(function (IncomingMessage $message) {
+        $consumer->consumeMessage(function (IncomingMessage $message) {
             $message->acknowledge();
         });
 
-        $queue->consume(function () {
+        $consumer->consumeMessage(function () {
         });
     }
 
@@ -186,8 +180,8 @@ class ProducerTest extends PHPUnit_Framework_TestCase
 
         $this->producer->getQueue('some-queue-name')->push(1);
 
-        $queue = $this->queue_factory->getQueue('some-queue-name');
-        $queue->consume(function () {
+        $consumer = $this->adapter_factory->getConsumer('some-queue-name');
+        $consumer->consumeMessage(function () {
         });
     }
 
@@ -205,8 +199,8 @@ class ProducerTest extends PHPUnit_Framework_TestCase
         $this->producer->getQueue('some-queue-name')->push(1);
         $this->producer->discardBatch();
 
-        $queue = $this->queue_factory->getQueue('some-queue-name');
-        $queue->consume(function () {
+        $consumer = $this->adapter_factory->getConsumer('some-queue-name');
+        $consumer->consumeMessage(function () {
             $this->fail('Discarded messages should not be available for consumption.');
         });
     }
@@ -274,8 +268,8 @@ class ProducerTest extends PHPUnit_Framework_TestCase
 
         $this->producer->getQueue('some-queue-name')->push(1);
 
-        $queue = $this->queue_factory->getQueue('some-queue-name');
-        $queue->consume(function () {
+        $consumer = $this->adapter_factory->getConsumer('some-queue-name');
+        $consumer->consumeMessage(function () {
         });
     }
 }
