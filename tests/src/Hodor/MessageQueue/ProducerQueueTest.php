@@ -2,9 +2,6 @@
 
 namespace Hodor\MessageQueue;
 
-use Exception;
-use Hodor\MessageQueue\Adapter\Testing\Config;
-use Hodor\MessageQueue\Adapter\Testing\Factory;
 use PHPUnit_Framework_TestCase;
 
 /**
