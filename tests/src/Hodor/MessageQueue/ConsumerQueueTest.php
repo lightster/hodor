@@ -15,7 +15,7 @@ class ConsumerQueueTest extends PHPUnit_Framework_TestCase
      */
     public function testConsumerReceivesExpectedCallback()
     {
-        $expected_callback = function ($message) {};
+        $expected_callback = function () {};
         $consumer = function (callable $callback) use ($expected_callback) {
             $this->assertSame($expected_callback, $callback);
         };
