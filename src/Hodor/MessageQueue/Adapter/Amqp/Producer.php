@@ -47,7 +47,7 @@ class Producer implements ProducerInterface
     }
 
     /**
-     * @param string[] $messages
+     * @param OutgoingMessage[] $messages
      */
     public function produceMessageBatch(array $messages)
     {
