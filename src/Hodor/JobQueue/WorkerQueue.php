@@ -6,15 +6,22 @@ use Closure;
 use DateTime;
 use Hodor\Database\Adapter\DequeuerInterface;
 use Hodor\Database\Exception\BufferedJobNotFoundException;
+use Hodor\MessageQueue\ConsumerQueue;
 use Hodor\MessageQueue\IncomingMessage;
+use Hodor\MessageQueue\ProducerQueue;
 use Hodor\MessageQueue\Queue;
 
 class WorkerQueue
 {
     /**
-     * @var Queue
+     * @var ProducerQueue
      */
-    private $message_queue;
+    private $producer_q;
+
+    /**
+     * @var ConsumerQueue
+     */
+    private $consumer_q;
 
     /**
      * @var DequeuerInterface
@@ -22,12 +29,14 @@ class WorkerQueue
     private $database;
 
     /**
-     * @param Queue $message_queue
+     * @param ProducerQueue $producer_q
+     * @param ConsumerQueue $consumer_q
      * @param DequeuerInterface $database
      */
-    public function __construct(Queue $message_queue, DequeuerInterface $database)
+    public function __construct(ProducerQueue $producer_q, ConsumerQueue $consumer_q, DequeuerInterface $database)
     {
-        $this->message_queue = $message_queue;
+        $this->producer_q = $producer_q;
+        $this->consumer_q = $consumer_q;
         $this->database = $database;
     }
 
@@ -38,7 +47,7 @@ class WorkerQueue
      */
     public function push($name, array $params = [], array $meta = [])
     {
-        $this->message_queue->push([
+        $this->producer_q->push([
             'name'   => $name,
             'params' => $params,
             'meta'   => $meta,
@@ -50,7 +59,7 @@ class WorkerQueue
      */
     public function runNext(callable $job_runner)
     {
-        $this->message_queue->consume(function (IncomingMessage $message) use ($job_runner) {
+        $this->consumer_q->consume(function (IncomingMessage $message) use ($job_runner) {
             $start_time = new DateTime;
 
             $mark_job_as_failed_if_not_successful = $this->getFailureCallback();

@@ -6,16 +6,15 @@ use Exception;
 use Hodor\Database\Adapter\Testing\Database;
 use Hodor\Database\Adapter\Testing\Dequeuer;
 use Hodor\Database\Exception\BufferedJobNotFoundException;
-use Hodor\MessageQueue\Adapter\ConsumerInterface;
-use Hodor\MessageQueue\Adapter\ProducerInterface;
 use Hodor\MessageQueue\Adapter\Testing\Config as TestingConfig;
-use Hodor\MessageQueue\Adapter\Testing\Consumer;
 use Hodor\MessageQueue\Adapter\Testing\Factory;
 use Hodor\MessageQueue\Adapter\Testing\MessageBank;
 use Hodor\MessageQueue\Adapter\Testing\MessageBankFactory;
-use Hodor\MessageQueue\Adapter\Testing\Producer;
+use Hodor\MessageQueue\Consumer;
+use Hodor\MessageQueue\ConsumerQueue;
 use Hodor\MessageQueue\IncomingMessage;
-use Hodor\MessageQueue\QueueFactory;
+use Hodor\MessageQueue\Producer;
+use Hodor\MessageQueue\ProducerQueue;
 use PHPUnit_Framework_TestCase;
 use UnexpectedValueException;
 
@@ -30,12 +29,12 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
     private $message_bank;
 
     /**
-     * @var ConsumerInterface
+     * @var ConsumerQueue
      */
     private $consumer;
 
     /**
-     * @var ProducerInterface
+     * @var ProducerQueue
      */
     private $producer;
 
@@ -62,15 +61,18 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
         $config = new TestingConfig([]);
         $config->addQueueConfig('worker-default-worker', ['workers_per_server' => 5]);
         $message_bank_factory->setConfig($config);
-        $mq_factory = new QueueFactory(new Factory($config, $message_bank_factory));
+        $adapter_factory = new Factory($config, $message_bank_factory);
+
+        $consumer = new Consumer($adapter_factory);
+        $producer = new Producer($adapter_factory);
 
         $this->message_bank = $message_bank_factory->getMessageBank('worker-default-worker');
-        $this->consumer = new Consumer($this->message_bank);
-        $this->producer = new Producer($this->message_bank);
+        $this->consumer = $consumer->getQueue('worker-default-worker');
+        $this->producer = $producer->getQueue('worker-default-worker');
         $this->database = new Database();
 
         $dequeuer = new Dequeuer($this->database);
-        $this->worker_queue_factory = new WorkerQueueFactory($mq_factory, $dequeuer);
+        $this->worker_queue_factory = new WorkerQueueFactory($producer, $consumer, $dequeuer);
 
         $this->worker_queue = $this->worker_queue_factory->getWorkerQueue('default-worker');
     }
@@ -91,7 +93,7 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
         ];
 
         $this->worker_queue->push($expected_job['name'], $expected_job['params'], $expected_job['meta']);
-        $this->consumer->consumeMessage(function (IncomingMessage $message) use ($expected_job) {
+        $this->consumer->consume(function (IncomingMessage $message) use ($expected_job) {
             $received_job = $message->getContent();
             $this->assertEquals($expected_job, [
                 'name'   => $received_job['name'],
@@ -99,6 +101,67 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
                 'meta'   => $received_job['meta'],
             ]);
         });
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::push
+     * @covers ::<private>
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
+     */
+    public function testBatchedJobIsPublishedIfAndOnlyIfBatchIsPublished()
+    {
+        $uniqid = uniqid();
+        $expected_job = [
+            'name'   => "some-job-{$uniqid}",
+            'params' => ['value' => $uniqid],
+            'meta'   => ['buffered_job_id' => rand(1, 10)],
+        ];
+
+        $this->worker_queue_factory->beginBatch();
+        $this->worker_queue->push($expected_job['name'], $expected_job['params'], $expected_job['meta']);
+
+        try {
+            $this->consumer->consume(function () use ($expected_job) {
+                $this->fail('A message should not be available for consuming until after batch is published.');
+            });
+        } catch (Exception $exception) {
+            // the exception is expected. do nothing.
+        }
+
+        $this->worker_queue_factory->publishBatch();
+
+        $this->consumer->consume(function (IncomingMessage $message) use ($expected_job) {
+            $received_job = $message->getContent();
+            $this->assertEquals($expected_job, [
+                'name'   => $received_job['name'],
+                'params' => $received_job['params'],
+                'meta'   => $received_job['meta'],
+            ]);
+        });
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::push
+     * @covers ::<private>
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
+     * @expectedException Exception
+     */
+    public function testBatchedJobIsDiscardedIfBatchIsDiscarded()
+    {
+        $uniqid = uniqid();
+        $expected_job = [
+            'name'   => "some-job-{$uniqid}",
+            'params' => ['value' => $uniqid],
+            'meta'   => ['buffered_job_id' => rand(1, 10)],
+        ];
+
+        $this->worker_queue_factory->beginBatch();
+        $this->worker_queue->push($expected_job['name'], $expected_job['params'], $expected_job['meta']);
+        $this->worker_queue_factory->discardBatch();
+
+        $this->consumer->consume(function () {});
     }
 
     /**
