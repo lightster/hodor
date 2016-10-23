@@ -52,8 +52,8 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
 
         $test_util = new TestingQueueProvisioner($config);
 
-        $this->message_bank = $test_util->getMessageBank('default-worker');
-        $this->consumer = $test_util->getConsumerQueue('default-worker');
+        $this->message_bank = $test_util->getMessageBank('worker-default-worker');
+        $this->consumer = $test_util->getConsumerQueue('worker-default-worker');
         $this->database = $test_util->getDatabase();
         $this->worker_queue_factory = $test_util->getWorkerQueueFactory();
         $this->worker_queue = $this->worker_queue_factory->getWorkerQueue('default-worker');

@@ -56,7 +56,7 @@ class TestingQueueProvisioner
      */
     public function getMessageBank($queue_name)
     {
-        return $this->message_bank_factory->getMessageBank("worker-{$queue_name}");
+        return $this->message_bank_factory->getMessageBank($queue_name);
     }
 
     /**
@@ -73,7 +73,7 @@ class TestingQueueProvisioner
      */
     public function getConsumerQueue($queue_name)
     {
-        return $this->getConsumer()->getQueue("worker-{$queue_name}");
+        return $this->getConsumer()->getQueue($queue_name);
     }
 
     /**
@@ -82,7 +82,7 @@ class TestingQueueProvisioner
      */
     public function getProducerQueue($queue_name)
     {
-        return $this->getProducer()->getQueue("worker-{$queue_name}");
+        return $this->getProducer()->getQueue($queue_name);
     }
 
     /**
