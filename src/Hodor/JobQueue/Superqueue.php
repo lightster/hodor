@@ -8,11 +8,6 @@ use Hodor\Database\Adapter\SuperqueuerInterface;
 class Superqueue
 {
     /**
-     * @var QueueManager
-     */
-    private $queue_manager;
-
-    /**
      * @var FactoryInterface
      */
     private $database;
@@ -30,16 +25,11 @@ class Superqueue
     /**
      * @param SuperqueuerInterface $database
      * @param WorkerQueueFactory $worker_queue_factory
-     * @param QueueManager $queue_manager
      */
-    public function __construct(
-        SuperqueuerInterface $database,
-        WorkerQueueFactory $worker_queue_factory,
-        QueueManager $queue_manager
-    ) {
+    public function __construct(SuperqueuerInterface $database, WorkerQueueFactory $worker_queue_factory)
+    {
         $this->database = $database;
         $this->worker_queue_factory = $worker_queue_factory;
-        $this->queue_manager = $queue_manager;
     }
 
     /**
@@ -75,7 +65,7 @@ class Superqueue
         $db = $this->database;
 
         if (0 === $this->jobs_queued) {
-            $this->queue_manager->beginBatch();
+            $this->worker_queue_factory->beginBatch();
             $db->beginBatch();
         }
 
@@ -102,7 +92,7 @@ class Superqueue
         // message is pushed to Rabbit MQ to prevent jobs from being
         // processed by workers before they have been moved to buffered_jobs
         $this->database->publishBatch();
-        $this->queue_manager->publishBatch();
+        $this->worker_queue_factory->publishBatch();
 
         $this->jobs_queued = 0;
     }

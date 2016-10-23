@@ -4,7 +4,10 @@ namespace Hodor\JobQueue;
 
 use Hodor\Database\Adapter\FactoryInterface;
 use Hodor\Database\AdapterFactory as DbAdapterFactory;
+use Hodor\MessageQueue\Adapter\FactoryInterface as MqFactoryInterface;
 use Hodor\MessageQueue\AdapterFactory;
+use Hodor\MessageQueue\Consumer;
+use Hodor\MessageQueue\Producer;
 use Hodor\MessageQueue\Queue as MessageQueue;
 use Hodor\MessageQueue\QueueFactory as MqFactory;
 
@@ -31,6 +34,21 @@ class QueueManager
     private $mq_factory;
 
     /**
+     * @var MqFactoryInterface
+     */
+    private $mq_adapter_factory;
+
+    /**
+     * @var Producer
+     */
+    private $mq_producer;
+
+    /**
+     * @var Consumer
+     */
+    private $mq_consumer;
+
+    /**
      * @var FactoryInterface
      */
     private $database;
@@ -54,8 +72,7 @@ class QueueManager
 
         $this->superqueue = new Superqueue(
             $this->getDatabase()->getSuperqueuer(),
-            $this->getWorkerQueueFactory(),
-            $this
+            $this->getWorkerQueueFactory()
         );
 
         return $this->superqueue;
@@ -107,7 +124,8 @@ class QueueManager
         }
 
         $this->worker_queue_factory = new WorkerQueueFactory(
-            $this->getMessageQueueFactory(),
+            $this->getMqProducer(),
+            $this->getMqConsumer(),
             $this->getDatabase()->getDequeuer()
         );
 
@@ -169,5 +187,47 @@ class QueueManager
         $this->mq_factory = new MqFactory($mq_adapter);
 
         return $this->mq_factory;
+    }
+
+    private function getMqProducer()
+    {
+        if ($this->mq_producer) {
+            return $this->mq_producer;
+        }
+
+        $this->mq_producer = new Producer($this->getMessageQueueAdapterFactory());
+
+        return $this->mq_producer;
+    }
+
+    /**
+     * @return Consumer
+     */
+    private function getMqConsumer()
+    {
+        if ($this->mq_consumer) {
+            return $this->mq_consumer;
+        }
+
+        $this->mq_consumer = new Consumer($this->getMessageQueueAdapterFactory());
+
+        return $this->mq_consumer;
+    }
+
+    /**
+     * @return MqFactoryInterface
+     */
+    private function getMessageQueueAdapterFactory()
+    {
+        if ($this->mq_adapter_factory) {
+            return $this->mq_adapter_factory;
+        }
+
+        $mq_adapter_factory = new AdapterFactory();
+        $this->mq_adapter_factory = $mq_adapter_factory->getAdapter(
+            $this->config->getMessageQueueConfig()
+        );
+
+        return $this->mq_adapter_factory;
     }
 }
