@@ -4,16 +4,12 @@ namespace Hodor\JobQueue;
 
 use Exception;
 use Hodor\Database\Adapter\Testing\Database;
-use Hodor\Database\Adapter\Testing\Dequeuer;
 use Hodor\Database\Exception\BufferedJobNotFoundException;
+use Hodor\JobQueue\TestUtil\TestingWorkerQueueFactory;
 use Hodor\MessageQueue\Adapter\Testing\Config as TestingConfig;
-use Hodor\MessageQueue\Adapter\Testing\Factory;
 use Hodor\MessageQueue\Adapter\Testing\MessageBank;
-use Hodor\MessageQueue\Adapter\Testing\MessageBankFactory;
-use Hodor\MessageQueue\Consumer;
 use Hodor\MessageQueue\ConsumerQueue;
 use Hodor\MessageQueue\IncomingMessage;
-use Hodor\MessageQueue\Producer;
 use Hodor\MessageQueue\ProducerQueue;
 use PHPUnit_Framework_TestCase;
 use UnexpectedValueException;
@@ -57,23 +53,17 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $message_bank_factory = new MessageBankFactory();
         $config = new TestingConfig([]);
         $config->addQueueConfig('worker-default-worker', ['workers_per_server' => 5]);
-        $message_bank_factory->setConfig($config);
-        $adapter_factory = new Factory($config, $message_bank_factory);
 
-        $consumer = new Consumer($adapter_factory);
-        $producer = new Producer($adapter_factory);
+        $testing_worker_queue_factory = new TestingWorkerQueueFactory($config);
 
-        $this->message_bank = $message_bank_factory->getMessageBank('worker-default-worker');
-        $this->consumer = $consumer->getQueue('worker-default-worker');
-        $this->producer = $producer->getQueue('worker-default-worker');
-        $this->database = new Database();
-
-        $dequeuer = new Dequeuer($this->database);
-        $this->worker_queue_factory = new WorkerQueueFactory($producer, $consumer, $dequeuer);
-
+        $this->message_bank = $testing_worker_queue_factory->getMessageBank('default-worker');
+        $this->consumer = $testing_worker_queue_factory->getConsumerQueue('default-worker');
+        $this->producer = $testing_worker_queue_factory->getProducerQueue('default-worker');
+        $this->message_bank = $testing_worker_queue_factory->getMessageBank('default-worker');
+        $this->database = $testing_worker_queue_factory->getDatabase();
+        $this->worker_queue_factory = $testing_worker_queue_factory->getWorkerQueueFactory();
         $this->worker_queue = $this->worker_queue_factory->getWorkerQueue('default-worker');
     }
 
