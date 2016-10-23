@@ -10,7 +10,6 @@ use Hodor\MessageQueue\Adapter\Testing\Config as TestingConfig;
 use Hodor\MessageQueue\Adapter\Testing\MessageBank;
 use Hodor\MessageQueue\ConsumerQueue;
 use Hodor\MessageQueue\IncomingMessage;
-use Hodor\MessageQueue\ProducerQueue;
 use PHPUnit_Framework_TestCase;
 use UnexpectedValueException;
 
@@ -28,11 +27,6 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @var ConsumerQueue
      */
     private $consumer;
-
-    /**
-     * @var ProducerQueue
-     */
-    private $producer;
 
     /**
      * @var WorkerQueueFactory
@@ -56,14 +50,12 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
         $config = new TestingConfig([]);
         $config->addQueueConfig('worker-default-worker', ['workers_per_server' => 5]);
 
-        $testing_worker_queue_factory = new TestingWorkerQueueFactory($config);
+        $test_util = new TestingWorkerQueueFactory($config);
 
-        $this->message_bank = $testing_worker_queue_factory->getMessageBank('default-worker');
-        $this->consumer = $testing_worker_queue_factory->getConsumerQueue('default-worker');
-        $this->producer = $testing_worker_queue_factory->getProducerQueue('default-worker');
-        $this->message_bank = $testing_worker_queue_factory->getMessageBank('default-worker');
-        $this->database = $testing_worker_queue_factory->getDatabase();
-        $this->worker_queue_factory = $testing_worker_queue_factory->getWorkerQueueFactory();
+        $this->message_bank = $test_util->getMessageBank('default-worker');
+        $this->consumer = $test_util->getConsumerQueue('default-worker');
+        $this->database = $test_util->getDatabase();
+        $this->worker_queue_factory = $test_util->getWorkerQueueFactory();
         $this->worker_queue = $this->worker_queue_factory->getWorkerQueue('default-worker');
     }
 
