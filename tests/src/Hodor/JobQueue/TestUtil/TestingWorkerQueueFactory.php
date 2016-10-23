@@ -47,16 +47,7 @@ class TestingWorkerQueueFactory
         $this->message_bank_factory = new MessageBankFactory();
         $this->database = new Database();
 
-        $adapter_factory = new Factory($config, $this->message_bank_factory);
-        $dequeuer = new Dequeuer($this->database);
-
-        $this->consumer = new Consumer($adapter_factory);
-        $this->producer = new Producer($adapter_factory);
-        $this->worker_queue_factory = new WorkerQueueFactory(
-            $this->producer,
-            $this->consumer,
-            $dequeuer
-        );
+        $this->adapter_factory = new Factory($config, $this->message_bank_factory);
     }
 
     /**
@@ -82,7 +73,7 @@ class TestingWorkerQueueFactory
      */
     public function getConsumerQueue($queue_name)
     {
-        return $this->consumer->getQueue("worker-{$queue_name}");
+        return $this->getConsumer()->getQueue("worker-{$queue_name}");
     }
 
     /**
@@ -91,7 +82,7 @@ class TestingWorkerQueueFactory
      */
     public function getProducerQueue($queue_name)
     {
-        return $this->producer->getQueue("worker-{$queue_name}");
+        return $this->getProducer()->getQueue("worker-{$queue_name}");
     }
 
     /**
@@ -99,6 +90,16 @@ class TestingWorkerQueueFactory
      */
     public function getWorkerQueueFactory()
     {
+        if ($this->worker_queue_factory) {
+            return $this->worker_queue_factory;
+        }
+
+        $this->worker_queue_factory = new WorkerQueueFactory(
+            $this->getProducer(),
+            $this->getConsumer(),
+            new Dequeuer($this->getDatabase())
+        );
+
         return $this->worker_queue_factory;
     }
 
@@ -108,6 +109,34 @@ class TestingWorkerQueueFactory
      */
     public function getWorkerQueue($queue_name)
     {
-        return $this->worker_queue_factory->getWorkerQueue($queue_name);
+        return $this->getWorkerQueueFactory()->getWorkerQueue($queue_name);
+    }
+
+    /**
+     * @return Consumer
+     */
+    private function getConsumer()
+    {
+        if ($this->consumer) {
+            return $this->consumer;
+        }
+
+        $this->consumer = new Consumer($this->adapter_factory);
+
+        return $this->consumer;
+    }
+
+    /**
+     * @return Producer
+     */
+    private function getProducer()
+    {
+        if ($this->producer) {
+            return $this->producer;
+        }
+
+        $this->producer = new Producer($this->adapter_factory);
+
+        return $this->producer;
     }
 }
