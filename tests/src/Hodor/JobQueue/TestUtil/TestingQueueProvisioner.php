@@ -15,7 +15,7 @@ use Hodor\MessageQueue\ConsumerQueue;
 use Hodor\MessageQueue\Producer;
 use Hodor\MessageQueue\ProducerQueue;
 
-class TestingWorkerQueueFactory
+class TestingQueueProvisioner
 {
     /**
      * @var MessageBankFactory

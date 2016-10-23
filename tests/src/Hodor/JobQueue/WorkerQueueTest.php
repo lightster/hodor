@@ -5,7 +5,7 @@ namespace Hodor\JobQueue;
 use Exception;
 use Hodor\Database\Adapter\Testing\Database;
 use Hodor\Database\Exception\BufferedJobNotFoundException;
-use Hodor\JobQueue\TestUtil\TestingWorkerQueueFactory;
+use Hodor\JobQueue\TestUtil\TestingQueueProvisioner;
 use Hodor\MessageQueue\Adapter\Testing\Config as TestingConfig;
 use Hodor\MessageQueue\Adapter\Testing\MessageBank;
 use Hodor\MessageQueue\ConsumerQueue;
@@ -50,7 +50,7 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
         $config = new TestingConfig([]);
         $config->addQueueConfig('worker-default-worker', ['workers_per_server' => 5]);
 
-        $test_util = new TestingWorkerQueueFactory($config);
+        $test_util = new TestingQueueProvisioner($config);
 
         $this->message_bank = $test_util->getMessageBank('default-worker');
         $this->consumer = $test_util->getConsumerQueue('default-worker');
