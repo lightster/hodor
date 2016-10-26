@@ -2,8 +2,11 @@
 
 namespace Hodor\JobQueue\TestUtil;
 
+use Hodor\Database\Adapter\Testing\BufferWorker;
 use Hodor\Database\Adapter\Testing\Database;
 use Hodor\Database\Adapter\Testing\Dequeuer;
+use Hodor\JobQueue\BufferQueue;
+use Hodor\JobQueue\Config;
 use Hodor\JobQueue\WorkerQueue;
 use Hodor\JobQueue\WorkerQueueFactory;
 use Hodor\MessageQueue\Adapter\Testing\Config as TestingConfig;
@@ -14,9 +17,15 @@ use Hodor\MessageQueue\Consumer;
 use Hodor\MessageQueue\ConsumerQueue;
 use Hodor\MessageQueue\Producer;
 use Hodor\MessageQueue\ProducerQueue;
+use Hodor\MessageQueue\Queue;
 
 class TestingQueueProvisioner
 {
+    /**
+     * @var TestingConfig
+     */
+    private $config;
+
     /**
      * @var MessageBankFactory
      */
@@ -42,8 +51,14 @@ class TestingQueueProvisioner
      */
     private $worker_queue_factory;
 
+    /**
+     * @var BufferQueue[]
+     */
+    private $buffer_queues = [];
+
     public function __construct(TestingConfig $config)
     {
+        $this->config = $config;
         $this->message_bank_factory = new MessageBankFactory();
         $this->database = new Database();
 
@@ -110,6 +125,29 @@ class TestingQueueProvisioner
     public function getWorkerQueue($queue_name)
     {
         return $this->getWorkerQueueFactory()->getWorkerQueue($queue_name);
+    }
+
+    /**
+     * @param string $queue_name
+     * @return BufferQueue
+     */
+    public function getBufferQueue($queue_name)
+    {
+        if (array_key_exists($queue_name, $this->buffer_queues)) {
+            return $this->buffer_queues[$queue_name];
+        }
+
+        $this->buffer_queues[$queue_name] = new BufferQueue(
+            $this->getProducerQueue("bufferer-{$queue_name}"),
+            $this->getConsumerQueue("bufferer-{$queue_name}"),
+            new BufferWorker($this->getDatabase()),
+            new Config(__FILE__, [
+                'adapter_factory' => 'testing',
+                'worker_queues' => ['test-queue' => []],
+            ])
+        );
+
+        return $this->buffer_queues[$queue_name];
     }
 
     /**

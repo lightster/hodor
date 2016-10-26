@@ -89,7 +89,8 @@ class QueueManager
         }
 
         $this->buffer_queues[$queue_name] = new BufferQueue(
-            $this->getMessageQueue("bufferer-{$queue_name}"),
+            $this->getMqProducer()->getQueue("bufferer-{$queue_name}"),
+            $this->getMqConsumer()->getQueue("bufferer-{$queue_name}"),
             $this->getDatabase()->getBufferWorker(),
             $this->config
         );
@@ -134,17 +135,17 @@ class QueueManager
 
     public function beginBatch()
     {
-        $this->getMessageQueueFactory()->beginBatch();
+        $this->getMqProducer()->beginBatch();
     }
 
     public function publishBatch()
     {
-        $this->getMessageQueueFactory()->publishBatch();
+        $this->getMqProducer()->publishBatch();
     }
 
     public function discardBatch()
     {
-        $this->getMessageQueueFactory()->discardBatch();
+        $this->getMqProducer()->discardBatch();
     }
 
     /**
@@ -162,15 +163,6 @@ class QueueManager
         $this->database = $db_adapter_factory->getAdapter($config);
 
         return $this->database;
-    }
-
-    /**
-     * @param  string $queue_name
-     * @return MessageQueue
-     */
-    private function getMessageQueue($queue_name)
-    {
-        return $this->getMessageQueueFactory()->getQueue($queue_name);
     }
 
     /**
