@@ -8,7 +8,7 @@ use Lstr\YoPdo\YoPdo;
 class BufferWorker implements BufferWorkerInterface
 {
     /**
-     * @var YoPdo
+     * @var Connection
      */
     private $connection;
 
