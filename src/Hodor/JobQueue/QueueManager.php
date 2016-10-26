@@ -8,7 +8,6 @@ use Hodor\MessageQueue\Adapter\FactoryInterface as MqFactoryInterface;
 use Hodor\MessageQueue\AdapterFactory;
 use Hodor\MessageQueue\Consumer;
 use Hodor\MessageQueue\Producer;
-use Hodor\MessageQueue\Queue as MessageQueue;
 use Hodor\MessageQueue\QueueFactory as MqFactory;
 
 class QueueManager
@@ -89,7 +88,8 @@ class QueueManager
         }
 
         $this->buffer_queues[$queue_name] = new BufferQueue(
-            $this->getMessageQueue("bufferer-{$queue_name}"),
+            $this->getMqProducer()->getQueue("bufferer-{$queue_name}"),
+            $this->getMqConsumer()->getQueue("bufferer-{$queue_name}"),
             $this->getDatabase()->getBufferWorker(),
             $this->config
         );
@@ -134,17 +134,17 @@ class QueueManager
 
     public function beginBatch()
     {
-        $this->getMessageQueueFactory()->beginBatch();
+        $this->getMqProducer()->beginBatch();
     }
 
     public function publishBatch()
     {
-        $this->getMessageQueueFactory()->publishBatch();
+        $this->getMqProducer()->publishBatch();
     }
 
     public function discardBatch()
     {
-        $this->getMessageQueueFactory()->discardBatch();
+        $this->getMqProducer()->discardBatch();
     }
 
     /**
@@ -165,30 +165,8 @@ class QueueManager
     }
 
     /**
-     * @param  string $queue_name
-     * @return MessageQueue
+     * @return Producer
      */
-    private function getMessageQueue($queue_name)
-    {
-        return $this->getMessageQueueFactory()->getQueue($queue_name);
-    }
-
-    /**
-     * @return MqFactory
-     */
-    private function getMessageQueueFactory()
-    {
-        if ($this->mq_factory) {
-            return $this->mq_factory;
-        }
-
-        $mq_adapter_factory = new AdapterFactory();
-        $mq_adapter = $mq_adapter_factory->getAdapter($this->config->getMessageQueueConfig());
-        $this->mq_factory = new MqFactory($mq_adapter);
-
-        return $this->mq_factory;
-    }
-
     private function getMqProducer()
     {
         if ($this->mq_producer) {

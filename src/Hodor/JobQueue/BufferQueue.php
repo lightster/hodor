@@ -4,15 +4,22 @@ namespace Hodor\JobQueue;
 
 use Hodor\Database\Adapter\BufferWorkerInterface as Database;
 use Hodor\JobQueue\JobOptions\Validator as JobOptionsValidator;
+use Hodor\MessageQueue\ConsumerQueue;
 use Hodor\MessageQueue\IncomingMessage;
+use Hodor\MessageQueue\ProducerQueue;
 use Hodor\MessageQueue\Queue;
 
 class BufferQueue
 {
     /**
-     * @var Queue
+     * @var ProducerQueue
      */
-    private $message_queue;
+    private $producer_q;
+
+    /**
+     * @var ConsumerQueue
+     */
+    private $consumer_q;
 
     /**
      * @var Database
@@ -30,13 +37,19 @@ class BufferQueue
     private $job_options_validator;
 
     /**
-     * @param Queue $message_queue
+     * @param ProducerQueue $producer_q
+     * @param ConsumerQueue $consumer_q
      * @param Database $database
      * @param Config $config
      */
-    public function __construct(Queue $message_queue, Database $database, Config $config)
-    {
-        $this->message_queue = $message_queue;
+    public function __construct(
+        ProducerQueue $producer_q,
+        ConsumerQueue $consumer_q,
+        Database $database,
+        Config $config
+    ) {
+        $this->producer_q = $producer_q;
+        $this->consumer_q = $consumer_q;
         $this->database = $database;
         $this->config = $config;
     }
@@ -54,7 +67,7 @@ class BufferQueue
             $options['run_after'] = $options['run_after']->format('c');
         }
 
-        $this->message_queue->push([
+        $this->producer_q->push([
             'name'    => $name,
             'params'  => $params,
             'options' => $options,
@@ -67,7 +80,7 @@ class BufferQueue
 
     public function processBuffer()
     {
-        $this->message_queue->consume(function (IncomingMessage $message) {
+        $this->consumer_q->consume(function (IncomingMessage $message) {
             $content = $message->getContent();
 
             $queue_name = $this->config->getJobQueueConfig()->getWorkerQueueName(

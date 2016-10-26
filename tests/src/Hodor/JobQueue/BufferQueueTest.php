@@ -4,15 +4,12 @@ namespace Hodor\JobQueue;
 
 use DateTime;
 use Exception;
-use Hodor\Database\Adapter\Testing\BufferWorker;
 use Hodor\Database\Adapter\Testing\Database;
-use Hodor\MessageQueue\Adapter\ConsumerInterface;
-use Hodor\MessageQueue\Adapter\ProducerInterface;
-use Hodor\MessageQueue\Adapter\Testing\Consumer;
+use Hodor\JobQueue\TestUtil\TestingQueueProvisioner;
+use Hodor\MessageQueue\Adapter\Testing\Config as TestingConfig;
 use Hodor\MessageQueue\Adapter\Testing\MessageBank;
-use Hodor\MessageQueue\Adapter\Testing\Producer;
+use Hodor\MessageQueue\ConsumerQueue;
 use Hodor\MessageQueue\IncomingMessage;
-use Hodor\MessageQueue\Queue;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -21,29 +18,14 @@ use PHPUnit_Framework_TestCase;
 class BufferQueueTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var Config
-     */
-    private $config;
-
-    /**
      * @var MessageBank
      */
     private $message_bank;
 
     /**
-     * @var ConsumerInterface
+     * @var ConsumerQueue
      */
     private $consumer;
-
-    /**
-     * @var ProducerInterface
-     */
-    private $producer;
-
-    /**
-     * @var Queue
-     */
-    private $queue;
 
     /**
      * @var BufferQueue
@@ -59,24 +41,15 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
-        $this->config = new Config(__FILE__, [
-            'adapter_factory' => 'testing',
-            'worker_queues' => [
-                'test-queue' => [
-                    'bufferers_per_server' => 5,
-                ],
-            ],
-        ]);
-        $this->message_bank = new MessageBank();
-        $this->consumer = new Consumer($this->message_bank);
-        $this->producer = new Producer($this->message_bank);
-        $this->queue = new Queue($this->consumer, $this->producer);
-        $this->database = new Database();
-        $this->buffer_queue = new BufferQueue(
-            $this->queue,
-            new BufferWorker($this->database),
-            $this->config
-        );
+        $config = new TestingConfig([]);
+        $config->addQueueConfig('bufferer-test-queue', ['bufferers_per_server' => 5]);
+
+        $test_util = new TestingQueueProvisioner($config);
+
+        $this->message_bank = $test_util->getMessageBank('bufferer-test-queue');
+        $this->consumer = $test_util->getConsumerQueue('bufferer-test-queue');
+        $this->database = $test_util->getDatabase();
+        $this->buffer_queue = $test_util->getBufferQueue('test-queue');
     }
 
     /**
@@ -215,11 +188,11 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
 
     /**
      * @param array $expected_job
-     * @param ConsumerInterface $consumer
+     * @param ConsumerQueue $consumer
      */
-    private function assertBufferedJobEquals(array $expected_job, ConsumerInterface $consumer)
+    private function assertBufferedJobEquals(array $expected_job, ConsumerQueue $consumer)
     {
-        $consumer->consumeMessage(function (IncomingMessage $message) use ($expected_job) {
+        $consumer->consume(function (IncomingMessage $message) use ($expected_job) {
             $received_job = $message->getContent();
             $this->assertEquals($expected_job, [
                 'name'    => $received_job['name'],
