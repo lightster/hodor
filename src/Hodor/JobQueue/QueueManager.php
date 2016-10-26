@@ -8,7 +8,6 @@ use Hodor\MessageQueue\Adapter\FactoryInterface as MqFactoryInterface;
 use Hodor\MessageQueue\AdapterFactory;
 use Hodor\MessageQueue\Consumer;
 use Hodor\MessageQueue\Producer;
-use Hodor\MessageQueue\Queue as MessageQueue;
 use Hodor\MessageQueue\QueueFactory as MqFactory;
 
 class QueueManager
@@ -163,22 +162,6 @@ class QueueManager
         $this->database = $db_adapter_factory->getAdapter($config);
 
         return $this->database;
-    }
-
-    /**
-     * @return MqFactory
-     */
-    private function getMessageQueueFactory()
-    {
-        if ($this->mq_factory) {
-            return $this->mq_factory;
-        }
-
-        $mq_adapter_factory = new AdapterFactory();
-        $mq_adapter = $mq_adapter_factory->getAdapter($this->config->getMessageQueueConfig());
-        $this->mq_factory = new MqFactory($mq_adapter);
-
-        return $this->mq_factory;
     }
 
     private function getMqProducer()
