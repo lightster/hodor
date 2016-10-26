@@ -164,6 +164,9 @@ class QueueManager
         return $this->database;
     }
 
+    /**
+     * @return Producer
+     */
     private function getMqProducer()
     {
         if ($this->mq_producer) {
