@@ -8,7 +8,6 @@ use Hodor\MessageQueue\Adapter\FactoryInterface as MqFactoryInterface;
 use Hodor\MessageQueue\AdapterFactory;
 use Hodor\MessageQueue\Consumer;
 use Hodor\MessageQueue\Producer;
-use Hodor\MessageQueue\QueueFactory as MqFactory;
 
 class QueueManager
 {
@@ -26,11 +25,6 @@ class QueueManager
      * @var WorkerQueueFactory
      */
     private $worker_queue_factory;
-
-    /**
-     * @var MqFactory
-     */
-    private $mq_factory;
 
     /**
      * @var MqFactoryInterface
