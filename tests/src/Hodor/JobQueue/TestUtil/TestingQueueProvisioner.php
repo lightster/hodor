@@ -5,8 +5,10 @@ namespace Hodor\JobQueue\TestUtil;
 use Hodor\Database\Adapter\Testing\BufferWorker;
 use Hodor\Database\Adapter\Testing\Database;
 use Hodor\Database\Adapter\Testing\Dequeuer;
+use Hodor\Database\Adapter\Testing\Superqueuer;
 use Hodor\JobQueue\BufferQueue;
 use Hodor\JobQueue\Config;
+use Hodor\JobQueue\Superqueue;
 use Hodor\JobQueue\WorkerQueue;
 use Hodor\JobQueue\WorkerQueueFactory;
 use Hodor\MessageQueue\Adapter\Testing\Config as TestingConfig;
@@ -55,6 +57,11 @@ class TestingQueueProvisioner
      * @var BufferQueue[]
      */
     private $buffer_queues = [];
+
+    /**
+     * @var Superqueue
+     */
+    private $superqueue;
 
     public function __construct(TestingConfig $config)
     {
@@ -148,6 +155,23 @@ class TestingQueueProvisioner
         );
 
         return $this->buffer_queues[$queue_name];
+    }
+
+    /**
+     * @return Superqueue
+     */
+    public function getSuperqueue()
+    {
+        if ($this->superqueue) {
+            return $this->superqueue;
+        }
+
+        $this->superqueue = new Superqueue(
+            new Superqueuer($this->getDatabase(), 1),
+            $this->getWorkerQueueFactory()
+        );
+
+        return $this->superqueue;
     }
 
     /**
