@@ -108,7 +108,6 @@ class SuperqueueTest extends PHPUnit_Framework_TestCase
 
         $this->superqueue->queueJobsFromDatabaseToWorkerQueue();
 
-        $queued_jobs_in_db = $this->database->getAll('queued_jobs');
         $confirmed_messages = 0;
         for ($i = 1; $i <= $count; $i++) {
             $mq_message = json_decode($this->message_bank->consumeMessage()->getContent(), true);
