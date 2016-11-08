@@ -5,7 +5,6 @@ namespace Hodor\JobQueue;
 use Hodor\Database\Adapter\DequeuerInterface;
 use Hodor\MessageQueue\Consumer;
 use Hodor\MessageQueue\Producer;
-use Hodor\MessageQueue\QueueFactory;
 
 class WorkerQueueFactory
 {
