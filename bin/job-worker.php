@@ -13,6 +13,6 @@ $queue_name = $args->getQueueName();
 
 $config = Config::loadFromFile($config_file);
 $queue_manager = new QueueManager($config);
-$worker_queue = $queue_manager->getWorkerQueueFactory()->getWorkerQueue($queue_name);
+$worker_queue = $queue_manager->getWorkerQueueFactory()->getQueue($queue_name);
 
 $worker_queue->runNext($config->getJobQueueConfig()->getJobRunnerFactory());

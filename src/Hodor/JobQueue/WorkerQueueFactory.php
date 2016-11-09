@@ -6,27 +6,15 @@ use Hodor\Database\Adapter\DequeuerInterface;
 use Hodor\MessageQueue\Consumer;
 use Hodor\MessageQueue\Producer;
 
-class WorkerQueueFactory
+/**
+ * @method WorkerQueue getQueue(string $queue_name)
+ */
+class WorkerQueueFactory extends AbstractQueueFactory
 {
-    /**
-     * @var Producer
-     */
-    private $producer;
-
-    /**
-     * @var Consumer
-     */
-    private $consumer;
-
     /**
      * @var DequeuerInterface
      */
     private $dequeuer;
-
-    /**
-     * @var array
-     */
-    private $worker_queues = [];
 
     /**
      * @param Producer $producer
@@ -35,42 +23,21 @@ class WorkerQueueFactory
      */
     public function __construct(Producer $producer, Consumer $consumer, DequeuerInterface $dequeuer)
     {
-        $this->producer = $producer;
-        $this->consumer = $consumer;
+        parent::__construct($producer, $consumer);
+
         $this->dequeuer = $dequeuer;
     }
 
     /**
-     * @param  string $queue_name
+     * @param string $queue_name
      * @return WorkerQueue
      */
-    public function getWorkerQueue($queue_name)
+    protected function generateQueue($queue_name)
     {
-        if (isset($this->worker_queues[$queue_name])) {
-            return $this->worker_queues[$queue_name];
-        }
-
-        $this->worker_queues[$queue_name] = new WorkerQueue(
-            $this->producer->getQueue("worker-{$queue_name}"),
-            $this->consumer->getQueue("worker-{$queue_name}"),
+        return new WorkerQueue(
+            $this->getProducer()->getQueue("worker-{$queue_name}"),
+            $this->getConsumer()->getQueue("worker-{$queue_name}"),
             $this->dequeuer
         );
-
-        return $this->worker_queues[$queue_name];
-    }
-
-    public function beginBatch()
-    {
-        $this->producer->beginBatch();
-    }
-
-    public function publishBatch()
-    {
-        $this->producer->publishBatch();
-    }
-
-    public function discardBatch()
-    {
-        $this->producer->discardBatch();
     }
 }
