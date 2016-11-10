@@ -186,8 +186,6 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
-     * @covers \Hodor\JobQueue\AbstractQueueFactory
-     * @covers \Hodor\JobQueue\WorkerQueueFactory
      */
     public function testDatabaseRecordForJobMarkedAsSuccessfulIsMovedToSuccessfulJobs()
     {
@@ -201,8 +199,6 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
-     * @covers \Hodor\JobQueue\AbstractQueueFactory
-     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException Exception
      */
     public function testMessageForJobMarkedAsSuccessfulIsAcknowledged()
@@ -214,8 +210,6 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
-     * @covers \Hodor\JobQueue\AbstractQueueFactory
-     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException \Hodor\MessageQueue\Adapter\Testing\Exception\EmptyQueueException
      */
     public function testJobMarkedAsSuccessfulButNotAcknowledgedCanBeAcknowledgedSecondTime()
@@ -227,8 +221,6 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
-     * @covers \Hodor\JobQueue\AbstractQueueFactory
-     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException UnexpectedValueException
      */
     public function testDatabaseRecordForJobMarkedAsFailedIsMovedToFailedJobs()
@@ -245,8 +237,6 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
-     * @covers \Hodor\JobQueue\AbstractQueueFactory
-     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException UnexpectedValueException
      */
     public function testMessageForJobMarkedAsFailedIsAcknowledged()
@@ -260,8 +250,6 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
-     * @covers \Hodor\JobQueue\AbstractQueueFactory
-     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException \Hodor\MessageQueue\Adapter\Testing\Exception\EmptyQueueException
      */
     public function testJobMarkedAsFailedButNotAcknowledgedCanBeAcknowledgedSecondTime()
