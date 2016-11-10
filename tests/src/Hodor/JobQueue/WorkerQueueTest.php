@@ -56,13 +56,14 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
         $this->consumer = $test_util->getConsumerQueue('worker-default-worker');
         $this->database = $test_util->getDatabase();
         $this->worker_queue_factory = $test_util->getWorkerQueueFactory();
-        $this->worker_queue = $this->worker_queue_factory->getWorkerQueue('default-worker');
+        $this->worker_queue = $this->worker_queue_factory->getQueue('default-worker');
     }
 
     /**
      * @covers ::__construct
      * @covers ::push
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
      * @covers \Hodor\JobQueue\WorkerQueueFactory
      */
     public function testJobCanBeQueued()
@@ -89,6 +90,7 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::push
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
      * @covers \Hodor\JobQueue\WorkerQueueFactory
      */
     public function testBatchedJobIsPublishedIfAndOnlyIfBatchIsPublished()
@@ -127,6 +129,7 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::push
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
      * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException Exception
      */
@@ -150,6 +153,7 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
      * @covers \Hodor\JobQueue\WorkerQueueFactory
      */
     public function testJobNameAndParamsArePassedToJobRunner()
@@ -182,7 +186,6 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
-     * @covers \Hodor\JobQueue\WorkerQueueFactory
      */
     public function testDatabaseRecordForJobMarkedAsSuccessfulIsMovedToSuccessfulJobs()
     {
@@ -196,7 +199,6 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
-     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException Exception
      */
     public function testMessageForJobMarkedAsSuccessfulIsAcknowledged()
@@ -208,7 +210,6 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
-     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException \Hodor\MessageQueue\Adapter\Testing\Exception\EmptyQueueException
      */
     public function testJobMarkedAsSuccessfulButNotAcknowledgedCanBeAcknowledgedSecondTime()
@@ -220,7 +221,6 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
-     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException UnexpectedValueException
      */
     public function testDatabaseRecordForJobMarkedAsFailedIsMovedToFailedJobs()
@@ -237,7 +237,6 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
-     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException UnexpectedValueException
      */
     public function testMessageForJobMarkedAsFailedIsAcknowledged()
@@ -251,7 +250,6 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::runNext
      * @covers ::<private>
-     * @covers \Hodor\JobQueue\WorkerQueueFactory
      * @expectedException \Hodor\MessageQueue\Adapter\Testing\Exception\EmptyQueueException
      */
     public function testJobMarkedAsFailedButNotAcknowledgedCanBeAcknowledgedSecondTime()
@@ -262,13 +260,14 @@ class WorkerQueueTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
      * @covers \Hodor\JobQueue\WorkerQueueFactory
      */
     public function testWorkerQueueIsReused()
     {
         $this->assertSame(
             $this->worker_queue,
-            $this->worker_queue_factory->getWorkerQueue('default-worker')
+            $this->worker_queue_factory->getQueue('default-worker')
         );
     }
 
