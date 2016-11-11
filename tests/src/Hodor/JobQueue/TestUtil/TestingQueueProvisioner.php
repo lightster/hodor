@@ -19,7 +19,6 @@ use Hodor\MessageQueue\Consumer;
 use Hodor\MessageQueue\ConsumerQueue;
 use Hodor\MessageQueue\Producer;
 use Hodor\MessageQueue\ProducerQueue;
-use Hodor\MessageQueue\Queue;
 
 class TestingQueueProvisioner
 {
