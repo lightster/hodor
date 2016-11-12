@@ -4,11 +4,8 @@ namespace Hodor\JobQueue;
 
 use DateTime;
 use Exception;
-use Hodor\Database\Adapter\Testing\Database;
 use Hodor\JobQueue\TestUtil\TestingQueueProvisioner;
 use Hodor\MessageQueue\Adapter\Testing\Config as TestingConfig;
-use Hodor\MessageQueue\Adapter\Testing\MessageBank;
-use Hodor\MessageQueue\ConsumerQueue;
 use Hodor\MessageQueue\IncomingMessage;
 use PHPUnit_Framework_TestCase;
 
@@ -18,24 +15,19 @@ use PHPUnit_Framework_TestCase;
 class BufferQueueTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var MessageBank
+     * @var TestingQueueProvisioner
      */
-    private $message_bank;
+    private $test_util;
 
     /**
-     * @var ConsumerQueue
+     * @var BufferQueueFactory
      */
-    private $consumer;
+    private $buffer_queue_factory;
 
     /**
      * @var BufferQueue
      */
     private $buffer_queue;
-
-    /**
-     * @var Database
-     */
-    private $database;
 
     public function setUp()
     {
@@ -44,18 +36,18 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
         $config = new TestingConfig([]);
         $config->addQueueConfig('bufferer-test-queue', ['bufferers_per_server' => 5]);
 
-        $test_util = new TestingQueueProvisioner($config);
+        $this->test_util = new TestingQueueProvisioner($config);
 
-        $this->message_bank = $test_util->getMessageBank('bufferer-test-queue');
-        $this->consumer = $test_util->getConsumerQueue('bufferer-test-queue');
-        $this->database = $test_util->getDatabase();
-        $this->buffer_queue = $test_util->getBufferQueue('test-queue');
+        $this->buffer_queue_factory = $this->test_util->getBufferQueueFactory();
+        $this->buffer_queue = $this->buffer_queue_factory->getQueue('test-queue');
     }
 
     /**
      * @covers ::__construct
      * @covers ::push
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\BufferQueueFactory
      */
     public function testJobCanBeBufferQueued()
     {
@@ -67,13 +59,15 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
         ];
 
         $this->buffer_queue->push($expected_job['name'], $expected_job['params'], $expected_job['options']);
-        $this->assertBufferedJobEquals($expected_job, $this->consumer);
+        $this->assertBufferedJobEquals($expected_job);
     }
 
     /**
      * @covers ::__construct
      * @covers ::push
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\BufferQueueFactory
      */
     public function testMultipleJobsCanBeBufferQueued()
     {
@@ -93,7 +87,7 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
                 $expected_job['params'],
                 $expected_job['options']
             );
-            $this->assertBufferedJobEquals($expected_job, $this->consumer);
+            $this->assertBufferedJobEquals($expected_job);
         }
     }
 
@@ -101,6 +95,8 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::push
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\BufferQueueFactory
      * @expectedException Exception
      */
     public function testBufferedJobOptionsAreValidated()
@@ -112,6 +108,8 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::push
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\BufferQueueFactory
      */
     public function testRunAfterIsConvertedToStringIfProvided()
     {
@@ -126,13 +124,15 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
         $this->buffer_queue->push($expected_job['name'], $expected_job['params'], $expected_job['options']);
 
         $expected_job['options']['run_after'] = $expected_job['options']['run_after']->format('c');
-        $this->assertBufferedJobEquals($expected_job, $this->consumer);
+        $this->assertBufferedJobEquals($expected_job);
     }
 
     /**
      * @covers ::__construct
      * @covers ::processBuffer
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\BufferQueueFactory
      */
     public function testProcessingBufferedMessageMovesMessageToDatabase()
     {
@@ -147,7 +147,7 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
 
         $this->buffer_queue->processBuffer();
 
-        $job = current($this->database->getAll('buffered_jobs'));
+        $job = current($this->test_util->getDatabase()->getAll('buffered_jobs'));
         $this->assertEquals(
             [
                 'job_name' => $expected_job['name'],
@@ -168,6 +168,8 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::processBuffer
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\BufferQueueFactory
      * @expectedException Exception
      */
     public function testProcessingBufferedMessageAcknowledgesMessage()
@@ -182,16 +184,81 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
         $this->buffer_queue->push($expected_job['name'], $expected_job['params'], $expected_job['options']);
 
         $this->buffer_queue->processBuffer();
-        $this->message_bank->emulateReconnect();
+        $this->test_util->getMessageBank('bufferer-test-queue')->emulateReconnect();
         $this->buffer_queue->processBuffer();
     }
 
     /**
-     * @param array $expected_job
-     * @param ConsumerQueue $consumer
+     * @covers ::__construct
+     * @covers ::push
+     * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
      */
-    private function assertBufferedJobEquals(array $expected_job, ConsumerQueue $consumer)
+    public function testBatchedJobIsPublishedIfAndOnlyIfBatchIsPublished()
     {
+        $uniqid = uniqid();
+        $expected_job = [
+            'name'   => "some-job-{$uniqid}",
+            'params' => ['value' => $uniqid],
+            'options' => ['queue_name' => 'test-queue'],
+        ];
+
+        $consumer = $this->test_util->getConsumerQueue('bufferer-test-queue');
+
+        $this->buffer_queue_factory->beginBatch();
+        $this->buffer_queue->push($expected_job['name'], $expected_job['params'], $expected_job['options']);
+
+        try {
+            $consumer->consume(function () use ($expected_job) {
+                $this->fail('A message should not be available for consuming until after batch is published.');
+            });
+        } catch (Exception $exception) {
+            // the exception is expected. do nothing.
+        }
+
+        $this->buffer_queue_factory->publishBatch();
+
+        $consumer->consume(function (IncomingMessage $message) use ($expected_job) {
+            $received_job = $message->getContent();
+            $this->assertEquals($expected_job, [
+                'name'   => $received_job['name'],
+                'params' => $received_job['params'],
+                'options'   => $received_job['options'],
+            ]);
+        });
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::push
+     * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
+     * @expectedException Exception
+     */
+    public function testBatchedJobIsDiscardedIfBatchIsDiscarded()
+    {
+        $uniqid = uniqid();
+        $expected_job = [
+            'name'   => "some-job-{$uniqid}",
+            'params' => ['value' => $uniqid],
+            'options' => ['queue_name' => 'test-queue'],
+        ];
+
+        $this->buffer_queue_factory->beginBatch();
+        $this->buffer_queue->push($expected_job['name'], $expected_job['params'], $expected_job['options']);
+        $this->buffer_queue_factory->discardBatch();
+
+        $this->test_util->getConsumerQueue('bufferer-test-queue')->consume(function () {});
+    }
+
+    /**
+     * @param array $expected_job
+     */
+    private function assertBufferedJobEquals(array $expected_job)
+    {
+        $consumer = $this->test_util->getConsumerQueue('bufferer-test-queue');
         $consumer->consume(function (IncomingMessage $message) use ($expected_job) {
             $received_job = $message->getContent();
             $this->assertEquals($expected_job, [

@@ -6,10 +6,9 @@ use Hodor\Database\Adapter\Testing\BufferWorker;
 use Hodor\Database\Adapter\Testing\Database;
 use Hodor\Database\Adapter\Testing\Dequeuer;
 use Hodor\Database\Adapter\Testing\Superqueuer;
-use Hodor\JobQueue\BufferQueue;
+use Hodor\JobQueue\BufferQueueFactory;
 use Hodor\JobQueue\Config;
 use Hodor\JobQueue\Superqueue;
-use Hodor\JobQueue\WorkerQueue;
 use Hodor\JobQueue\WorkerQueueFactory;
 use Hodor\MessageQueue\Adapter\Testing\Config as TestingConfig;
 use Hodor\MessageQueue\Adapter\Testing\Factory;
@@ -53,9 +52,9 @@ class TestingQueueProvisioner
     private $worker_queue_factory;
 
     /**
-     * @var BufferQueue[]
+     * @var BufferQueueFactory
      */
-    private $buffer_queues = [];
+    private $buffer_queue_factory;
 
     /**
      * @var Superqueue
@@ -125,27 +124,17 @@ class TestingQueueProvisioner
     }
 
     /**
-     * @param string $queue_name
-     * @return WorkerQueue
+     * @return BufferQueueFactory
      */
-    public function getWorkerQueue($queue_name)
+    public function getBufferQueueFactory()
     {
-        return $this->getWorkerQueueFactory()->getWorkerQueue($queue_name);
-    }
-
-    /**
-     * @param string $queue_name
-     * @return BufferQueue
-     */
-    public function getBufferQueue($queue_name)
-    {
-        if (array_key_exists($queue_name, $this->buffer_queues)) {
-            return $this->buffer_queues[$queue_name];
+        if ($this->buffer_queue_factory) {
+            return $this->buffer_queue_factory;
         }
 
-        $this->buffer_queues[$queue_name] = new BufferQueue(
-            $this->getProducerQueue("bufferer-{$queue_name}"),
-            $this->getConsumerQueue("bufferer-{$queue_name}"),
+        $this->buffer_queue_factory = new BufferQueueFactory(
+            $this->getProducer(),
+            $this->getConsumer(),
             new BufferWorker($this->getDatabase()),
             new Config(__FILE__, [
                 'adapter_factory' => 'testing',
@@ -153,7 +142,7 @@ class TestingQueueProvisioner
             ])
         );
 
-        return $this->buffer_queues[$queue_name];
+        return $this->buffer_queue_factory;
     }
 
     /**
