@@ -17,29 +17,19 @@ class QueueManager
     private $config;
 
     /**
-     * @var array
-     */
-    private $buffer_queues = [];
-
-    /**
      * @var WorkerQueueFactory
      */
     private $worker_queue_factory;
 
     /**
+     * @var BufferQueueFactory
+     */
+    private $buffer_queue_factory;
+
+    /**
      * @var MqFactoryInterface
      */
     private $mq_adapter_factory;
-
-    /**
-     * @var Producer
-     */
-    private $mq_producer;
-
-    /**
-     * @var Consumer
-     */
-    private $mq_consumer;
 
     /**
      * @var FactoryInterface
@@ -77,18 +67,7 @@ class QueueManager
      */
     public function getBufferQueue($queue_name)
     {
-        if (isset($this->buffer_queues[$queue_name])) {
-            return $this->buffer_queues[$queue_name];
-        }
-
-        $this->buffer_queues[$queue_name] = new BufferQueue(
-            $this->getMqProducer()->getQueue("bufferer-{$queue_name}"),
-            $this->getMqConsumer()->getQueue("bufferer-{$queue_name}"),
-            $this->getDatabase()->getBufferWorker(),
-            $this->config
-        );
-
-        return $this->buffer_queues[$queue_name];
+        return $this->getBufferQueueFactory()->getQueue($queue_name);
     }
 
     /**
@@ -118,27 +97,46 @@ class QueueManager
         }
 
         $this->worker_queue_factory = new WorkerQueueFactory(
-            $this->getMqProducer(),
-            $this->getMqConsumer(),
+            new Producer($this->getMessageQueueAdapterFactory()),
+            new Consumer($this->getMessageQueueAdapterFactory()),
             $this->getDatabase()->getDequeuer()
         );
 
         return $this->worker_queue_factory;
     }
 
+    /**
+     * @return BufferQueueFactory
+     */
+    public function getBufferQueueFactory()
+    {
+        if ($this->buffer_queue_factory) {
+            return $this->buffer_queue_factory;
+        }
+
+        $this->buffer_queue_factory = new BufferQueueFactory(
+            new Producer($this->getMessageQueueAdapterFactory()),
+            new Consumer($this->getMessageQueueAdapterFactory()),
+            $this->getDatabase()->getBufferWorker(),
+            $this->config
+        );
+
+        return $this->buffer_queue_factory;
+    }
+
     public function beginBatch()
     {
-        $this->getMqProducer()->beginBatch();
+        $this->getBufferQueueFactory()->beginBatch();
     }
 
     public function publishBatch()
     {
-        $this->getMqProducer()->publishBatch();
+        $this->getBufferQueueFactory()->publishBatch();
     }
 
     public function discardBatch()
     {
-        $this->getMqProducer()->discardBatch();
+        $this->getBufferQueueFactory()->discardBatch();
     }
 
     /**
@@ -156,34 +154,6 @@ class QueueManager
         $this->database = $db_adapter_factory->getAdapter($config);
 
         return $this->database;
-    }
-
-    /**
-     * @return Producer
-     */
-    private function getMqProducer()
-    {
-        if ($this->mq_producer) {
-            return $this->mq_producer;
-        }
-
-        $this->mq_producer = new Producer($this->getMessageQueueAdapterFactory());
-
-        return $this->mq_producer;
-    }
-
-    /**
-     * @return Consumer
-     */
-    private function getMqConsumer()
-    {
-        if ($this->mq_consumer) {
-            return $this->mq_consumer;
-        }
-
-        $this->mq_consumer = new Consumer($this->getMessageQueueAdapterFactory());
-
-        return $this->mq_consumer;
     }
 
     /**

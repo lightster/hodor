@@ -28,6 +28,11 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
     private $consumer;
 
     /**
+     * @var BufferQueueFactory
+     */
+    private $buffer_queue_factory;
+
+    /**
      * @var BufferQueue
      */
     private $buffer_queue;
@@ -49,13 +54,16 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
         $this->message_bank = $test_util->getMessageBank('bufferer-test-queue');
         $this->consumer = $test_util->getConsumerQueue('bufferer-test-queue');
         $this->database = $test_util->getDatabase();
-        $this->buffer_queue = $test_util->getBufferQueue('test-queue');
+        $this->buffer_queue_factory = $test_util->getBufferQueueFactory();
+        $this->buffer_queue = $this->buffer_queue_factory->getQueue('test-queue');
     }
 
     /**
      * @covers ::__construct
      * @covers ::push
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\BufferQueueFactory
      */
     public function testJobCanBeBufferQueued()
     {
@@ -74,6 +82,8 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::push
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\BufferQueueFactory
      */
     public function testMultipleJobsCanBeBufferQueued()
     {
@@ -101,6 +111,8 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::push
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\BufferQueueFactory
      * @expectedException Exception
      */
     public function testBufferedJobOptionsAreValidated()
@@ -112,6 +124,8 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::push
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\BufferQueueFactory
      */
     public function testRunAfterIsConvertedToStringIfProvided()
     {
@@ -133,6 +147,8 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::processBuffer
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\BufferQueueFactory
      */
     public function testProcessingBufferedMessageMovesMessageToDatabase()
     {
@@ -168,6 +184,8 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::processBuffer
      * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\BufferQueueFactory
      * @expectedException Exception
      */
     public function testProcessingBufferedMessageAcknowledgesMessage()
