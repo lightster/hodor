@@ -189,6 +189,71 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     * @covers ::push
+     * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
+     */
+    public function testBatchedJobIsPublishedIfAndOnlyIfBatchIsPublished()
+    {
+        $uniqid = uniqid();
+        $expected_job = [
+            'name'   => "some-job-{$uniqid}",
+            'params' => ['value' => $uniqid],
+            'options' => ['queue_name' => 'test-queue'],
+        ];
+
+        $consumer = $this->test_util->getConsumerQueue('bufferer-test-queue');
+
+        $this->buffer_queue_factory->beginBatch();
+        $this->buffer_queue->push($expected_job['name'], $expected_job['params'], $expected_job['options']);
+
+        try {
+            $consumer->consume(function () use ($expected_job) {
+                $this->fail('A message should not be available for consuming until after batch is published.');
+            });
+        } catch (Exception $exception) {
+            // the exception is expected. do nothing.
+        }
+
+        $this->buffer_queue_factory->publishBatch();
+
+        $consumer->consume(function (IncomingMessage $message) use ($expected_job) {
+            $received_job = $message->getContent();
+            $this->assertEquals($expected_job, [
+                'name'   => $received_job['name'],
+                'params' => $received_job['params'],
+                'options'   => $received_job['options'],
+            ]);
+        });
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::push
+     * @covers ::<private>
+     * @covers \Hodor\JobQueue\AbstractQueueFactory
+     * @covers \Hodor\JobQueue\WorkerQueueFactory
+     * @expectedException Exception
+     */
+    public function testBatchedJobIsDiscardedIfBatchIsDiscarded()
+    {
+        $uniqid = uniqid();
+        $expected_job = [
+            'name'   => "some-job-{$uniqid}",
+            'params' => ['value' => $uniqid],
+            'options' => ['queue_name' => 'test-queue'],
+        ];
+
+        $this->buffer_queue_factory->beginBatch();
+        $this->buffer_queue->push($expected_job['name'], $expected_job['params'], $expected_job['options']);
+        $this->buffer_queue_factory->discardBatch();
+
+        $this->test_util->getConsumerQueue('bufferer-test-queue')->consume(function () {});
+    }
+
+    /**
      * @param array $expected_job
      */
     private function assertBufferedJobEquals(array $expected_job)
