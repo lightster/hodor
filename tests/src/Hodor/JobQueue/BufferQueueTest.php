@@ -4,11 +4,8 @@ namespace Hodor\JobQueue;
 
 use DateTime;
 use Exception;
-use Hodor\Database\Adapter\Testing\Database;
 use Hodor\JobQueue\TestUtil\TestingQueueProvisioner;
 use Hodor\MessageQueue\Adapter\Testing\Config as TestingConfig;
-use Hodor\MessageQueue\Adapter\Testing\MessageBank;
-use Hodor\MessageQueue\ConsumerQueue;
 use Hodor\MessageQueue\IncomingMessage;
 use PHPUnit_Framework_TestCase;
 
@@ -18,14 +15,9 @@ use PHPUnit_Framework_TestCase;
 class BufferQueueTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * @var MessageBank
+     * @var TestingQueueProvisioner
      */
-    private $message_bank;
-
-    /**
-     * @var ConsumerQueue
-     */
-    private $consumer;
+    private $test_util;
 
     /**
      * @var BufferQueueFactory
@@ -37,11 +29,6 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
      */
     private $buffer_queue;
 
-    /**
-     * @var Database
-     */
-    private $database;
-
     public function setUp()
     {
         parent::setUp();
@@ -49,12 +36,9 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
         $config = new TestingConfig([]);
         $config->addQueueConfig('bufferer-test-queue', ['bufferers_per_server' => 5]);
 
-        $test_util = new TestingQueueProvisioner($config);
+        $this->test_util = new TestingQueueProvisioner($config);
 
-        $this->message_bank = $test_util->getMessageBank('bufferer-test-queue');
-        $this->consumer = $test_util->getConsumerQueue('bufferer-test-queue');
-        $this->database = $test_util->getDatabase();
-        $this->buffer_queue_factory = $test_util->getBufferQueueFactory();
+        $this->buffer_queue_factory = $this->test_util->getBufferQueueFactory();
         $this->buffer_queue = $this->buffer_queue_factory->getQueue('test-queue');
     }
 
@@ -75,7 +59,7 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
         ];
 
         $this->buffer_queue->push($expected_job['name'], $expected_job['params'], $expected_job['options']);
-        $this->assertBufferedJobEquals($expected_job, $this->consumer);
+        $this->assertBufferedJobEquals($expected_job);
     }
 
     /**
@@ -103,7 +87,7 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
                 $expected_job['params'],
                 $expected_job['options']
             );
-            $this->assertBufferedJobEquals($expected_job, $this->consumer);
+            $this->assertBufferedJobEquals($expected_job);
         }
     }
 
@@ -140,7 +124,7 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
         $this->buffer_queue->push($expected_job['name'], $expected_job['params'], $expected_job['options']);
 
         $expected_job['options']['run_after'] = $expected_job['options']['run_after']->format('c');
-        $this->assertBufferedJobEquals($expected_job, $this->consumer);
+        $this->assertBufferedJobEquals($expected_job);
     }
 
     /**
@@ -163,7 +147,7 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
 
         $this->buffer_queue->processBuffer();
 
-        $job = current($this->database->getAll('buffered_jobs'));
+        $job = current($this->test_util->getDatabase()->getAll('buffered_jobs'));
         $this->assertEquals(
             [
                 'job_name' => $expected_job['name'],
@@ -200,16 +184,16 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
         $this->buffer_queue->push($expected_job['name'], $expected_job['params'], $expected_job['options']);
 
         $this->buffer_queue->processBuffer();
-        $this->message_bank->emulateReconnect();
+        $this->test_util->getMessageBank('bufferer-test-queue')->emulateReconnect();
         $this->buffer_queue->processBuffer();
     }
 
     /**
      * @param array $expected_job
-     * @param ConsumerQueue $consumer
      */
-    private function assertBufferedJobEquals(array $expected_job, ConsumerQueue $consumer)
+    private function assertBufferedJobEquals(array $expected_job)
     {
+        $consumer = $this->test_util->getConsumerQueue('bufferer-test-queue');
         $consumer->consume(function (IncomingMessage $message) use ($expected_job) {
             $received_job = $message->getContent();
             $this->assertEquals($expected_job, [
