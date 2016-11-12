@@ -9,7 +9,6 @@ use Hodor\Database\Exception\BufferedJobNotFoundException;
 use Hodor\MessageQueue\ConsumerQueue;
 use Hodor\MessageQueue\IncomingMessage;
 use Hodor\MessageQueue\ProducerQueue;
-use Hodor\MessageQueue\Queue;
 
 class WorkerQueue
 {
