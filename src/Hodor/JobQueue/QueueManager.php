@@ -62,32 +62,6 @@ class QueueManager
     }
 
     /**
-     * @param  string $queue_name
-     * @return BufferQueue
-     */
-    public function getBufferQueue($queue_name)
-    {
-        return $this->getBufferQueueFactory()->getQueue($queue_name);
-    }
-
-    /**
-     * @param  string $name
-     * @param  array  $params
-     * @param  array  $options
-     * @return BufferQueue
-     */
-    public function getBufferQueueForJob($name, array $params, array $options)
-    {
-        $queue_name = $this->config->getJobQueueConfig()->getBufferQueueName(
-            $name,
-            $params,
-            $options
-        );
-
-        return $this->getBufferQueue($queue_name);
-    }
-
-    /**
      * @return WorkerQueueFactory
      */
     public function getWorkerQueueFactory()
@@ -122,21 +96,6 @@ class QueueManager
         );
 
         return $this->buffer_queue_factory;
-    }
-
-    public function beginBatch()
-    {
-        $this->getBufferQueueFactory()->beginBatch();
-    }
-
-    public function publishBatch()
-    {
-        $this->getBufferQueueFactory()->publishBatch();
-    }
-
-    public function discardBatch()
-    {
-        $this->getBufferQueueFactory()->discardBatch();
     }
 
     /**

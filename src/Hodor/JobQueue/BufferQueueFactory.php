@@ -36,6 +36,23 @@ class BufferQueueFactory extends AbstractQueueFactory
     }
 
     /**
+     * @param  string $name
+     * @param  array  $params
+     * @param  array  $options
+     * @return BufferQueue
+     */
+    public function getBufferQueueForJob($name, array $params, array $options)
+    {
+        $queue_name = $this->config->getJobQueueConfig()->getBufferQueueName(
+            $name,
+            $params,
+            $options
+        );
+
+        return $this->getQueue($queue_name);
+    }
+
+    /**
      * @param string $queue_name
      * @return BufferQueue
      */

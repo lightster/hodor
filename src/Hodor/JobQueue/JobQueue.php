@@ -29,7 +29,7 @@ class JobQueue
      */
     public function push($job_name, array $params = [], array $options = [])
     {
-        $buffer_queue = $this->getQueueManager()->getBufferQueueForJob(
+        $buffer_queue = $this->getQueueManager()->getBufferQueueFactory()->getBufferQueueForJob(
             $job_name,
             $params,
             $options
@@ -44,17 +44,17 @@ class JobQueue
 
     public function beginBatch()
     {
-        $this->getQueueManager()->beginBatch();
+        $this->getQueueManager()->getBufferQueueFactory()->beginBatch();
     }
 
     public function publishBatch()
     {
-        $this->getQueueManager()->publishBatch();
+        $this->getQueueManager()->getBufferQueueFactory()->publishBatch();
     }
 
     public function discardBatch()
     {
-        $this->getQueueManager()->discardBatch();
+        $this->getQueueManager()->getBufferQueueFactory()->discardBatch();
     }
 
     /**

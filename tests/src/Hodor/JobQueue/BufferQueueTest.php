@@ -34,12 +34,12 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
         parent::setUp();
 
         $config = new TestingConfig([]);
-        $config->addQueueConfig('bufferer-test-queue', ['bufferers_per_server' => 5]);
+        $config->addQueueConfig('bufferer-default', ['bufferers_per_server' => 5]);
 
         $this->test_util = new TestingQueueProvisioner($config);
 
         $this->buffer_queue_factory = $this->test_util->getBufferQueueFactory();
-        $this->buffer_queue = $this->buffer_queue_factory->getQueue('test-queue');
+        $this->buffer_queue = $this->buffer_queue_factory->getQueue('default');
     }
 
     /**
@@ -60,6 +60,31 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
 
         $this->buffer_queue->push($expected_job['name'], $expected_job['params'], $expected_job['options']);
         $this->assertBufferedJobEquals($expected_job);
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers \Hodor\JobQueue\BufferQueueFactory
+     */
+    public function testBufferQueueForJobIsAsExpected()
+    {
+        $uniqid = uniqid();
+        $expected_job = [
+            'name'    => "some-job-{$uniqid}",
+            'params'  => ['value' => $uniqid],
+            'options' => [],
+        ];
+
+        $buffer_queue_for_job = $this->buffer_queue_factory->getBufferQueueForJob(
+            $expected_job['name'],
+            $expected_job['params'],
+            $expected_job['options']
+        );
+
+        $this->assertSame(
+            $this->buffer_queue_factory->getQueue('default'),
+            $buffer_queue_for_job
+        );
     }
 
     /**
@@ -184,7 +209,7 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
         $this->buffer_queue->push($expected_job['name'], $expected_job['params'], $expected_job['options']);
 
         $this->buffer_queue->processBuffer();
-        $this->test_util->getMessageBank('bufferer-test-queue')->emulateReconnect();
+        $this->test_util->getMessageBank('bufferer-default')->emulateReconnect();
         $this->buffer_queue->processBuffer();
     }
 
@@ -204,7 +229,7 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
             'options' => ['queue_name' => 'test-queue'],
         ];
 
-        $consumer = $this->test_util->getConsumerQueue('bufferer-test-queue');
+        $consumer = $this->test_util->getConsumerQueue('bufferer-default');
 
         $this->buffer_queue_factory->beginBatch();
         $this->buffer_queue->push($expected_job['name'], $expected_job['params'], $expected_job['options']);
@@ -250,7 +275,7 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
         $this->buffer_queue->push($expected_job['name'], $expected_job['params'], $expected_job['options']);
         $this->buffer_queue_factory->discardBatch();
 
-        $this->test_util->getConsumerQueue('bufferer-test-queue')->consume(function () {});
+        $this->test_util->getConsumerQueue('bufferer-default')->consume(function () {});
     }
 
     /**
@@ -258,7 +283,7 @@ class BufferQueueTest extends PHPUnit_Framework_TestCase
      */
     private function assertBufferedJobEquals(array $expected_job)
     {
-        $consumer = $this->test_util->getConsumerQueue('bufferer-test-queue');
+        $consumer = $this->test_util->getConsumerQueue('bufferer-default');
         $consumer->consume(function (IncomingMessage $message) use ($expected_job) {
             $received_job = $message->getContent();
             $this->assertEquals($expected_job, [
