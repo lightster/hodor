@@ -13,6 +13,6 @@ $queue_name = $args->getQueueName();
 
 $config = Config::loadFromFile($config_file);
 $queue_manager = new QueueManager($config);
-$buffer_worker = $queue_manager->getBufferQueue($queue_name);
+$buffer_worker = $queue_manager->getBufferQueueFactory()->getQueue($queue_name);
 
 $buffer_worker->processBuffer();
