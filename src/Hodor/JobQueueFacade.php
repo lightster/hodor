@@ -4,6 +4,10 @@ namespace Hodor;
 
 use Hodor\JobQueue\JobQueue;
 
+/**
+ * @deprecated 0.3.0 Use Hodor\JobQueue\JobQueue with dependency injection
+ * @see \Hodor\JobQueue\JobQueue
+ */
 class JobQueueFacade
 {
     /**

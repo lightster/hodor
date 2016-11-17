@@ -3,6 +3,7 @@
 Breaking Changes:
 
  - Upgraded Hodor's dependency on lightster/yo-pdo to v0.1.3+ from v0.0.2+
+ - Deprecated \Hodor\JobQueueFacade and will remove in 0.3.0
 
 Bug Fixes:
 
