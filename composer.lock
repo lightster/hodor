@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "9adc1170d9b79363aee1c361d78cd09c",
-    "content-hash": "90380670625955df8c33c9c5ee64dc33",
+    "hash": "3ad67606e881abd59c89f7239569f740",
+    "content-hash": "8b9a68bdc20bc2030d4cfef8e535502d",
     "packages": [
         {
             "name": "davedevelopment/phpmig",
@@ -71,6 +71,52 @@
                 "migrations"
             ],
             "time": "2015-07-29 08:00:40"
+        },
+        {
+            "name": "hodor/ravens",
+            "version": "v0.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hold-the-door/ravens.git",
+                "reference": "b63c2db85e1efe97356d82c105acd46de97b23ba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hold-the-door/ravens/zipball/b63c2db85e1efe97356d82c105acd46de97b23ba",
+                "reference": "b63c2db85e1efe97356d82c105acd46de97b23ba",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.18",
+                "php-amqplib/php-amqplib": "^2.4.0",
+                "pimple/pimple": "^1.1.1",
+                "symfony/console": "^2.8.3"
+            },
+            "require-dev": {
+                "codeclimate/php-test-reporter": "dev-master",
+                "mikey179/vfsstream": "^1.6.4",
+                "phpunit/phpunit": "^4.8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Hodor\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHP/rabbitmq-based message queue library",
+            "homepage": "http://github.com/hold-the-door/ravens",
+            "keywords": [
+                "hodor",
+                "message",
+                "php",
+                "queue",
+                "rabbitmq"
+            ],
+            "time": "2016-12-08 05:01:33"
         },
         {
             "name": "lightster/yo-pdo",
