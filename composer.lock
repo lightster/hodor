@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "3ad67606e881abd59c89f7239569f740",
-    "content-hash": "8b9a68bdc20bc2030d4cfef8e535502d",
+    "hash": "f8dfc3ead3cf6904b18769ee21b07d3e",
+    "content-hash": "52dab6022c387838f2d5ca9640511fb6",
     "packages": [
         {
             "name": "davedevelopment/phpmig",
@@ -74,21 +74,21 @@
         },
         {
             "name": "hodor/ravens",
-            "version": "v0.0.0",
+            "version": "v0.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hold-the-door/ravens.git",
-                "reference": "b63c2db85e1efe97356d82c105acd46de97b23ba"
+                "reference": "e74f866ad868b2854470d15c8ad0038f023c7dcd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hold-the-door/ravens/zipball/b63c2db85e1efe97356d82c105acd46de97b23ba",
-                "reference": "b63c2db85e1efe97356d82c105acd46de97b23ba",
+                "url": "https://api.github.com/repos/hold-the-door/ravens/zipball/e74f866ad868b2854470d15c8ad0038f023c7dcd",
+                "reference": "e74f866ad868b2854470d15c8ad0038f023c7dcd",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.5.18",
-                "php-amqplib/php-amqplib": "^2.4.0",
+                "php-amqplib/php-amqplib": "^2.5.2",
                 "pimple/pimple": "^1.1.1",
                 "symfony/console": "^2.8.3"
             },
@@ -116,7 +116,7 @@
                 "queue",
                 "rabbitmq"
             ],
-            "time": "2016-12-08 05:01:33"
+            "time": "2016-12-26 04:36:52"
         },
         {
             "name": "lightster/yo-pdo",
