@@ -49,29 +49,25 @@ class Superqueuer implements SuperqueuerInterface
     {
         $sql = <<<SQL
 WITH mutexed_buffered_jobs AS (
-    SELECT
-        buffered_jobs.*,
-        RANK() OVER (
-            PARTITION BY mutex_id
-            ORDER BY job_rank, buffered_at, buffered_job_id
-        ) AS mutex_rank
+    SELECT DISTINCT ON (mutex_id)
+        buffered_jobs.*
     FROM buffered_jobs
     WHERE run_after <= NOW()
-        AND NOT EXISTS (
-            SELECT 1
-            FROM queued_jobs
-            WHERE queued_jobs.mutex_id = buffered_jobs.mutex_id
-        )
     ORDER BY
+        mutex_id,
         job_rank,
         buffered_at
 )
 SELECT *
 FROM mutexed_buffered_jobs
-WHERE mutex_rank = 1
+WHERE mutex_id NOT IN (
+        SELECT DISTINCT queued_jobs.mutex_id
+        FROM queued_jobs
+    )
 ORDER BY
     job_rank,
-    buffered_at
+    buffered_at,
+    buffered_job_id
 SQL;
 
         $row_generator = $this->getYoPdo()->getSelectRowGenerator($sql);
