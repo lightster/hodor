@@ -143,6 +143,14 @@ abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @return JobsToRunAsserter
+     */
+    protected function getAsserter()
+    {
+        return $this->asserter;
+    }
+
+    /**
      * @param array|Traversable $jobs
      * @return array
      */
