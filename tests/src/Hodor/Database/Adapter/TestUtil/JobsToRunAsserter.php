@@ -39,32 +39,20 @@ class JobsToRunAsserter
 
         $actual_jobs = [];
         foreach ($database->getJobsToRunGenerator() as $actual_job) {
-            $expected_job = $this->getNextExpectedJob($expected_jobs, $actual_jobs, $actual_job);
+            if ($expected_jobs instanceof Generator) {
+                $expected_job = $expected_jobs->current();
+                $expected_jobs->next();
+                $this->test_case->assertSame("job-{$uniqid}-{$expected_job}", $actual_job['job_name']);
+                continue;
+            }
 
+            $expected_job = array_shift($expected_jobs);
+            $actual_jobs[] = $actual_job;
             $this->test_case->assertSame("job-{$uniqid}-{$expected_job}", $actual_job['job_name']);
         }
         $this->assertNoMoreExpectedJobs($expected_jobs);
 
         return $actual_jobs;
-    }
-
-    /**
-     * @param $expected_jobs
-     * @param array $actual_jobs
-     * @param $actual_job
-     * @return mixed
-     */
-    private function getNextExpectedJob($expected_jobs, array & $actual_jobs, $actual_job)
-    {
-        if ($expected_jobs instanceof Generator) {
-            $expected_job = $expected_jobs->current();
-            $expected_jobs->next();
-            return $expected_job;
-        }
-
-        $expected_job = array_shift($expected_jobs);
-        $actual_jobs[] = $actual_job;
-        return $expected_job;
     }
 
     /**
