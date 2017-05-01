@@ -22,6 +22,9 @@ class SuperqueuerTest extends SuperqueuerBaseTest
         $uniqid = uniqid();
 
         $sql = <<<'SQL'
+-- increase worker memory so Postgres can better handle superqueuer query
+SET work_mem = '4MB';
+
 INSERT INTO buffered_jobs
 (
     queue_name,
