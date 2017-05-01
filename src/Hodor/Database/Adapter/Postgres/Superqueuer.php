@@ -61,7 +61,7 @@ WITH mutexed_buffered_jobs AS (
 SELECT *
 FROM mutexed_buffered_jobs
 WHERE mutex_id NOT IN (
-        SELECT DISTINCT queued_jobs.mutex_id
+        SELECT queued_jobs.mutex_id
         FROM queued_jobs
     )
 ORDER BY
