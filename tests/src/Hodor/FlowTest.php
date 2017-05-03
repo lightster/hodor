@@ -84,7 +84,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
             'the_time'    => date('c'),
             'known_value' => 'donuts',
             'job_options' => [
-                'run_after' => date('c', time() + 2),
+                'run_after' => date('c', time() + 3),
                 'job_rank' => 1,
                 'mutex_id' => 'chocolate',
             ],
@@ -93,7 +93,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
         $this->queueJobs($job_name, [$job_params, $job_params, $scheduled_job_params]);
 
         $this->assertJobRan($job_name, $job_params);
-        sleep(3);
+        sleep(5);
         $this->runSuperqueuer();
         $this->assertJobRan($job_name, $scheduled_job_params);
         $this->runSuperqueuer();
