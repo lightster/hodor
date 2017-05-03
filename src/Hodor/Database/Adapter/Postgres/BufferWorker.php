@@ -26,13 +26,20 @@ class BufferWorker implements BufferWorkerInterface
      */
     public function bufferJob($queue_name, array $job)
     {
+        $table_name = 'buffered_jobs';
+        $status_column = 'inserted';
+        if (isset($job['options']['run_after'])) {
+            $table_name = 'scheduled_jobs';
+            $status_column = 'scheduled';
+        }
+
         $row = [
-            'queue_name'    => $queue_name,
-            'job_name'      => $job['name'],
-            'job_params'    => json_encode($job['params'], JSON_FORCE_OBJECT),
-            'buffered_at'   => $job['meta']['buffered_at'],
-            'buffered_from' => $job['meta']['buffered_from'],
-            'inserted_from' => gethostname(),
+            'queue_name'            => $queue_name,
+            'job_name'              => $job['name'],
+            'job_params'            => json_encode($job['params'], JSON_FORCE_OBJECT),
+            'buffered_at'           => $job['meta']['buffered_at'],
+            'buffered_from'         => $job['meta']['buffered_from'],
+            "{$status_column}_from" => gethostname(),
         ];
 
         if (isset($job['options']['run_after'])) {
@@ -46,7 +53,7 @@ class BufferWorker implements BufferWorkerInterface
         }
 
         $this->getYoPdo()->transaction()->begin('buffer-job');
-        $this->getYoPdo()->insert('buffered_jobs', $row);
+        $this->getYoPdo()->insert($table_name, $row);
         $this->getYoPdo()->transaction()->accept('buffer-job');
     }
 

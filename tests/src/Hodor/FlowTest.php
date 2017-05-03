@@ -60,13 +60,43 @@ class FlowTest extends PHPUnit_Framework_TestCase
             'the_time'    => date('c'),
             'known_value' => 'donuts',
             'job_options' => [
-                'run_after' => date('c'),
                 'job_rank' => 5,
             ],
         ];
 
         $this->queueJobs($job_name, [$job_params]);
 
+        $this->assertJobRan($job_name, $job_params);
+    }
+
+    public function testJobCanBeScheduled()
+    {
+        $job_name = 'job-name-' . uniqid();
+        $job_params = [
+            'the_time'    => date('c'),
+            'known_value' => 'donuts',
+            'job_options' => [
+                'job_rank' => 5,
+                'mutex_id' => 'chocolate',
+            ],
+        ];
+        $scheduled_job_params = [
+            'the_time'    => date('c'),
+            'known_value' => 'donuts',
+            'job_options' => [
+                'run_after' => date('c', time() + 2),
+                'job_rank' => 1,
+                'mutex_id' => 'chocolate',
+            ],
+        ];
+
+        $this->queueJobs($job_name, [$job_params, $job_params, $scheduled_job_params]);
+
+        $this->assertJobRan($job_name, $job_params);
+        sleep(3);
+        $this->runSuperqueuer();
+        $this->assertJobRan($job_name, $scheduled_job_params);
+        $this->runSuperqueuer();
         $this->assertJobRan($job_name, $job_params);
     }
 
@@ -93,7 +123,6 @@ class FlowTest extends PHPUnit_Framework_TestCase
             'the_time'    => date('c'),
             'known_value' => 'donuts',
             'job_options' => [
-                'run_after' => date('c'),
                 'job_rank' => 5,
             ],
         ];
@@ -160,7 +189,6 @@ class FlowTest extends PHPUnit_Framework_TestCase
             'the_time'    => date('c'),
             'known_value' => 'donuts',
             'job_options' => [
-                'run_after' => date('c'),
                 'job_rank' => 5,
             ],
         ];
