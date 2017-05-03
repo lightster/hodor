@@ -54,7 +54,6 @@ WITH mutexed_buffered_jobs AS (
     SELECT DISTINCT ON (mutex_id)
         buffered_jobs.*
     FROM buffered_jobs
-    WHERE run_after <= NOW()
     ORDER BY
         mutex_id,
         job_rank,
