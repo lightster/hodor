@@ -47,12 +47,13 @@ class Superqueuer implements SuperqueuerInterface
      */
     public function getJobsToRunGenerator()
     {
+        $this->processScheduledJobs();
+
         $sql = <<<SQL
 WITH mutexed_buffered_jobs AS (
     SELECT DISTINCT ON (mutex_id)
         buffered_jobs.*
     FROM buffered_jobs
-    WHERE run_after <= NOW()
     ORDER BY
         mutex_id,
         job_rank,
@@ -119,6 +120,51 @@ SQL;
     public function publishBatch()
     {
         $this->getYoPdo()->transaction()->accept('superqueue-jobs');
+    }
+
+    private function processScheduledJobs()
+    {
+        $sql = <<<SQL
+INSERT INTO buffered_jobs
+(
+    buffered_job_id,
+    queue_name,
+    job_name,
+    job_params,
+    job_rank,
+    run_after,
+    buffered_at,
+    buffered_from,
+    inserted_at,
+    inserted_from,
+    mutex_id,
+    scheduled_at,
+    scheduled_from
+)
+SELECT
+    buffered_job_id,
+    queue_name,
+    job_name,
+    job_params,
+    job_rank,
+    run_after,
+    buffered_at,
+    buffered_from,
+    NOW(),
+    :inserted_from,
+    mutex_id,
+    scheduled_at,
+    scheduled_from
+FROM scheduled_jobs
+WHERE run_after <= NOW();
+
+DELETE FROM scheduled_jobs
+WHERE run_after <= NOW();
+SQL;
+
+        $this->getYoPdo()->transaction()->begin('scheduled-jobs');
+        $this->getYoPdo()->queryMultiple($sql, ['inserted_from' => gethostname()]);
+        $this->getYoPdo()->transaction()->accept('scheduled-jobs');
     }
 
     /**
