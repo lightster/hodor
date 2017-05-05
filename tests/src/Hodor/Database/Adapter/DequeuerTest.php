@@ -68,7 +68,7 @@ abstract class DequeuerTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::markJobAsSuccessful
      * @covers ::<private>
-     * @expectedException Hodor\Database\Exception\BufferedJobNotFoundException
+     * @expectedException \Hodor\Database\Exception\BufferedJobNotFoundException
      */
     public function testMarkingUnrecognizedJobAsSuccessfulTriggersAnException()
     {
@@ -82,7 +82,7 @@ abstract class DequeuerTest extends PHPUnit_Framework_TestCase
      * @covers ::__construct
      * @covers ::markJobAsFailed
      * @covers ::<private>
-     * @expectedException Hodor\Database\Exception\BufferedJobNotFoundException
+     * @expectedException \Hodor\Database\Exception\BufferedJobNotFoundException
      */
     public function testMarkingUnrecognizedJobAsFailedTriggersAnException()
     {
@@ -119,7 +119,7 @@ abstract class DequeuerTest extends PHPUnit_Framework_TestCase
         $adapter_factory = $this->getProvisioner()->getAdapterFactory();
         $superqueuer = $adapter_factory->getSuperqueuer();
 
-        $scenario = $this->scenario_creator->createScenario($adapter_factory,  [
+        $scenario = $this->scenario_creator->createScenario($adapter_factory, [
             ['name' => 1, 'mutex_id' => 'a'],
             ['name' => 2, 'mutex_id' => 'a'],
         ], []);
