@@ -139,7 +139,7 @@ class JobQueueTest extends PHPUnit_Framework_TestCase
             'superqueue' => ['database' => ['type' => 'testing']],
             'buffer_queues'   => [
                 'default' => [
-                    'host' => 'localhost',
+                    'host' => 'fake-host',
                     'username' => 'guest',
                     'password' => 'guest',
                     'bufferers_per_server' => 1,

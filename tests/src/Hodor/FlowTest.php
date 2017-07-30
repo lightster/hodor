@@ -367,6 +367,7 @@ PHP;
         $dsn = $this->generateDsn($db_credentials);
 
         $config = $config_template;
+        $config['queue_defaults']['host'] = $config_credentials['test']['rabbitmq']['host'];
         $config['superqueue']['database'] = [
             'type'     => 'pgsql',
             'dsn'      => $dsn,
