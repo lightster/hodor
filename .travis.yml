@@ -13,13 +13,13 @@ services:
 addons:
   postgresql: "9.3"
 
+install:
+  - composer install
+
 before_script:
   - psql -c 'create database travisci_hodor;' -U postgres
   - cp config/dist/config.test.php config/config.test.php
   - sed -i 's#dbname=test_hodor#dbname=travisci_hodor#' config/config.test.php
-
-install:
-  - composer install
 
 after_script:
   - vendor/bin/test-reporter --coverage-report=tests/log/coverage.xml
