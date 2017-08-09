@@ -3,13 +3,13 @@ return [
     'test' => [
         'db' => [
             'yo-pdo-pgsql' => [
-                'dsn'      => 'pgsql:host=localhost;dbname=test_hodor',
+                'dsn'      => "pgsql:host={$options['postgres-host']};dbname={$options['postgres-dbname']}",
                 'username' => 'postgres',
                 'password' => '',
             ],
         ],
         'rabbitmq' => [
-            'host'            => '127.0.0.1',
+            'host'            => $options['rabbitmq-host'],
             'port'            => 5672,
             'username'        => 'guest',
             'password'        => 'guest',

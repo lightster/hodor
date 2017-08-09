@@ -18,8 +18,7 @@ install:
 
 before_script:
   - psql -c 'create database travisci_hodor;' -U postgres
-  - cp config/dist/config.test.php config/config.test.php
-  - sed -i 's#dbname=test_hodor#dbname=travisci_hodor#' config/config.test.php
+  - make install-test-travis
 
 after_script:
   - vendor/bin/test-reporter --coverage-report=tests/log/coverage.xml
