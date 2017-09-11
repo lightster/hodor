@@ -1,0 +1,40 @@
+{
+    "users": [
+        {
+            "name": "guest",
+            "password_hash": "Q24e80/0+e8OMOj7ehnRROe3c9hgpJZr8k/FeSiRIVl/jigC",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": "administrator"
+        }
+    ],
+    "vhosts": [
+        {
+            "name": "/"
+        }
+    ],
+    "permissions": [
+        {
+            "user": "guest",
+            "vhost": "/",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        }
+    ],
+    "parameters": [],
+    "global_parameters": [],
+    "policies": [
+        {
+            "vhost": "/",
+            "name": "expire-test-hodor",
+            "pattern": "test-hodor-.*",
+            "definition": {
+                "expires": 600000
+            },
+            "apply-to": "queues"
+        }
+    ],
+    "queues": [],
+    "exchanges": [],
+    "bindings": []
+}

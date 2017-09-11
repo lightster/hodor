@@ -1,0 +1,8 @@
+test:
+	%(CMD_PREFIX) test
+
+install:
+	%(CMD_PREFIX) install
+
+install-test-travis:
+	php bin/hodor.php test:generate-config --postgres-dbname=travisci_hodor
