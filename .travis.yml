@@ -13,12 +13,14 @@ services:
 addons:
   postgresql: "9.3"
 
-install:
-  - composer install
-
 before_script:
+  - chmod 0755 configure
+  - ./configure shell
   - psql -c 'create database travisci_hodor;' -U postgres
   - make install-test-travis
+
+install:
+  - composer install
 
 after_script:
   - vendor/bin/test-reporter --coverage-report=tests/log/coverage.xml

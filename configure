@@ -1,0 +1,22 @@
+#!/bin/bash
+
+case "$1" in
+    docker)
+        CMD_PREFIX='docker-compose run --rm php'
+        ;;
+
+    shell)
+        CMD_PREFIX='bash docker/fs/usr/local/bin/entrypoint.sh shell'
+        ;;
+
+    *)
+        echo $"Usage: $0 {docker|shell}"
+        exit 1
+esac
+
+echo -n 'Creating Makefile... '
+sed "s#%(CMD_PREFIX)#${CMD_PREFIX}#g" Makefile.in >Makefile
+echo "done"
+
+echo 'Run `make install` to install dev dependencies'
+echo 'Run `make test` to run tests'
