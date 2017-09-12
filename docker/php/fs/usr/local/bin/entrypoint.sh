@@ -31,7 +31,7 @@ wait_on_depends ()
 case "${COMMAND}" in
     test)
         wait_on_depends
-        php vendor/bin/phpunit --filter ArgumentsTest
+        php vendor/bin/phpunit
         ;;
 
     install)
