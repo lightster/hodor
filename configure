@@ -1,7 +1,7 @@
 #!/bin/bash
 
 case "$1" in
-    docker)
+    docker|pier)
         CMD_PREFIX='docker-compose run --rm php'
         ;;
 
