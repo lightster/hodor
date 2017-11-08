@@ -88,6 +88,10 @@ class Superqueue
 
     private function publishBatch()
     {
+        if ($this->jobs_queued <= 0) {
+            return;
+        }
+
         // the database transaction needs to be committed before the
         // message is pushed to Rabbit MQ to prevent jobs from being
         // processed by workers before they have been moved to buffered_jobs

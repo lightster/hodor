@@ -60,6 +60,16 @@ class SuperqueueTest extends PHPUnit_Framework_TestCase
      * @covers ::queueJobsFromDatabaseToWorkerQueue
      * @covers ::<private>
      */
+    public function testEmptyBatchOfJobsCanBeQueued()
+    {
+        $this->assertJobsAreQueued(0);
+    }
+
+    /**
+     * @covers ::__construct
+     * @covers ::queueJobsFromDatabaseToWorkerQueue
+     * @covers ::<private>
+     */
     public function testPartialBatchOfJobsCanBeQueued()
     {
         $this->assertJobsAreQueued(2);
