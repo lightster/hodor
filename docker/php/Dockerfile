@@ -1,19 +1,20 @@
 FROM php:5.6.24-cli
 MAINTAINER Matt Light <matt.light@lightdatasys.com>
 
+# - bcmath is for phpunit
+# - pdo_pgsql is for postgres
+# - sockets is for phpamqplib
+# - zip is for composer
+
 RUN apt-get update -qq \
     && apt install -yqq \
         libpq-dev \
         git \
         postgresql-client \
     && docker-php-ext-install -j$(nproc) \
-        # for phpunit
         bcmath \
-        # for postgres
         pdo_pgsql \
-        # for phpamqplib
         sockets \
-        # for composer
         zip \
     && pecl install xdebug \
     && docker-php-ext-enable xdebug
