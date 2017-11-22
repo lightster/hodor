@@ -24,7 +24,7 @@ services:
       dockerfile: docker/php/Dockerfile
     volumes:
       - .:/hodor
-      - ~/.composer/:/.composer
+      - ~/.composer/:/root/.composer
     depends_on:
       - postgres
       - rabbitmq
