@@ -1,23 +1,29 @@
-FROM php:5.6.24-cli
+FROM php:5.6-cli-alpine
 MAINTAINER Matt Light <matt.light@lightdatasys.com>
 
-# - bcmath is for phpunit
-# - pdo_pgsql is for postgres
-# - sockets is for phpamqplib
-# - zip is for composer
+# bash is for the docker entrypoint
+# git is for composer
+# bcmath is for phpunit
+# sockets is for phpamqplib
+# zip is for composer
+# pdo_pgsql is for postgres
 
-RUN apt-get update -qq \
-    && apt install -yqq \
-        libpq-dev \
+RUN apk add --no-cache --virtual '.lightster-phpize-deps' \
+        $PHPIZE_DEPS \
+    && apk add --no-cache \
+        bash \
         git \
+        zlib-dev \
+        postgresql-dev \
         postgresql-client \
-    && docker-php-ext-install -j$(nproc) \
+    && docker-php-ext-install \
         bcmath \
-        pdo_pgsql \
         sockets \
         zip \
+        pdo_pgsql \
     && pecl install xdebug \
-    && docker-php-ext-enable xdebug
+    && docker-php-ext-enable xdebug \
+    && apk del --no-cache .lightster-phpize-deps
 
 ADD https://getcomposer.org/installer /usr/local/bin/composer-setup.php
 RUN php /usr/local/bin/composer-setup.php \
@@ -26,7 +32,6 @@ RUN php /usr/local/bin/composer-setup.php \
     --filename=composer
 
 COPY docker/php/fs /
-COPY . /hodor
 
 ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh \
     /usr/local/bin/wait-for-it.sh
