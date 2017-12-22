@@ -31,8 +31,6 @@ RUN php /usr/local/bin/composer-setup.php \
     --install-dir=/usr/local/bin \
     --filename=composer
 
-COPY docker/php/fs /
-
 ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh \
     /usr/local/bin/wait-for-it.sh
 

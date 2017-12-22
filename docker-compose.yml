@@ -10,10 +10,10 @@ services:
       - POSTGRES_PASSWORD=
       - POSTGRES_DB=test_hodor
   rabbitmq:
-    build:
-      context: .
-      dockerfile: docker/rabbitmq/Dockerfile
+    image: rabbitmq:3.6-management-alpine
     restart: always
+    volumes:
+      - ./docker/rabbitmq:/etc/rabbitmq
     ports:
       - 5672
       - 15672
@@ -23,6 +23,8 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
     volumes:
+      - ./docker/php/entrypoint.sh:/usr/local/bin/entrypoint.sh
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
       - .:/hodor
       - ~/.composer/:/root/.composer
     depends_on:
