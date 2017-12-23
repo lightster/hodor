@@ -4,3 +4,4 @@ tests/config/config.php
 tests/log
 tests/tmp
 Makefile
+.pier.overrides.yaml
