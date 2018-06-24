@@ -24,6 +24,7 @@ notifications:
       secure: qzLVdHHCuYhL80XaZ+lBVRhuT97x1RuKbvfmYIMiX9A2X4JwxrQpd3cZayRXc7AbOmvOeUzA+Eg5drzt/nK3v4EFBpzK5VEtjLvKWAF0czZ0D0/a86mRWTxriUvjpjbuIut1WVKJV78TGKKqHc7Eq8WFXCaVTzk/hWmI3SwZUAdNo8uChfy81DykaBXgb4b3/JVKGVzs6YxlfsIsXYFwdogP/SPlHLjfZBIYZUFhqVHBtfWH97ecHTR2aiy6ojoUTiwDbnzgDbGF5J7wEljUnO3vpIGwjmP/XdM5hcyt6QnTBSfSxpVgxaTWMoIaQ49iVB3PMSZ/sGf8UPLkAmQ8pQTq6N9gbWpMeU3YK3ViqsNlNBTACwBE7tLph6s/Jvgv4eUFqcBn/h4pNK26ekJp2WY/DsX36ez1uLcnySgItUZyZOpzt13bXUeSDUQGDE+echI/E0x1fPkbOM1ThJZVlA5WbKSortuapzIZ6crW4WplT9pgvm85MX1vaRmCJy2NtZQ5bmDb5AtsOSiNVFySxUfoIzVmu//aXEx0dhXzJg+wVIXpAg4Og4InRWjyPZ4sf0GPCSz13KXs+6cebu8/GZdCgq389//RBlwamOw/zWkUKVE8smDDlUsMSu1hsJ9qkpSIaTp3tOJ1RoqmMDtbwnTev7oyxBuT7xDXoiPYR4o=
     on_success: change
     on_failure: always
+    on_pull_requests: false
 cache:
   directories:
   - "$HOME/.composer/cache/files"
