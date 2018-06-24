@@ -1,37 +1,30 @@
 language: php
-
 php:
-  - 5.6
-  - 7.0
-  - 7.1
-
+- 5.6
+- 7.0
+- 7.1
+- 7.2
 services:
-  - postgres
-  - rabbitmq
-
+- postgres
+- rabbitmq
 addons:
-  postgresql: "9.3"
-
+  postgresql: '9.3'
 before_script:
-  - chmod 0755 configure
-  - ./configure shell
-  - psql -c 'create database travisci_hodor;' -U postgres
-  - make install-test-travis
-
+- chmod 0755 configure
+- "./configure shell"
+- psql -c 'create database travisci_hodor;' -U postgres
+- make install-test-travis
 install:
-  - composer install
-
+- composer install
 after_script:
-  - vendor/bin/test-reporter --coverage-report=tests/log/coverage.xml
-
+- vendor/bin/test-reporter --coverage-report=tests/log/coverage.xml
 notifications:
   slack:
     rooms:
-      - secure: l6BPBIih0bxP+6AV4ZwqbwewX4KB+DInf2GHfbzaAkFwanDDugWl/k1gakLmDSU6TbJDEpQq4yYnA8k+LcXvrxBYB9DIfB9DC/aExLujHWH8inb5WrSGi9dKN+cwYVj85RBniC/UWGopYWYTVJBy6XZrthQ9FST76jbH6MTvDmLRdK+enX34PKGXxEOGpDqt8wqq+d6WUSVxbyXwBnxBvLgz4WVTgHB4dpR4O6ouQvjqoV+RwSQDP2vYgHzUyteBj6uJZNRe8AETPe1l2/5VVN/K4WhFihUdR4LG9EMNcmMqqAnXXxwsA6a80xUQ3rw+88McxuXHYC2fYZxnI4b/zz42KwzPX2Q/2872CzO5ZMunGgbcPgdXACx3wUGuk5Pii/SMynEZWQ0h9h1sIHrJbnfzeP+sjRyY/X/UA8xcuJReKKf5BoJvedOLejQUwZEJfvLB2E91xybR/cM4U96XSXKbF6MjaDrIpxJgtxQVuveZdmX2nuevY7pLd90hinnewV0zpRY1Cka8iebQF/f3vuRsa5t6xS4OQKPEur9FRVS0SqkpsEpM0Q8Pj6ACudX8VF5qODYNlR3WkWDsXmkZrOUUzunFK0rsMWg6l/qTviH480+3pXDPZN5b2UiSYY9mY4xL/kJT6lSa4nNcxZL21pt73Pxzs2csBXYAJ3bwXIo=
+      secure: qzLVdHHCuYhL80XaZ+lBVRhuT97x1RuKbvfmYIMiX9A2X4JwxrQpd3cZayRXc7AbOmvOeUzA+Eg5drzt/nK3v4EFBpzK5VEtjLvKWAF0czZ0D0/a86mRWTxriUvjpjbuIut1WVKJV78TGKKqHc7Eq8WFXCaVTzk/hWmI3SwZUAdNo8uChfy81DykaBXgb4b3/JVKGVzs6YxlfsIsXYFwdogP/SPlHLjfZBIYZUFhqVHBtfWH97ecHTR2aiy6ojoUTiwDbnzgDbGF5J7wEljUnO3vpIGwjmP/XdM5hcyt6QnTBSfSxpVgxaTWMoIaQ49iVB3PMSZ/sGf8UPLkAmQ8pQTq6N9gbWpMeU3YK3ViqsNlNBTACwBE7tLph6s/Jvgv4eUFqcBn/h4pNK26ekJp2WY/DsX36ez1uLcnySgItUZyZOpzt13bXUeSDUQGDE+echI/E0x1fPkbOM1ThJZVlA5WbKSortuapzIZ6crW4WplT9pgvm85MX1vaRmCJy2NtZQ5bmDb5AtsOSiNVFySxUfoIzVmu//aXEx0dhXzJg+wVIXpAg4Og4InRWjyPZ4sf0GPCSz13KXs+6cebu8/GZdCgq389//RBlwamOw/zWkUKVE8smDDlUsMSu1hsJ9qkpSIaTp3tOJ1RoqmMDtbwnTev7oyxBuT7xDXoiPYR4o=
     on_success: change
     on_failure: always
-    on_start:   change
-
+    on_pull_requests: false
 cache:
   directories:
-    - $HOME/.composer/cache/files
+  - "$HOME/.composer/cache/files"
