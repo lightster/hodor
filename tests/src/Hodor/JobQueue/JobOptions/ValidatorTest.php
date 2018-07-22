@@ -44,6 +44,7 @@ class ValidatorTest extends TestCase
     public function testKnownQueueNameCanValidateWithoutAnException()
     {
         $this->generateValidator()->validateJobOptions(['queue_name' => 'queue_a']);
+        $this->assertTrue(true);
     }
 
     /**
@@ -65,6 +66,7 @@ class ValidatorTest extends TestCase
     public function testRunAfterCanValidateWithoutAnException()
     {
         $this->generateValidator()->validateJobOptions(['run_after' => new DateTime()]);
+        $this->assertTrue(true);
     }
 
     /**
@@ -97,6 +99,7 @@ class ValidatorTest extends TestCase
     public function testJobRankCanValidateWithoutAnException()
     {
         $this->generateValidator()->validateJobOptions(['job_rank' => 5]);
+        $this->assertTrue(true);
     }
 
     /**
@@ -129,6 +132,7 @@ class ValidatorTest extends TestCase
     public function testMutexIdCanValidateWithoutAnException()
     {
         $this->generateValidator()->validateJobOptions(['mutex_id' => 'yay']);
+        $this->assertTrue(true);
     }
 
     /**

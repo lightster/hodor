@@ -147,11 +147,7 @@ class FlowTest extends TestCase
         $job_params = [];
 
         $this->queueJobs($job_name, [$job_params]);
-        try {
-            $this->runJobWorker();
-        } catch (Exception $exception) {
-            $this->assertEquals(0, $exception->getCode());
-        }
+        $this->assertEquals(0, $this->runJobWorker()[1]);
     }
 
     public function testFatalErrorInJobResultsInNonZeroExitCode()
@@ -224,7 +220,7 @@ class FlowTest extends TestCase
                     'params' => $job_params,
                 ]
             ),
-            $this->runJobWorker()
+            $this->runJobWorker()[0]
         );
     }
 
@@ -307,7 +303,7 @@ class FlowTest extends TestCase
 
         if ($exit_code) {
             throw new Exception(
-                "An error occurred runninga command:\n"
+                "An error occurred running a command:\n"
                     . "  > Command:   {$command}\n"
                     . "  > Exit code: {$exit_code}\n"
                     . "  > Output:    {$output}\n\n",
@@ -315,7 +311,7 @@ class FlowTest extends TestCase
             );
         }
 
-        return $output;
+        return [$output, $exit_code];
     }
 
     /**
