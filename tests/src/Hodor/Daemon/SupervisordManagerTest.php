@@ -4,13 +4,13 @@ namespace Hodor\Daemon;
 
 use org\bovigo\vfs\vfsStreamDirectory;
 use org\bovigo\vfs\vfsStreamWrapper;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Hodor\JobQueue\Config;
 
 /**
  * @coversDefaultClass Hodor\Daemon\SupervisordManager
  */
-class SupervisordManagerTest extends PHPUnit_Framework_TestCase
+class SupervisordManagerTest extends TestCase
 {
     /**
      * @covers ::__construct

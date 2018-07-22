@@ -2,12 +2,12 @@
 
 namespace Hodor\Database\Exception;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\Database\Exception\BufferedJobNotFoundException
  */
-class BufferedJobNotFoundExceptionTest extends PHPUnit_Framework_TestCase
+class BufferedJobNotFoundExceptionTest extends TestCase
 {
     /**
      * @covers ::__construct

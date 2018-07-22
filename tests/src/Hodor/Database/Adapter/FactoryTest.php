@@ -2,9 +2,9 @@
 
 namespace Hodor\Database\Adapter;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-abstract class FactoryTest extends PHPUnit_Framework_TestCase
+abstract class FactoryTest extends TestCase
 {
     /**
      * @covers ::__construct

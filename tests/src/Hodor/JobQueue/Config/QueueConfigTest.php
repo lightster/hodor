@@ -3,12 +3,12 @@
 namespace Hodor\JobQueue\Config;
 
 use Exception;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\JobQueue\Config\QueueConfig
  */
-class QueueConfigTest extends PHPUnit_Framework_TestCase
+class QueueConfigTest extends TestCase
 {
     /**
      * @covers ::__construct

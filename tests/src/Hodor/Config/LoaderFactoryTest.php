@@ -2,12 +2,12 @@
 
 namespace Hodor\Config;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\Config\LoaderFactory
  */
-class LoaderFactoryTest extends PHPUnit_Framework_TestCase
+class LoaderFactoryTest extends TestCase
 {
     private $loader_factory;
 

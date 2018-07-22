@@ -4,19 +4,19 @@ namespace Hodor\Database\Adapter\TestUtil;
 
 use Generator;
 use Hodor\Database\Adapter\SuperqueuerInterface;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 class JobsToRunAsserter
 {
     /**
-     * @var PHPUnit_Framework_TestCase
+     * @var TestCase
      */
     private $test_case;
 
     /**
-     * @param PHPUnit_Framework_TestCase $test_case
+     * @param TestCase $test_case
      */
-    public function __construct(PHPUnit_Framework_TestCase $test_case)
+    public function __construct(TestCase $test_case)
     {
         $this->test_case = $test_case;
     }

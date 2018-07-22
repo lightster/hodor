@@ -2,12 +2,12 @@
 
 namespace Hodor\JobQueue;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\JobQueue\QueueManager
  */
-class QueueManagerTest extends PHPUnit_Framework_TestCase
+class QueueManagerTest extends TestCase
 {
     /**
      * @var QueueManager

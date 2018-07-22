@@ -1,4 +1,4 @@
-FROM php:5.6-cli-alpine
+FROM php:7.0-cli-alpine
 MAINTAINER Matt Light <matt.light@lightdatasys.com>
 
 # bash is for the docker entrypoint

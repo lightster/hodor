@@ -3,12 +3,12 @@
 namespace Hodor\Database\Adapter\Postgres;
 
 use Exception;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass \Hodor\Database\Adapter\Postgres\Connection
  */
-class ConnectionTest extends PHPUnit_Framework_TestCase
+class ConnectionTest extends TestCase
 {
     /**
      * @covers ::__construct

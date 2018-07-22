@@ -2,12 +2,12 @@
 
 namespace Hodor\Config;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\Config\PhpConfigLoader
  */
-class PhpConfigLoaderTest extends PHPUnit_Framework_TestCase
+class PhpConfigLoaderTest extends TestCase
 {
     private $loader;
 

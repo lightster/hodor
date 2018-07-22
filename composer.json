@@ -24,12 +24,12 @@
         "davedevelopment/phpmig": "^1.1.0",
         "lightster/yo-pdo": "^0.1.3",
         "hodor/ravens": "~0.0.1",
-        "php": ">=5.5.18",
+        "php": "^7",
         "pimple/pimple": "^1.1.1",
         "symfony/console": "^2.8.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "^4.8.0",
+        "phpunit/phpunit": "^6",
         "mikey179/vfsStream": "^1.6.4",
         "codeclimate/php-test-reporter": "dev-master"
     }
