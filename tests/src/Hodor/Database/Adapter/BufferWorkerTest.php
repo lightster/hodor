@@ -5,9 +5,9 @@ namespace Hodor\Database\Adapter;
 use Hodor\Database\Adapter\TestUtil\AbstractProvisioner;
 use Hodor\Database\Adapter\TestUtil\JobsToRunAsserter;
 use Hodor\Database\Adapter\TestUtil\ScenarioCreator;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-abstract class BufferWorkerTest extends PHPUnit_Framework_TestCase
+abstract class BufferWorkerTest extends TestCase
 {
     /**
      * @var JobsToRunAsserter

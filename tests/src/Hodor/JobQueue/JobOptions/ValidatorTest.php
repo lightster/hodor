@@ -6,12 +6,12 @@ use DateTime;
 use Hodor\JobQueue\Config;
 use Hodor\JobQueue\Config\QueueConfig;
 use Hodor\JobQueue\Config\WorkerConfig;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\JobQueue\JobOptions\Validator
  */
-class ValidatorTest extends PHPUnit_Framework_TestCase
+class ValidatorTest extends TestCase
 {
     /**
      * @covers ::__construct

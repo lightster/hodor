@@ -2,12 +2,12 @@
 
 namespace Hodor\Daemon;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\Daemon\ManagerFactory
  */
-class ManagerFactoryTest extends PHPUnit_Framework_TestCase
+class ManagerFactoryTest extends TestCase
 {
     /**
      * @covers ::__construct

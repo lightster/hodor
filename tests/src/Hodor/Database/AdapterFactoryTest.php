@@ -2,12 +2,12 @@
 
 namespace Hodor\Database;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\Database\AdapterFactory
  */
-class AdapterFactoryTest extends PHPUnit_Framework_TestCase
+class AdapterFactoryTest extends TestCase
 {
     /**
      * @var AdapterFactory

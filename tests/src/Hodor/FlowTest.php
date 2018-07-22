@@ -4,9 +4,9 @@ namespace Hodor;
 
 use Exception;
 use Hodor\Database\Adapter\Postgres\Factory;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class FlowTest extends PHPUnit_Framework_TestCase
+class FlowTest extends TestCase
 {
     private $config_file;
     private $e_config_file;

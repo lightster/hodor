@@ -7,12 +7,12 @@ use Exception;
 use Hodor\JobQueue\TestUtil\TestingQueueProvisioner;
 use Hodor\MessageQueue\Adapter\Testing\Config as TestingConfig;
 use Hodor\MessageQueue\IncomingMessage;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\JobQueue\BufferQueue
  */
-class BufferQueueTest extends PHPUnit_Framework_TestCase
+class BufferQueueTest extends TestCase
 {
     /**
      * @var TestingQueueProvisioner
