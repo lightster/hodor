@@ -1,4 +1,0 @@
----
-pier:
-  run:
-    command: bash docker/pier.sh
