@@ -4,9 +4,9 @@ namespace Hodor;
 
 use Exception;
 use Hodor\Database\Adapter\Postgres\Factory;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class FlowTest extends PHPUnit_Framework_TestCase
+class FlowTest extends TestCase
 {
     private $config_file;
     private $e_config_file;
@@ -147,11 +147,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
         $job_params = [];
 
         $this->queueJobs($job_name, [$job_params]);
-        try {
-            $this->runJobWorker();
-        } catch (Exception $exception) {
-            $this->assertEquals(0, $exception->getCode());
-        }
+        $this->assertEquals(0, $this->runJobWorker()[1]);
     }
 
     public function testFatalErrorInJobResultsInNonZeroExitCode()
@@ -224,7 +220,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
                     'params' => $job_params,
                 ]
             ),
-            $this->runJobWorker()
+            $this->runJobWorker()[0]
         );
     }
 
@@ -307,7 +303,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
 
         if ($exit_code) {
             throw new Exception(
-                "An error occurred runninga command:\n"
+                "An error occurred running a command:\n"
                     . "  > Command:   {$command}\n"
                     . "  > Exit code: {$exit_code}\n"
                     . "  > Output:    {$output}\n\n",
@@ -315,7 +311,7 @@ class FlowTest extends PHPUnit_Framework_TestCase
             );
         }
 
-        return $output;
+        return [$output, $exit_code];
     }
 
     /**

@@ -3,12 +3,12 @@
 namespace Hodor\Command;
 
 use Exception;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\Command\Arguments
  */
-class ArgumentsTest extends PHPUnit_Framework_TestCase
+class ArgumentsTest extends TestCase
 {
     /**
      * @covers ::setCliOptsLoader

@@ -6,9 +6,9 @@ use Hodor\Database\Adapter\TestUtil\AbstractProvisioner;
 use Hodor\Database\Adapter\TestUtil\JobsToRunAsserter;
 use Hodor\Database\Adapter\TestUtil\ScenarioCreator;
 use Hodor\Database\AdapterInterface;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-abstract class SuperqueuerTest extends PHPUnit_Framework_TestCase
+abstract class SuperqueuerTest extends TestCase
 {
     /**
      * @var JobsToRunAsserter

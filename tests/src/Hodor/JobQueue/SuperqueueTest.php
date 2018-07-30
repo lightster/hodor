@@ -6,12 +6,12 @@ use Hodor\Database\Adapter\Testing\Database;
 use Hodor\JobQueue\TestUtil\TestingQueueProvisioner;
 use Hodor\MessageQueue\Adapter\Testing\Config as TestingConfig;
 use Hodor\MessageQueue\Adapter\Testing\MessageBank;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\JobQueue\Superqueue
  */
-class SuperqueueTest extends PHPUnit_Framework_TestCase
+class SuperqueueTest extends TestCase
 {
 
     /**

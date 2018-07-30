@@ -6,12 +6,12 @@ use DateTime;
 use Hodor\JobQueue\Config;
 use Hodor\JobQueue\Config\QueueConfig;
 use Hodor\JobQueue\Config\WorkerConfig;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\JobQueue\JobOptions\Validator
  */
-class ValidatorTest extends PHPUnit_Framework_TestCase
+class ValidatorTest extends TestCase
 {
     /**
      * @covers ::__construct
@@ -44,6 +44,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     public function testKnownQueueNameCanValidateWithoutAnException()
     {
         $this->generateValidator()->validateJobOptions(['queue_name' => 'queue_a']);
+        $this->assertTrue(true);
     }
 
     /**
@@ -65,6 +66,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     public function testRunAfterCanValidateWithoutAnException()
     {
         $this->generateValidator()->validateJobOptions(['run_after' => new DateTime()]);
+        $this->assertTrue(true);
     }
 
     /**
@@ -97,6 +99,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     public function testJobRankCanValidateWithoutAnException()
     {
         $this->generateValidator()->validateJobOptions(['job_rank' => 5]);
+        $this->assertTrue(true);
     }
 
     /**
@@ -129,6 +132,7 @@ class ValidatorTest extends PHPUnit_Framework_TestCase
     public function testMutexIdCanValidateWithoutAnException()
     {
         $this->generateValidator()->validateJobOptions(['mutex_id' => 'yay']);
+        $this->assertTrue(true);
     }
 
     /**

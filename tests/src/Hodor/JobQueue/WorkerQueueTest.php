@@ -10,13 +10,13 @@ use Hodor\MessageQueue\Adapter\Testing\Config as TestingConfig;
 use Hodor\MessageQueue\Adapter\Testing\MessageBank;
 use Hodor\MessageQueue\ConsumerQueue;
 use Hodor\MessageQueue\IncomingMessage;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
 
 /**
  * @coversDefaultClass Hodor\JobQueue\WorkerQueue
  */
-class WorkerQueueTest extends PHPUnit_Framework_TestCase
+class WorkerQueueTest extends TestCase
 {
     /**
      * @var MessageBank

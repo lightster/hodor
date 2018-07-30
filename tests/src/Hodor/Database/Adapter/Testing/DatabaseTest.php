@@ -3,13 +3,13 @@
 namespace Hodor\Database\Adapter\Testing;
 
 use Exception;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use stdClass;
 
 /**
  * @coversDefaultClass \Hodor\Database\Adapter\Testing\Database
  */
-class DatabaseTest extends PHPUnit_Framework_TestCase
+class DatabaseTest extends TestCase
 {
     /**
      * @var Database

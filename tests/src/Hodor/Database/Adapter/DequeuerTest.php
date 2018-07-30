@@ -5,10 +5,10 @@ namespace Hodor\Database\Adapter;
 use Hodor\Database\Adapter\TestUtil\AbstractProvisioner;
 use Hodor\Database\Adapter\TestUtil\JobsToRunAsserter;
 use Hodor\Database\Adapter\TestUtil\ScenarioCreator;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Traversable;
 
-abstract class DequeuerTest extends PHPUnit_Framework_TestCase
+abstract class DequeuerTest extends TestCase
 {
     /**
      * @var JobsToRunAsserter

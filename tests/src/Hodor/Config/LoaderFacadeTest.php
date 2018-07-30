@@ -2,12 +2,12 @@
 
 namespace Hodor\Config;
 
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\Config\LoaderFacade
  */
-class LoaderFacadeTest extends PHPUnit_Framework_TestCase
+class LoaderFacadeTest extends TestCase
 {
     /**
      * @covers ::loadFromFile

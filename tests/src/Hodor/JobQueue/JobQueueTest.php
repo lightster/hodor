@@ -7,12 +7,12 @@ use Hodor\MessageQueue\Adapter\FactoryInterface;
 use Hodor\MessageQueue\Adapter\Testing\MessageBankFactory;
 use Hodor\MessageQueue\AdapterFactory;
 use Hodor\MessageQueue\IncomingMessage;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\JobQueue\JobQueue
  */
-class JobQueueTest extends PHPUnit_Framework_TestCase
+class JobQueueTest extends TestCase
 {
     /**
      * @var JobQueue

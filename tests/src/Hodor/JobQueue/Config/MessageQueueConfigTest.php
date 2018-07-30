@@ -4,12 +4,12 @@ namespace Hodor\JobQueue\Config;
 
 use Exception;
 use Hodor\MessageQueue\Adapter\Testing\MessageBankFactory;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @coversDefaultClass Hodor\JobQueue\Config\MessageQueueConfig
  */
-class MessageQueueConfigTest extends PHPUnit_Framework_TestCase
+class MessageQueueConfigTest extends TestCase
 {
     /**
      * @covers ::__construct
